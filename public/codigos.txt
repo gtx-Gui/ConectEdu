@@ -1,0 +1,225 @@
+<div class="form-group empresa-only" style="display: none;">
+                &nbsp;<label>Já possui equipamentos para doação?</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="possui-equipamentos-sim" name="possui-equipamentos" value="sim">
+                        <label class="radio-label" for="possui-equipamentos-sim">Sim</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="possui-equipamentos-nao" name="possui-equipamentos" value="nao" checked>
+                        <label class="radio-label" for="possui-equipamentos-nao">Não</label>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div class="form-group instituicao-only" style="display: none;">
+                &nbsp;<label>Sua instituição possui necessidades de equipamentos?</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="possui-necessidade-sim" name="possui-necessidade" value="sim">
+                        <label class="radio-label" for="possui-necessidade-sim">Sim</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="possui-necessidade-nao" name="possui-necessidade" value="nao" checked>
+                        <label class="radio-label" for="possui-necessidade-nao">Não</label>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.querySelectorAll('input[name="tipo-cadastro"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                        const empresaOnly = document.querySelector('.empresa-only');
+                        const instituicaoOnly = document.querySelector('.instituicao-only');
+                        const necessidadesLista = document.querySelector('.necessidades-lista');
+                        const equipamentosLista = document.querySelector('.equipamentos-lista');
+                        
+                        if (this.value === 'empresa') {
+                            empresaOnly.style.display = 'block';
+                            instituicaoOnly.style.display = 'none';
+                            necessidadesLista.style.display = 'none';
+                            equipamentosLista.style.display = 'none';
+                        } else if (this.value === 'instituicaoDeEnsino') {
+                            empresaOnly.style.display = 'none';
+                            instituicaoOnly.style.display = 'block';
+                            equipamentosLista.style.display = 'none';
+                            necessidadesLista.style.display = 'none';
+                        }
+                    });
+                });
+                </script>
+            
+            
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Script para equipamentos
+                                const radioButtonsEquip = document.querySelectorAll('input[name="possui-equipamentos"]');
+                                const equipamentosLista = document.querySelector('.equipamentos-lista');
+            
+                                // Verifica estado inicial
+                                const equipamentoSimRadio = document.querySelector('#possui-equipamentos-sim');
+                                if (equipamentoSimRadio && equipamentoSimRadio.checked) {
+                                    equipamentosLista.style.display = 'block';
+                                }
+            
+                                radioButtonsEquip.forEach(radio => {
+                                    radio.addEventListener('change', function() {
+                                        if (this.value === 'sim') {
+                                            equipamentosLista.style.display = 'block';
+                                        } else {
+                                            equipamentosLista.style.display = 'none';
+                                        }
+                                    });
+                                });
+            
+                                // Script para necessidades
+                                const radioButtonsNec = document.querySelectorAll('input[name="possui-necessidade"]');
+                                const necessidadesLista = document.querySelector('.necessidades-lista');
+            
+                                // Verifica estado inicial
+                                const necessidadeSimRadio = document.querySelector('#possui-necessidade-sim');
+                                if (necessidadeSimRadio && necessidadeSimRadio.checked) {
+                                    necessidadesLista.style.display = 'block';
+                                }
+            
+                                radioButtonsNec.forEach(radio => {
+                                    radio.addEventListener('change', function() {
+                                        if (this.value === 'sim') {
+                                            necessidadesLista.style.display = 'block';
+                                        } else {
+                                            necessidadesLista.style.display = 'none';
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+            
+
+        
+
+            <div class="form-group equipamentos-lista" style="display: none;">
+                &nbsp;<label><h3>Guia rápido para cadastro de equipamentos</h3></label>
+                &nbsp;<label>Equipamentos para doação:</label>
+                <div class="equipamento-item">
+                    <select id="categoria-equipamento" name="categoria-equipamento" required>
+                        <option value="">Selecione a categoria</option>
+                        <option value="computador">Computador</option>
+                        <option value="smartphone">Teclado</option>
+                        <option value="smartphone">Mouse</option>
+                        <option value="smartphone">Projetor de Vídeo</option>
+                        <option value="impressora">Impressora</option>
+                        <option value="notebook">Notebook</option>
+                        <option value="monitor">Monitor</option>
+                        <option value="tablet">Tablet</option>
+                        <option value="smartphone">Smartphone</option>
+                    </select>
+                    &nbsp;<label>Marca e Modelo:</label>
+                    <input type="text" id="marca-modelo" name="marca-modelo" placeholder="Marca e Modelo" required>
+                    &nbsp;<label>Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" placeholder="Quantidade" min="1" required>
+                    &nbsp;<label>Estado de conservação:</label>
+                    <select id="estado" name="estado" required>
+                        <option value="">Estado de conservação</option>
+                        <option value="novo">Novo</option>
+                        <option value="excelente">Excelente (usado poucas vezes)</option>
+                        <option value="bom">Bom (funciona perfeitamente)</option>
+                        <option value="regular">Regular (necessita pequenos reparos)</option>
+                    </select>
+                    &nbsp;<label>Especificações técnicas (se houver):</label>
+                    <input type="text" id="especificacoes" name="especificacoes" placeholder="Especificações técnicas ">
+                </div>
+            </div>
+
+            
+
+
+            <div class="form-group necessidades-lista" style="display: none;">
+                &nbsp;<label><h3>Guia rápido para cadastro de necessidades:</h3></label>
+                &nbsp;<label>Necessidades da Instituição:</label>
+                <div class="necessidade-item">
+                    <select id="categoria-necessidade" name="categoria-necessidade" required>
+                        <option value="">Selecione a categoria</option>
+                        <option value="computador">Computador</option>
+                        <option value="notebook">Notebook</option>
+                        <option value="monitor">Monitor</option>
+                        <option value="impressora">Impressora</option>
+                        <option value="tablet">Tablet</option>
+                        <option value="smartphone">Smartphone</option>
+                        
+                    </select>
+                    &nbsp;<label>Quantidade necessária:</label>
+                    <input type="number" id="quantidade-necessaria" name="quantidade-necessaria" placeholder="Quantidade necessária" min="1" required>
+                    &nbsp;<label>Nível de prioridade:</label>
+                    <select id="prioridade" name="prioridade" required>
+                        <option value="">Nível de prioridade</option>
+                        <option value="urgente">Urgente</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Média</option>
+                        <option value="baixa">Baixa</option>
+                    </select>
+                    
+                </div>
+            </div>
+
+<style>
+
+.form-group.equipamentos-lista, .form-group.necessidades-lista {
+    display: none;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: #a8daa4;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.equipamento-item, .necessidade-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.equipamento-item select,
+.equipamento-item input,
+.necessidade-item select,
+.necessidade-item input {
+    padding: 12px;
+    color: #000000;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.equipamento-item select:focus,
+.equipamento-item input:focus,
+.necessidade-item select:focus,
+.necessidade-item input:focus {
+    outline: none;
+    border-color: #98D8C1;
+    box-shadow: 0 0 5px rgba(152, 216, 193, 0.5);
+}
+
+.equipamento-item select,
+.necessidade-item select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 35px;
+}
+
+.equipamento-item input::placeholder,
+.necessidade-item input::placeholder {
+    color: #999;
+}
+
+.equipamento-item input[type="number"],
+.necessidade-item input[type="number"] {
+    width: 150px;
+}
+
+</style>
