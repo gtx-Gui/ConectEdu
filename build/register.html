@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-cadastro">
+        <div class="cabecalho">
+            <h1>Cadastro</h1>
+        </div>
+        
+        <form action="insert.js" method="post" class="form-cadastro">
+            <div class="form-group-TypeRegister">
+                <label class="tipo-cadastro-label">Selecione o tipo de cadastro:</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="empresa" name="tipo-cadastro" value="empresa" required>
+                        <label for="empresa" class="radio-label">
+                            <span class="radio-custom"></span>
+                            Empresa Doadora
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="instituicao" name="tipo-cadastro" value="instituicaoDeEnsino" required>
+                        <label for="instituicao" class="radio-label">
+                            <span class="radio-custom"></span>
+                            Instituição De Ensino
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário para Empresa -->
+            <div id="form-empresa" style="display:none;">
+                <div class="form-group">
+                    <label for="nome-empresa">Nome da Empresa:</label>
+                    <input type="text" id="nome-empresa" name="nome-empresa" placeholder="Nome da Empresa" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cnpj">CNPJ:</label>
+                    <input type="text" id="cnpj" name="cnpj" placeholder="CNPJ" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endereco">Endereço completo:</label>
+                    <input type="text" id="endereco" name="endereco" placeholder="Endereço completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cep">CEP:</label>
+                    <input type="text" id="cep" name="cep" placeholder="Digite o CEP" maxlength="8" required>
+                    <div id="endereco-detalhes" style="display:none; margin-top: 10px;">
+                        <input type="text" id="rua" placeholder="Rua" disabled>
+                        <input type="text" id="bairro" placeholder="Bairro" disabled>
+                        <input type="text" id="cidade" placeholder="Cidade" disabled>
+                        <input type="text" id="estado" placeholder="Estado" disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome-responsavel">Nome do responsável:</label>
+                    <input type="text" id="nome-responsavel" name="nome-responsavel" placeholder="Nome do responsável" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo">Cargo do responsável:</label>
+                    <input type="text" id="cargo" name="cargo" placeholder="Cargo do responsável" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail de contato:</label>
+                    <input type="email" id="email" name="email" placeholder="E-mail de contato" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone de contato:</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="Telefone de contato" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha" name="senha" placeholder="Senha" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirma-senha">Confirme sua senha:</label>
+                    <input type="password" id="confirma-senha" name="confirma-senha" placeholder="Confirme sua senha" required>
+                </div>
+            </div>
+
+            <!-- Formulário para Instituição -->
+            <div id="form-instituicao" style="display:none;">
+                <div class="form-group">
+                    <label for="nome-instituicao">Nome da Instituição:</label>
+                    <input type="text" id="nome-instituicao" name="nome-instituicao" placeholder="Nome da Instituição" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cnpj">CNPJ:</label>
+                    <input type="text" id="cnpj-inst" name="cnpj" placeholder="CNPJ" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endereco">Endereço completo:</label>
+                    <input type="text" id="endereco-inst" name="endereco" placeholder="Endereço completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cep">CEP:</label>
+                    <input type="text" id="cep-inst" name="cep" placeholder="Digite o CEP" maxlength="8" required>
+                    <div id="endereco-detalhes-inst" style="display:none; margin-top: 10px;">
+                        <input type="text" id="rua-inst" placeholder="Rua" disabled>
+                        <input type="text" id="bairro-inst" placeholder="Bairro" disabled>
+                        <input type="text" id="cidade-inst" placeholder="Cidade" disabled>
+                        <input type="text" id="estado-inst" placeholder="Estado" disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome-responsavel">Nome do responsável:</label>
+                    <input type="text" id="nome-responsavel-inst" name="nome-responsavel" placeholder="Nome do responsável" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo">Cargo do responsável:</label>
+                    <input type="text" id="cargo-inst" name="cargo" placeholder="Cargo do responsável" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail de contato:</label>
+                    <input type="email" id="email-inst" name="email" placeholder="E-mail de contato" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone de contato:</label>
+                    <input type="tel" id="telefone-inst" name="telefone" placeholder="Telefone de contato" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha-inst" name="senha" placeholder="Senha" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirma-senha">Confirme sua senha:</label>
+                    <input type="password" id="confirma-senha-inst" name="confirma-senha" placeholder="Confirme sua senha" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit"><b>Cadastrar</b></button>
+            </div>
+
+            <div class="links">
+                <p>Já tem uma conta? <a href="login.html">Faça login</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioEmpresa = document.getElementById('empresa');
+            const radioInstituicao = document.getElementById('instituicao');
+            const formEmpresa = document.getElementById('form-empresa');
+            const formInstituicao = document.getElementById('form-instituicao');
+
+            radioEmpresa.addEventListener('change', function() {
+                if(this.checked) {
+                    formEmpresa.style.display = 'block';
+                    formInstituicao.style.display = 'none';
+                }
+            });
+
+            radioInstituicao.addEventListener('change', function() {
+                if(this.checked) {
+                    formInstituicao.style.display = 'block';
+                    formEmpresa.style.display = 'none';
+                }
+            });
+
+            // Script para CEP
+            const cepInputs = ['cep', 'cep-inst'];
+            cepInputs.forEach(id => {
+                document.getElementById(id).addEventListener('blur', function(e) {
+                    let cep = e.target.value.replace(/\D/g, '');
+                    
+                    if(cep.length !== 8) {
+                        alert('CEP inválido');
+                        return;
+                    }
+
+                    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.erro) {
+                                alert('CEP não encontrado');
+                                return;
+                            }
+                            
+                            const suffix = id === 'cep' ? '' : '-inst';
+                            document.getElementById('endereco-detalhes' + suffix).style.display = 'block';
+                            document.getElementById('rua' + suffix).value = data.logradouro;
+                            document.getElementById('bairro' + suffix).value = data.bairro;
+                            document.getElementById('cidade' + suffix).value = data.localidade;
+                            document.getElementById('estado' + suffix).value = data.uf;
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Erro ao buscar o CEP');
+                        });
+                });
+            });
+        });
+    </script>
+
+    <style>
+        body {
+            background-color: #252525;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container-cadastro {
+            width: 100%;
+            max-width: 800px;
+            padding: 0;
+            border-radius: 10px;
+            background: #f5f5f5;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .form-group-TypeRegister {
+            margin-bottom: 20px;
+        }
+
+        .cabecalho {
+            background: #98D8C1;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+
+        .form-cadastro {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .tipo-cadastro-label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .radio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            margin-right: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .radio-custom:before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.2s ease;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label .radio-custom:before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        button {
+            background: #98D8C1;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            color: #333;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background: #7bc5aa;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #56bb96;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            color: #7bc5aa;
+        }
+
+        @media (max-width: 480px) {
+            .container-cadastro {
+                margin: 20px;
+            }
+        }
+    </style>
+</body>
+</html>

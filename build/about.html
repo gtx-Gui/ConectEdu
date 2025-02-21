@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Sobre Nós</title>
+    <link rel="stylesheet" href="/src/App.css">
+    <link rel="stylesheet" href="/src/variables.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+
+    <header>
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+      <div class="btnLogin">
+    <a href="login.html" class="btn login" id="loginBtn">
+        <i class="fas fa-user"></i>
+    </a>
+    
+        </div>
+    <menu>
+        <nav class="nav-links">
+            <li class="nav-li"><a href="index.html">Home</a></li>
+            <li class="nav-li"><a href="register.html">Cadastro</a></li>
+            <li class="nav-li"><a href="about.html">Sobre</a></li>
+            <li class="dropdown">
+                <a href="#" onclick="toggleDropdown(event, 'plataformaDropdown')">Plataforma</a>
+                <ul class="dropdown-content" id="plataformaDropdown">
+                    <li class="dropdown-li"><a href="services.html#equipamentos">Doar Equipamentos</a></li>
+                    <li class="dropdown-li"><a href="services.html#manutencao">Solicitar Equipamentos</a></li>
+                    <li class="dropdown-li"><a href="services.html#treinamento">Logística</a></li>
+                    <li class="dropdown-li"><a href="services.html#suporte">Reciclagem e Descarte</a></li>
+                    <li class="dropdown-li"><a href="services.html#reciclagem">Suporte</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" onclick="toggleDropdown(event, 'escolasDropdown')">Instituições Cadastradas</a>
+                <ul class="dropdown-content" id="escolasDropdown">
+                    <!-- As escolas serão carregadas dinamicamente via JavaScript baseado na localização -->
+                </ul>
+            </li>
+            <script>
+                // Função para carregar escolas próximas
+                function carregarEscolasProximas() {
+                    if ("geolocation" in navigator) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            const lat = position.coords.latitude;
+                            const long = position.coords.longitude;
+                            
+                            // Aqui você faria uma chamada à API para buscar escolas próximas
+                            // usando as coordenadas lat e long
+                            
+                            // Exemplo de como adicionar escolas dinamicamente
+                            const escolasDropdown = document.getElementById('escolasDropdown');
+                            escolasDropdown.innerHTML = '<li><p style="color: white; padding: 12px 16px;">Buscando escolas próximas...</p></li>';
+                            
+                            // Simular chamada à API
+                            // Na implementação real, substituir por chamada à API de escolas
+                            setTimeout(() => {
+                                buscarEscolasProximas(lat, long);
+                            }, 1000);
+                        });
+                    }
+                }
+
+                // Carregar escolas quando a página carregar
+                document.addEventListener('DOMContentLoaded', carregarEscolasProximas);
+            </script>
+            <script>
+                function toggleDropdown(event, dropdownId) {
+                    event.preventDefault();
+                    const dropdown = document.getElementById(dropdownId);
+                    const allDropdowns = document.querySelectorAll('.dropdown-content');
+                    
+                    // Fecha todos os outros dropdowns
+                    allDropdowns.forEach(d => {
+                        if (d.id !== dropdownId) {
+                            d.classList.remove('show');
+                        }
+                    });
+                    
+                    // Alterna o dropdown atual
+                    dropdown.classList.toggle('show');
+                }
+
+                // Fecha o dropdown quando clicar fora
+                document.addEventListener('click', function(event) {
+                    if (!event.target.matches('.dropdown a')) {
+                        const dropdowns = document.querySelectorAll('.dropdown-content');
+                        dropdowns.forEach(dropdown => {
+                            if (dropdown.classList.contains('show') && !dropdown.contains(event.target)) {
+                                dropdown.classList.remove('show');
+                            }
+                        });
+                    }
+                });
+            </script>
+        </nav>
+    </menu>
+    </header>
+    <div class="container-sobre">
+        <h1>Sobre Nós</h1>
+        
+        <section class="missao">
+            <h2>Nossa Missão</h2>
+            <p class="pContainerSobre">A ConectEdu é um projeto que nasceu a partir de uma iniciativa estudantil com um propósito claro: diminuir a desigualdade digital na educação brasileira. Acreditamos que todo estudante merece ter acesso às ferramentas tecnológicas necessárias para um aprendizado completo no século XXI.</p>
+        </section>
+
+        <section class="visao">
+            <h2>Nossa Visão</h2>
+            <p class="pContainerSobre">Buscamos criar uma rede solidária que conecta doadores a escolas necessitadas, transformando equipamentos eletrônicos em oportunidades de aprendizado. Queremos ser a ponte que liga aqueles que podem ajudar àqueles que precisam.</p>
+        </section>
+
+        <section class="valores">
+            <h2>Nossos Valores</h2>
+            <ul>
+                <li class="li-aboutValues">Compromisso com a educação</li>
+                <li class="li-aboutValues">Responsabilidade social</li>
+                <li class="li-aboutValues">Sustentabilidade</li>
+                <li class="li-aboutValues">Transparência</li>
+                <li class="li-aboutValues">Inovação social</li>
+            </ul>
+        </section>
+
+        <section class="impacto">
+            <h2>Nosso Impacto</h2>
+            <p class="pContainerSobre">Cada doação representa uma nova possibilidade de aprendizado. Trabalhamos incansavelmente para que equipamentos eletrônicos cheguem às escolas que mais precisam, impactando positivamente o futuro de milhares de estudantes.</p>
+        </section>
+
+        <section class="desenvolvedores"></section>
+            <h2>Desenvolvedores</h2>
+            <p class="pContainerSobre">Orientados por Fabiana Cristine e Diogo Pelaes, Guilherme Grasso e Giovanna de Souza desenvolveram a ConectEdu com o intuito de ajudar escolas que não possuem recursos para fornecer equipamentos tecnológicos aos seus alunos. </p>
+             <img src="/img/aboutimg/fotoProjeto.jpeg" alt="Equipe do projeto" height="350px" width="800px" style="border-radius: 5px;">
+             <br><br><br><br>
+             
+             <div class="dev-profile" style="display: flex; align-items: center;">
+                <img src="/img/aboutimg/fotoGui.webp" alt="Equipe do projeto" height="170px" width="170px" style="border-radius: 50%; object-fit: cover; margin-right: 20px;">
+                <div style="flex: 1;">
+                    Guilherme Grasso - Autor do Projeto e estudante do CEMEP, de Paulínia. Responsável pelo desenvolvimento do site e das APIs
+                </div>
+            </div>
+            <br><br>    
+             <div class="dev-profile" style="display: flex; align-items: center; margin-bottom: 20px;">
+                 <img src="/img/aboutimg/fotoGiovanna.jfif" alt="Equipe do projeto" height="170px" width="170px" style="border-radius: 50%; object-fit: cover; margin-right: 20px;">
+                 <div style="flex: 1;">
+                     Giovanna de Souza - Autora do Projeto e estudante do CEMEP, de Paulínia. Responsável pelo desenvolvimento do Banco de Dados e das APIs
+                 </div>
+                
+             </div>
+             
+             
+        </section>
+    </div>
+
+    <style>
+        body {
+
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--light-text);
+        }
+
+        
+
+        .container-sobre {
+            max-width: 800px;
+            margin: 0 auto;
+            margin-top: 18vh;
+            margin-bottom: 10vh;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #4CAF50;
+            margin-top: 30px;
+            font-size: 1.8em;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        .pContainerSobre {
+            line-height: 1.6;
+            font-size: 1.1em;
+            text-align: justify;
+
+        }
+
+        .container-sobre img:hover {
+            transform: scale(1.01);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+            filter: brightness(1.1);
+            
+        }
+
+        .container-sobre img:not(:hover) {
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+
+        
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .li-aboutValues
+        {
+            padding: 10px 0;
+            font-size: 1.1em;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .li-aboutValues:before {
+            content: "•";
+            color: #4CAF50;
+            font-size: 1.5em;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 600px) {
+            .container-sobre {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            p, li {
+                font-size: 1em;
+            }
+        }
+    </style>
+
+<footer>
+    <nav class="nav-links-footer">
+      <li><a href="#">Home</a></li>
+      <li><a href="register.html">Cadastro</a></li>
+      <li><a href="login.html">Entrar</a></li>
+      <li><a href="donation.html">Doe</a></li>
+      <li><a href="orderEquipment.html">Solicitar Equipamentos</a></li>
+      <li><a href="about.html">Sobre</a></li>
+      <li><a href="https://whatsa.me/5519996117872/?t=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20projeto%20ConectEdu">Contato whatsapp</a></li>
+  </nav>
+
+  <p>Contato: (19) 99611-7872 | Conectedu.org@gmail.com</p>
+
+  <div class="social-buttons">
+      <a href="https://whatsa.me/5519996117872/?t=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20projeto%20ConectEdu" class="btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://instagram.com/conectedu_org" class="btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="mailto:conectedu.org@gmail.com?subject=Redirecionamento do Site&body=Escreva%20seu%20texto%20aqui!" class="btn gmail" target="_blank"><i class="fas fa-envelope"></i></a>
+      <a href="https://youtube.com/@conectedu-q6f?si=-ry3RsRVXmXcdWVu" class="btn youtube" target="_blank"><i class="fab fa-youtube"></i></a>
+  </div>
+
+  <p>&copy; Todos os direitos reservados</p>
+</footer>
+</body>
+</html>

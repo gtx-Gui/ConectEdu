@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Usuário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+        <div class="container">
+            <img src="/img/LogoConectEdu7.png" alt="Logo ConectEdu" class="logo">
+
+            <style>
+            .logo {
+                position: absolute;
+                top: 0;
+                left: 20px;
+                height: 100%;
+                max-height: 200px;
+                width: auto;
+                object-fit: cover;
+                margin: auto;
+                z-index: 1001;
+            }
+            
+            @media (max-width: 768px) {
+                .logo {
+                    left: 50%;
+                    transform: translateX(-50%);
+                    height: 100%;
+                    max-height: 200px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .logo {
+                    height: 50%;
+                    max-height: 50px;
+                }
+            }
+
+            .dashboard-card {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                transition: transform 0.3s ease;
+            }
+
+            .dashboard-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: #4CAF50;
+            }
+            </style>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end " id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="donation.html">Doar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="orderEquipment.html">Solicitar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Sobre</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <button class="btn btn-danger btn-sm" onclick="logout()">Sair</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="text-center text-light mb-5">Bem-vindo ao seu Painel</h1>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="dashboard-card p-4 text-center text-light">
+                    <div class="stat-number">12</div>
+                    <p>Doações Realizadas</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card p-4 text-center text-light">
+                    <div class="stat-number">5</div>
+                    <p>Solicitações Ativas</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card p-4 text-center text-light">
+                    <div class="stat-number">3</div>
+                    <p>Equipamentos em Trânsito</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card p-4 text-center text-light">
+                    <div class="stat-number">8</div>
+                    <p>Instituições Ajudadas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="dashboard-card p-4 text-light">
+                    <h3 class="mb-4"><i class="fas fa-history me-2"></i>Atividades Recentes</h3>
+                    <div class="timeline">
+                        <div class="activity-item mb-3 pb-3 border-bottom border-secondary">
+                            <p class="mb-1 text-light"><strong>Doação Realizada</strong></p>
+                            <p class="text-light mb-0">3 notebooks doados para Escola Municipal</p>
+                            <small class="text-light">Há 2 dias</small>
+                        </div>
+                        <div class="activity-item mb-3 pb-3 border-bottom border-secondary">
+                            <p class="mb-1 text-light"><strong>Solicitação Aprovada</strong></p>
+                            <p class="text-light mb-0">Sua solicitação de tablets foi aprovada</p>
+                            <small class="text-light">Há 4 dias</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="dashboard-card p-4 text-light">
+                    <h3 class="mb-4"><i class="fas fa-tasks me-2"></i>Ações Rápidas</h3>
+                    <div class="d-grid gap-3">
+                        <button onclick="newDonation()" class="btn btn-success btn-lg">
+                            <i class="fas fa-hand-holding-heart me-2"></i>Nova Doação
+                        </button>
+                        <button onclick="orderEquipment()" class="btn btn-info btn-lg">
+                            <i class="fas fa-laptop me-2"></i>Solicitar Equipamento
+                        </button>
+                        <button onclick="generateReport()" class="btn btn-warning btn-lg">
+                            <i class="fas fa-file-alt me-2"></i>Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5 border-top">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <ul class="nav justify-content-center mb-4">
+                        <li class="nav-item"><a href="#" class="nav-link text-light">Home</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-light">Doe</a></li>
+                        <li class="nav-item"><a href="orderEquipment.html" class="nav-link text-light">Solicitar Equipamentos</a></li>
+                        <li class="nav-item"><a href="about.html" class="nav-link text-light">Sobre</a></li>
+                        <li class="nav-item"><a href="https://whatsa.me/5519996117872/?t=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20projeto%20ConectEdu" class="nav-link text-light">Contato WhatsApp</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p>Contato: (19) 99611-7872 | Conectedu.org@gmail.com</p>
+                <div class="mb-3">
+                    <a href="https://whatsa.me/5519996117872/?t=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20projeto%20ConectEdu" class="btn btn-outline-light me-2" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://instagram.com/conectedu_org" class="btn btn-outline-light me-2" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="mailto:conectedu.org@gmail.com" class="btn btn-outline-light me-2" target="_blank"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function logout() {
+            // Implementar lógica de logout
+            window.location.href = "index.html";
+        }
+
+    </script>
+</body>
+</html>

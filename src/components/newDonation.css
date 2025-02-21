@@ -1,0 +1,57 @@
+.form-group.equipamentos-lista, .form-group.necessidades-lista {
+    display: none;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: #a8daa4;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.equipamento-item, .necessidade-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.equipamento-item select,
+.equipamento-item input,
+.necessidade-item select,
+.necessidade-item input {
+    padding: 12px;
+    color: #000000;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.equipamento-item select:focus,
+.equipamento-item input:focus,
+.necessidade-item select:focus,
+.necessidade-item input:focus {
+    outline: none;
+    border-color: #98D8C1;
+    box-shadow: 0 0 5px rgba(152, 216, 193, 0.5);
+}
+
+.equipamento-item select,
+.necessidade-item select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 35px;
+}
+
+.equipamento-item input::placeholder,
+.necessidade-item input::placeholder {
+    color: #999;
+}
+
+.equipamento-item input[type="number"],
+.necessidade-item input[type="number"] {
+    width: 150px;
+}
