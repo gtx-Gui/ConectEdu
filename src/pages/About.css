@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    background-color: rgb(27, 27, 27) !important;
     font-family: 'Segoe UI', sans-serif;
     background-color: var(--dark-bg);
     color: var(--light-text);
@@ -98,8 +99,10 @@ ul {
 
 .team-image {
     height: 350px;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     border-radius: 5px;
+  
 }
 
 .dev-profile {

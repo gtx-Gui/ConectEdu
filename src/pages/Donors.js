@@ -29,7 +29,7 @@ export default function Donors() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 mt-50">
-      <h2>Lista de Doadores   </h2>
+      <h2 className="h2Donors">Lista de Doadores   </h2>
       {loading ? (
         <p className="text-center">Carregando...</p>
       ) : (
@@ -37,7 +37,7 @@ export default function Donors() {
           <ul className="divide-y divide-gray-300">
             {doadores.length > 0 ? (
               doadores.map((doador, index) => (
-                <li key={index} className="h2Donors">
+                <li key={index} className="liDonors">
                   <p><strong>Empresa:</strong> {doador.Nome_da_empresa}</p>
                   <p><strong>CNPJ:</strong> {doador.CNPJ}</p>
                   <p><strong>Endereço:</strong> {doador.Endereco}</p>

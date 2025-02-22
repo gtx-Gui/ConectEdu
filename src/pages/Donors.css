@@ -11,8 +11,9 @@
   
   .h2Donors{
     display: flex;                /* Ativa o Flexbox */
-      flex-direction: column;       /* Alinha os elementos em coluna */
-      align-items: center;          /* Alinha os itens no centro horizontal */
+    flex-direction: column;       /* Alinha os elementos em coluna */
+    align-items: center;          /* Alinha os itens no centro horizontal */
+     
   }
   
   /* Estilo da caixa de conteúdo */

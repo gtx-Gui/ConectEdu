@@ -12,10 +12,12 @@ import DocumentationSection from './components/documentationSection';
 import PartnerSection from './components/partnerSection';
 import Footer from './components/footer';
 
+import Login from './pages/Login';
 import About from './pages/About.js';
-import Register from './pages/register.js';
-import Donors from './pages/Donors.js'; // ✅ Importe a nova página
+import Register from './pages/Register.js';
 
+import Donors from './pages/Donors.js'; // ✅ Importe a nova página
+import UserDashboard from './pages/userDashboard.js';
 // Componente para a página inicial
 function Home() {
   return (
@@ -39,6 +41,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/register" element={<Register />} />
           <Route path="/donors" element={<Donors />} /> {/* ✅ Nova rota */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/userDashboard" element={<UserDashboard />} />
         </Routes>
         <Footer />
       </div>
