@@ -6,7 +6,7 @@ import './userDashboard.css'; // Importando o CSS
 
 function UserDashboard() {
     const logout = () => {
-        window.location.href = "index.html"; // Redirecionar para a página inicial
+        window.location.href = "/"; // Redirecionar para a página inicial
     };
 
     const newDonation = () => {

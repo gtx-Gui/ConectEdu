@@ -1,7 +1,7 @@
 /* Hero Section */
 /* src/components/heroSection.css */
 .hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), rgba(0, 0, 0, 0.7);
+    background: linear-gradient(rgba(25, 25, 25, 0.7), rgba(36, 36, 36, 0.7)), rgba(0, 0, 0, 0.7);
     background-size: cover;
     background-position: center;
     height: 100vh; /* Altura total da seção hero */

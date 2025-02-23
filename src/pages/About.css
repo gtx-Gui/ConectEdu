@@ -26,7 +26,7 @@ body {
     margin-bottom: 40px;
 }
 
-h2 {
+.about-container h2 {
     color: #4CAF50;
     margin-top: 30px;
     font-size: 1.8em;

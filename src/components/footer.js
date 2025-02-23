@@ -6,12 +6,12 @@ function footer() {
         <footer>
             <nav>
                 <ul className="nav-links-footer">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="register.html">Cadastro</a></li>
-                    <li><a href="login.html">Entrar</a></li>
-                    <li><a href="donation.html">Doe</a></li>
-                    <li><a href="orderEquipment.html">Solicitar Equipamentos</a></li>
-                    <li><a href="about.html">Sobre</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/register">Cadastro</a></li>
+                    <li><a href="/login">Entrar</a></li>
+                    <li><a href="/donation">Doe</a></li>
+                    <li><a href="/orderEquipment">Solicitar Equipamentos</a></li>
+                    <li><a href="/about">Sobre</a></li>
                     <li><a href="https://whatsa.me/5519996117872/?t=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20projeto%20ConectEdu">Contato whatsapp</a></li>
                 </ul>
             </nav>

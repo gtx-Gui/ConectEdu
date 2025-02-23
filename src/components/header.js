@@ -32,7 +32,7 @@ function header() {
             </button>
 
             <div className="btnLogin">
-                <Link to="login.html" className="btn login" id="loginBtn">
+                <Link to="/login" className="btn login" id="loginBtn">
                     <i className="fas fa-user"></i>
                 </Link>
             </div>

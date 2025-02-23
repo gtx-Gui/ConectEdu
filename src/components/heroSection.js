@@ -9,8 +9,8 @@ function heroSection() {
                 <h1>Transformando a Educação através da Tecnologia</h1>
                 <p>Conectamos empresas doadoras a escolas públicas, democratizando o acesso à tecnologia na educação.</p>
                 <div className="cta-buttons">
-                    <a href="login.html" className="btn-primary">Quero Doar</a>
-                    <a href="login.html" className="btn-secondary">Sou uma Instituição de Ensino/Estudante</a>
+                    <a href="/login" className="btn-primary">Quero Doar</a>
+                    <a href="/login" className="btn-secondary">Sou uma Instituição de Ensino</a>
                 </div>
             </div>
         </section>
