@@ -1,0 +1,140 @@
+/* src/Login.css */
+
+/* Estilo geral do body */
+body {
+    background-color: rgb(0, 0, 0); /* Cor de fundo da página */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte da página */
+    display: flex; /* Usar flexbox para centralizar o conteúdo */
+    justify-content: center; /* Centralizar horizontalmente */
+    align-items: center; /* Centralizar verticalmente */
+    min-height: 100vh; /* Altura mínima da página */
+    margin: 0; /* Remover margens padrão */
+    
+}
+
+.errorLogin{
+    color: #ff0000;
+}
+/* Estilo do container de login */
+.containerLogin {
+    width: 100%; /* Largura total */
+    max-width: 400px; /* Largura máxima */
+    padding: 40px; /* Espaçamento interno */
+    border-radius: 20px; /* Bordas arredondadas */
+    background: rgb(40, 40, 40); /* Fundo semi-transparente */
+    backdrop-filter: blur(10px); /* Efeito de desfoque no fundo */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2); /* Sombra do container */
+   
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto; /* Adicionado para centralizar o container */
+    padding-bottom: 20px; /* Adicionado para criar espaço entre o header e o footer */
+    margin-top: 20vh;
+    margin-bottom: 10vh;
+}
+
+/* Estilo do título */
+.h1Login {
+    text-align: center; /* Centralizar o texto */
+    color: #fff; /* Cor do texto */
+    margin-bottom: 30px; /* Margem inferior */
+    font-size: 2.5em; /* Tamanho da fonte */
+    font-weight: 600; /* Peso da fonte */
+}
+
+/* Estilo do formulário de login */
+.formLogin {
+    width: 100%;
+    display: flex; /* Usar flexbox para o layout */
+    flex-direction: column; /* Colocar os elementos em coluna */
+    gap: 25px; /* Espaçamento entre os elementos */
+    
+}
+
+/* Estilo do grupo de formulário */
+.formGroupLogin {
+    position: relative; /* Posicionamento relativo para elementos internos */
+}
+
+/* Estilo dos inputs */
+.inputLogin {
+    width: 100%; /* Largura total */
+    padding: 15px; /* Espaçamento interno */
+    border: none; /* Sem borda */
+    border-radius: 12px; /* Bordas arredondadas */
+    background: rgba(255, 255, 255, 0.05); /* Fundo semi-transparente */
+    color: #fff; /* Cor do texto */
+    font-size: 16px; /* Tamanho da fonte */
+    transition: all 0.3s ease; /* Transição suave para efeitos */
+    box-sizing: border-box; /* Incluir padding e border no cálculo da largura */
+}
+
+
+/* Estilo do placeholder do input */
+.inputLogin::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Cor do texto do placeholder */
+}
+
+/* Estilo do input em foco */
+.inputLogin:focus {
+    outline: none; /* Remover contorno padrão */
+    background: rgba(255, 255, 255, 0.1); /* Fundo em foco */
+    box-shadow: 0 0 15px rgba(255,255,255,0.1); /* Sombra em foco */
+}
+
+/* Estilo do botão */
+.buttonLogin {
+    width: 100%; /* Largura total */
+    padding: 15px; /* Espaçamento interno */
+    border: none; /* Sem borda */
+    border-radius: 12px; /* Bordas arredondadas */
+    background: linear-gradient(45deg, #4CAF50, #45a049); /* Gradiente de fundo */
+    color: white; /* Cor do texto */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: 600; /* Peso da fonte */
+    cursor: pointer; /* Cursor de ponteiro ao passar o mouse */
+    transition: transform 0.3s ease; /* Transição suave para efeitos */
+}
+
+/* Estilo do botão ao passar o mouse */
+.buttonLogin:hover {
+    transform: translateY(-2px); /* Levantar o botão */
+    box-shadow: 0 5px 15px rgba(76,175,80,0.3); /* Sombra ao passar o mouse */
+}
+
+/* Estilo dos links */
+.linksLogin {
+    text-align: center; /* Centralizar o texto */
+    margin-top: 20px; /* Margem superior */
+}
+
+/* Estilo dos links */
+.linksLogin a {
+    color: #4CAF50; /* Cor do link */
+    text-decoration: none; /* Remover sublinhado */
+    font-size: 14px; /* Tamanho da fonte */
+    transition: color 0.3s ease; /* Transição suave para a cor */
+}
+
+/* Estilo do parágrafo dentro dos links */
+.linksLogin p {
+    color: #fff; /* Cor do texto */
+    margin: 10px 0; /* Margens superior e inferior */
+    font-size: 14px; /* Tamanho da fonte */
+}
+
+/* Estilo do link ao passar o mouse */
+.linksLogin a:hover {
+    color: #45a049; /* Cor do link ao passar o mouse */
+}
+
+
+/* Estilos responsivos */
+@media (max-width: 480px) {
+    .containerLogin {
+        padding: 20px; /* Reduzir o padding em telas pequenas */
+        margin: 20px; /* Adicionar margem em telas pequenas */
+    }
+}

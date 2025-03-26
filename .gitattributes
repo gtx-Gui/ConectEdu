@@ -1,0 +1,19 @@
+﻿# Defina o comportamento padrão
+* text=auto
+
+# Arquivos de código fonte
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+
+# Arquivos binários
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.woff binary
+*.woff2 binary

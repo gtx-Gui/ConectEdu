@@ -1,0 +1,51 @@
+/* Estilos globais */
+  
+  /* Estilo do contêiner principal */
+  .min-h-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .h2Donors{
+    display: flex;                /* Ativa o Flexbox */
+    flex-direction: column;       /* Alinha os elementos em coluna */
+    align-items: center;          /* Alinha os itens no centro horizontal */
+     
+  }
+  
+  /* Estilo da caixa de conteúdo */
+  .bg-white {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px; /* Limita a largura para evitar que a página fique muito larga */
+    padding: 20px;
+  }
+  
+  /* Lista de doadores */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .liDonors {
+    padding: 15px 0;
+    border-bottom: 1px solid #e2e8f0; /* Linha divisória entre itens */
+  }
+  
+  li p {
+    margin: 5px 0;
+    color: #4a5568; /* Texto em cinza escuro */
+  }
+  
+  /* Estilo de carregamento */
+  .text-center {
+    text-align: center;
+    color: #4a5568;
+  }
+  
+  

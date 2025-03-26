@@ -1,0 +1,160 @@
+.hub-recycling-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 18vh;
+    margin-bottom: 10vh;
+    padding: 40px;
+    width: 80%;
+    background-color: var(--background-darkbg-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+}
+
+.hub-recycling__header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+
+.hub-recycling__content {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: var(--light-text);
+    text-align: justify;
+}
+
+.hub-recycling__link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.hub-recycling__link:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.content p {
+    color: #fff;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.signature {
+    margin-bottom: 20px;
+}
+
+.hub-recycling__image {
+    width: 40%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.hub-recycling__subheader {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.hub-recycling__partners {
+    margin-top: 3rem;
+}
+
+.hub-recycling__partner-card {
+    display: flex;
+    background: var(--card-bg-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.hub-recycling__partner-card:hover {
+    transform: translateY(-5px);
+}
+
+.hub-recycling__partner-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.hub-recycling__partner-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.hub-recycling__partner-title {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.hub-recycling__partner-description {
+    color: var(--light-text);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.hub-recycling__partner-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.8s ease;
+    margin-top: auto;
+}
+
+.hub-recycling__partner-link:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.hub-recycling__intro {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 2rem;
+}
+
+.hub-recycling__intro-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hub-recycling__partner-card {
+        flex-direction: column;
+    }
+
+    .hub-recycling__partner-image {
+        width: 100%;
+        height: 200px;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .hub-recycling__intro {
+        flex-direction: column;
+    }
+
+    .hub-recycling__image {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+

@@ -1,0 +1,247 @@
+/* Documento.css */
+.documento-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    line-height: 1.6;
+    margin-top: 20vmin;
+    color:rgb(0, 0, 0);
+    background-color: #d8d8d8;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    border-radius: 10px;
+    border: 1px solid #000000;
+    margin-bottom: 10vmin;
+    
+  }
+  
+  .header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .content {
+    margin-bottom: 20px;
+  }
+  
+  .signature {
+    margin-bottom: 20px;
+  }
+
+.report-page {
+    width: 100%;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    background: rgba(41, 41, 41, 0.8);
+    backdrop-filter: blur(10px);
+    margin: 60px 0;
+    position: relative;
+}
+
+.report-container {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.report-form {
+    width: 400px;
+    background: rgba(43, 43, 43, 0.95);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.report-form h2 {
+    color: #4CAF50;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+}
+
+.download-button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+}
+
+.download-button:hover {
+    background: linear-gradient(45deg, #45a049, #4CAF50);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.report-preview {
+    flex: 1;
+    max-width: 800px;
+}
+
+.preview-paper {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    min-height: 1000px;
+}
+
+.preview-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.gov-logo {
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+.preview-header h1 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.preview-header h2 {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.preview-content {
+    line-height: 1.8;
+    color: #333;
+}
+
+.preview-content .date {
+    text-align: right;
+    margin-bottom: 30px;
+}
+
+.preview-content .oficio,
+.preview-content .assunto {
+    margin-bottom: 20px;
+}
+
+.preview-content .destinatario {
+    margin-bottom: 30px;
+}
+
+.preview-content .texto {
+    text-align: justify;
+    margin-bottom: 20px;
+}
+
+.preview-content .assinatura {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.assinatura-diretor {
+    text-align: center;
+    border-top: 1px solid #333;
+    width: 300px;
+    margin: 60px auto 0;
+    padding-top: 10px;
+}
+
+.back-button {
+    position: absolute;
+    top: 60px;
+    left: 40px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
+}
+
+@media (max-width: 1200px) {
+    .report-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .report-form {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .report-preview {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .report-page {
+        padding: 80px 15px 40px;
+    }
+
+    .back-button {
+        top: 45px;
+        left: 20px;
+    }
+
+    .preview-paper {
+        padding: 20px;
+    }
+}

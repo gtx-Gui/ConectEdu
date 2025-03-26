@@ -1,0 +1,22 @@
+﻿# Dependencies
+/node_modules
+/node_modules/.cache
+*.pack
+.cache/
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

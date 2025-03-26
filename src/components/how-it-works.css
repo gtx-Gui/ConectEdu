@@ -1,0 +1,36 @@
+/* Como Funciona */
+.how-it-works {
+    padding: 80px 20px;
+    background-color: rgb(31, 31, 31);
+    margin: 0;
+    color: var(--light-text);
+}
+
+.how-it-works  h2, h3{
+    color: var(--primary-color);
+}
+
+.how-it-works  h3{
+    color: var(--primary-color);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.step-card {
+    text-align: center;
+    padding: 30px;
+}
+
+.step-icon {
+    font-size: 3em;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+

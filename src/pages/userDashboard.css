@@ -1,0 +1,33 @@
+/* src/pages/userDashboard.css */
+
+/* Estilos gerais */
+.bg-dark {
+    background-color: #212529;
+    min-height: 40vh;
+}
+
+
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card-btns {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #4CAF50;
+}
+

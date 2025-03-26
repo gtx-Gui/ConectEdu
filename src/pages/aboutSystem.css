@@ -1,0 +1,201 @@
+.about-system-page {
+    width: 100%;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    background: rgba(41, 41, 41, 0.8);
+    backdrop-filter: blur(10px);
+    margin: 60px 0;
+    position: relative;
+}
+
+.about-system-container {
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(43, 43, 43, 0.95);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-system-title {
+    color: var(--primary-color, #4CAF50);
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+.about-system-section {
+    margin-bottom: 4rem;
+}
+
+.about-system-subtitle {
+    color: var(--primary-color, #4CAF50);
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.about-system-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.about-system-flow-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-system-flow-card:hover {
+    transform: translateY(-5px);
+}
+
+.about-system-icon-wrapper {
+    color: var(--primary-color, #4CAF50);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.about-system-flow-card h3 {
+    color: var(--white, #fff);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.about-system-flow-card p {
+    color: var(--white, #fff);
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.about-system-tech {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.about-system-tech-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-system-tech-card h3 {
+    color: var(--white, #fff);
+    margin: 1rem 0;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.about-system-tech-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.about-system-tech-card li {
+    color: var(--white, #fff);
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.about-system-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.about-system-tool-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--white, #fff);
+    transition: transform 0.3s ease;
+}
+
+.about-system-tool-icon:hover {
+    transform: translateY(-5px);
+    color: var(--primary-color, #4CAF50);
+}
+
+.about-system-tool-icon span {
+    font-size: 1rem;
+}
+
+.about-system-back-btn {
+    position: absolute;
+    top: 60px;
+    left: 40px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--white, #fff);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.about-system-back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
+}
+
+@media (max-width: 768px) {
+    .about-system-page {
+        padding: 80px 15px 40px;
+    }
+
+    .about-system-back-btn {
+        top: 45px;
+        left: 20px;
+    }
+
+    .about-system-container {
+        padding: 1.5rem;
+    }
+
+    .about-system-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .about-system-subtitle {
+        font-size: 1.5rem;
+    }
+
+    .about-system-flow {
+        grid-template-columns: 1fr;
+    }
+
+    .about-system-tech {
+        grid-template-columns: 1fr;
+    }
+
+    .about-system-tools {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
