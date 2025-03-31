@@ -265,6 +265,7 @@
     "form-data": "^3.0.2",
     "forwarded": "^0.2.0",
     "fraction.js": "^4.3.7",
+    "framer-motion": "^12.6.2",
     "fresh": "^0.5.2",
     "fs-extra": "^10.1.0",
     "fs-monkey": "^1.0.6",

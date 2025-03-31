@@ -3,6 +3,7 @@ import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './userDashboard.css'; 
+import { motion } from 'framer-motion';
 
 function UserDashboard() {
     const logout = () => {
@@ -77,7 +78,7 @@ function UserDashboard() {
                     <div className="col-md-3">
                         <div className="dashboard-card p-4 text-center text-light">
                             <div className="stat-number">3</div>
-                            <p>Equipamentos em Trânsito</p>
+                            <p>Equipamentos Doados</p>
                         </div>
                     </div>
                     <div className="col-md-3">

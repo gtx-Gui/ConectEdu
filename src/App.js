@@ -24,7 +24,8 @@ import HubRecycling from './pages/hubRecycling.js';
 import NewDonation from './pages/newDonation.js';
 import RequestEquipment from './pages/requestEquipment.js';
 import Support from './pages/Support.js';
-import AboutSystem from './pages/aboutSystem.js';
+import AboutSystem from './pages/aboutSystem';
+
 
 
 
@@ -32,7 +33,7 @@ import AboutSystem from './pages/aboutSystem.js';
 function Home() {
   return (
     <>
-      <HeroSection />
+     <HeroSection />
       <ImpactSection />
       <HowItWorks />
       <DocumentationSection />
