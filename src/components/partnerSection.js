@@ -4,7 +4,7 @@ import './partnerSection.css';
 function partnerSection() {
     return (
         <section className="partners-section">
-            <h2>Apoio</h2>
+            <h2>Empresas Doadoras</h2>
             <div className="partners-grid">
                 <div className="partner-card">
                     <div className="partner-icon">

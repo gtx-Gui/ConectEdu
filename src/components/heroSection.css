@@ -11,6 +11,8 @@
     margin: 0; /* Remove margens */
     padding: 0; /* Remove padding */
     color: var(--light-text);
+    position: relative;
+    overflow: hidden;
 }
 
 .hero-content {
@@ -67,4 +69,94 @@
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(33,150,243,0.4);
     background: rgba(33,150,243,0.1);
+}
+
+/* Animação das bolhas */
+@keyframes float {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-10vh) scale(1);
+        opacity: 0;
+    }
+}
+
+.bubble {
+    position: absolute;
+    bottom: -20px;
+    background: rgba(76, 175, 80, 0.1); /* Cor verde do site */
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.3),
+                inset 0 0 20px rgba(76, 175, 80, 0.4);
+    backdrop-filter: blur(1px);
+}
+
+/* Bolhas com durações mais longas e diferentes delays */
+.bubble:nth-child(1) { 
+    left: 10%; 
+    width: 15px; 
+    height: 15px; 
+    animation: float 15s infinite; 
+}
+.bubble:nth-child(2) { 
+    left: 20%; 
+    width: 20px; 
+    height: 20px; 
+    animation: float 18s infinite 2s; 
+}
+.bubble:nth-child(3) { 
+    left: 35%; 
+    width: 12px; 
+    height: 12px; 
+    animation: float 16s infinite 4s; 
+}
+.bubble:nth-child(4) { 
+    left: 50%; 
+    width: 25px; 
+    height: 25px; 
+    animation: float 20s infinite 1s; 
+}
+.bubble:nth-child(5) { 
+    left: 65%; 
+    width: 16px; 
+    height: 16px; 
+    animation: float 17s infinite 3s; 
+}
+.bubble:nth-child(6) { 
+    left: 80%; 
+    width: 18px; 
+    height: 18px; 
+    animation: float 19s infinite 5s; 
+}
+.bubble:nth-child(7) { 
+    left: 90%; 
+    width: 22px; 
+    height: 22px; 
+    animation: float 16s infinite 2s; 
+}
+
+/* Adicionar mais algumas bolhas para melhor efeito */
+.bubble:nth-child(8) { 
+    left: 15%; 
+    width: 14px; 
+    height: 14px; 
+    animation: float 17s infinite 7s; 
+}
+.bubble:nth-child(9) { 
+    left: 75%; 
+    width: 19px; 
+    height: 19px; 
+    animation: float 18s infinite 6s; 
+}
+.bubble:nth-child(10) { 
+    left: 45%; 
+    width: 13px; 
+    height: 13px; 
+    animation: float 16s infinite 8s; 
 }
