@@ -24,8 +24,6 @@ function UserDashboard() {
     const generateReport = () => {
         console.log("Gerar relatório");
          window.location.href = "/generateReport";
-    
-         
          // Redireciona para a página GeradorDocs.html
     };
 
