@@ -1,9 +1,10 @@
 // src/pages/userDashboard.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './userDashboard.css'; 
 import { motion } from 'framer-motion';
+import { supabase } from '../supabaseClient'; // ajuste o caminho se necessário
 
 function UserDashboard() {
     const logout = () => {
@@ -26,6 +27,36 @@ function UserDashboard() {
          window.location.href = "/generateReport";
          // Redireciona para a página GeradorDocs.html
     };
+
+    // Estados para pesquisa de escolas
+    const [searchTerm, setSearchTerm] = useState('');
+    const [schools, setSchools] = useState([]);
+    const [filteredSchools, setFilteredSchools] = useState([]);
+
+    // Buscar escolas (usuários do tipo 'instituicao') ao carregar o componente
+    useEffect(() => {
+        async function fetchSchools() {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('tipo', 'instituicao');
+            if (!error) setSchools(data || []);
+        }
+        fetchSchools();
+    }, []);
+
+    // Filtrar escolas conforme o termo de busca
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
+            setFilteredSchools([]);
+        } else {
+            setFilteredSchools(
+                schools.filter(school =>
+                    school.nome.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            );
+        }
+    }, [searchTerm, schools]);
 
     return (
         <div className="bg-dark">
@@ -59,6 +90,37 @@ function UserDashboard() {
 
             <div className="container py-5">
                 <h1 className="text-center text-light mb-5">Bem-vindo ao seu Painel</h1>
+
+                {/* ÁREA DE PESQUISA DE ESCOLAS */}
+                <div className="mb-5">
+                    <h3 className="text-light mb-3">Pesquisar Instituições de Ensino Cadastradas</h3>
+                    <input
+                        type="text"
+                        className="form-control mb-2"
+                        placeholder="Digite o nome da instituição..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                        <div className="list-group">
+                            {filteredSchools.length > 0 ? (
+                                filteredSchools.map(school => (
+                                    <div key={school.id} className="list-group-item">
+                                        <strong>{school.nome}</strong>
+                                        {/* Adapte para exibir outros campos se desejar */}
+                                        {school.cidade && school.estado && (
+                                            <div style={{ fontSize: '0.9em', color: '#555' }}>
+                                                {school.cidade} - {school.estado}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="list-group-item">Nenhuma instituição encontrada.</div>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 <div className="row g-4 mb-5">
                     <div className="col-md-3">
