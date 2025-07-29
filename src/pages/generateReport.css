@@ -35,7 +35,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px;
+    padding: 160px 20px 40px 80px;
     background: rgba(41, 41, 41, 0.8);
     backdrop-filter: blur(10px);
     margin: 60px 0;
@@ -46,10 +46,11 @@
     width: 100%;
     max-width: 1400px;
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
     align-items: flex-start;
     padding: 20px;
+    margin-left: 60px;
 }
 
 .report-form {
@@ -115,22 +116,36 @@
 }
 
 .download-button:hover {
-    background: linear-gradient(45deg, #45a049, #4CAF50);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: #45a049;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Removida a animação transform: translateY(-2px); */
 }
 
 .report-preview {
-    flex: 1;
-    max-width: 800px;
+    width: 100%;
+    max-width: 210mm;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .preview-paper {
-    background: #fff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    min-height: 1000px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  /* Tamanho A4: 210mm x 297mm */
+  width: 210mm;
+  min-height: 297mm;
+  max-width: 100%;
+  margin: 0 auto 20px auto;
+  position: relative;
+  /* Garantir que o conteúdo se ajuste ao tamanho A4 */
+  box-sizing: border-box;
+  font-size: 12pt;
+  line-height: 1.4;
 }
 
 .preview-header {
@@ -192,9 +207,9 @@
 }
 
 .back-button {
-    position: absolute;
-    top: 60px;
-    left: 40px;
+    position: fixed;
+    top: 120px;
+    left: 20px;
     padding: 12px 24px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -207,12 +222,312 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    z-index: 10;
+    z-index: 999;
 }
 
 .back-button:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateX(-5px);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.custom-spinner {
+  width: 48px;
+  height: 48px;
+  border: 6px solid #eee;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: white;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.card-maxwidth {
+  max-width: 540px;
+  margin-top: 60px;
+}
+
+.bg-secondary.bg-opacity-75 {
+  background: rgba(255, 255, 255, 0.13) !important;
+  /* cinza claro translúcido, harmônico com o dashboard */
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  border-radius: 15px;
+}
+
+.select-maxwidth {
+  max-width: 350px;
+}
+
+/* Select customizado para tipo de documento */
+.custom-select {
+  width: 100%;
+  max-width: 350px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #4CAF50;
+  background: #212529;
+  color: #fff;
+  font-size: 1.08rem;
+  margin-bottom: 16px;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.custom-select:focus {
+  border: 2px solid #4CAF50;
+  background: #263238;
+  box-shadow: 0 0 0 2px #4CAF5044;
+}
+
+/* Label customizado */
+.custom-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4CAF50;
+  display: block;
+  letter-spacing: 0.5px;
+}
+
+/* Botões de modo customizados */
+.mode-btn-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+.mode-btn {
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: 2px solid #4CAF50;
+  background: #212529;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  outline: none;
+}
+.mode-btn.selected, .mode-btn:focus, .mode-btn:hover {
+  background: #4CAF50;
+  color: #fff;
+  border: 2px solid #4CAF50;
+  box-shadow: 0 0 0 2px #4CAF5044;
+}
+
+/* Cards de seleção de tipo de documento */
+.doc-type-card {
+  background: rgba(255,255,255,0.08);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 32px 24px 16px 24px;
+  min-width: 200px;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  color: #fff;
+  margin-bottom: 0;
+  flex: 1 1 200px;
+}
+.doc-type-card:hover,
+.doc-type-card:focus {
+  border-color: #4CAF50;
+  background: rgba(76,175,80,0.12);
+  box-shadow: 0 4px 24px rgba(76,175,80,0.15);
+  outline: none;
+}
+.doc-type-card.selected {
+  border-color: #4CAF50;
+  background: rgba(76,175,80,0.18);
+  box-shadow: 0 4px 32px rgba(76,175,80,0.18);
+}
+.doc-type-icon {
+  color: #4CAF50;
+  margin-bottom: 8px;
+}
+.doc-type-label {
+  color: #fff;
+  margin-top: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Container dos cards de tipo de documento */
+.d-flex.flex-wrap.justify-content-center.gap-4 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  gap: 32px !important;
+  margin-top: 24px;
+}
+
+/* Estilos para a seção de equipamentos dinâmicos */
+.equipamentos-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(76, 175, 80, 0.3);
+}
+
+.equipamento-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.equipamento-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(76, 175, 80, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.equipamento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.equipamento-header h4 {
+  color: #4CAF50;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.equipamento-card .form-group {
+  margin-bottom: 1rem;
+}
+
+.equipamento-card .form-group label {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 0.3rem;
+}
+
+.equipamento-card .form-group input,
+.equipamento-card .form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  min-height: 35px;
+  box-sizing: border-box;
+  line-height: 1.2;
+}
+
+.equipamento-card .form-group input:focus,
+.equipamento-card .form-group select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.equipamento-card .form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.equipamento-card .form-group select option {
+  background: #2c3e50;
+  color: #fff;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+/* Ajustes para melhor espaçamento dos equipamentos */
+.equipamento-card .row {
+  margin-bottom: 15px;
+}
+
+.equipamento-card .col-md-6,
+.equipamento-card .col-md-4 {
+  padding: 0 8px;
+  margin-bottom: 10px;
+}
+
+.equipamento-card .form-group {
+  margin-bottom: 15px;
+}
+
+.equipamento-card .form-group label {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+}
+
+/* Ajustes específicos para campos menores */
+.equipamento-card .form-group input[type="number"] {
+  text-align: center;
+}
+
+.equipamento-card .form-group select {
+  cursor: pointer;
+}
+
+/* Melhor espaçamento entre cards */
+.equipamento-card {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.equipamento-header {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+}
+
+/* Responsividade para equipamentos */
+@media (max-width: 768px) {
+  .equipamento-card {
+    padding: 1rem;
+  }
+  
+  .equipamento-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .equipamento-header h4 {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -233,15 +548,343 @@
 
 @media (max-width: 768px) {
     .report-page {
-        padding: 80px 15px 40px;
+        padding: 140px 15px 40px 60px;
     }
 
     .back-button {
-        top: 45px;
-        left: 20px;
+        top: 100px;
+        left: 15px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .card-maxwidth .back-button {
+        top: 100px;
+        left: 15px;
+        padding: 8px 16px;
+        font-size: 0.8rem;
     }
 
     .preview-paper {
+        width: 100%;
         padding: 20px;
+        font-size: 10pt;
     }
+}
+
+@media (max-width: 900px) {
+  .doc-type-card {
+    min-width: 140px;
+    max-width: 100%;
+  }
+  .d-flex.flex-wrap.justify-content-center.gap-4 {
+    gap: 16px !important;
+  }
+}
+@media (max-width: 600px) {
+  .doc-type-card {
+    min-width: 100px;
+    max-width: 100%;
+    padding: 16px 4px 8px 4px;
+  }
+  .d-flex.flex-wrap.justify-content-center.gap-4 {
+    gap: 8px !important;
+  }
+}
+
+/* Estilos para botão desabilitado */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.btn:disabled:hover {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  transform: none;
+}
+
+/* Indicador de limite */
+.btn:disabled span {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 1200px) {
+  .preview-paper {
+    width: 100%;
+    min-height: auto;
+    max-width: 210mm;
+    margin: 0 auto 20px auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .preview-paper {
+    width: 100%;
+    padding: 20px;
+    font-size: 10pt;
+  }
+}
+
+/* Ajustar o container do preview para centralizar o A4 */
+.report-preview {
+  width: 100%;
+  max-width: 210mm;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Estilos para busca de escolas */
+.school-results {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.school-item {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.school-item:hover {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.school-item:last-child {
+  margin-bottom: 0;
+}
+
+.school-item div:first-child {
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 4px;
+}
+
+.school-item small {
+  color: #999;
+  font-style: italic;
+}
+
+/* Alert customizado para aviso de escola não encontrada */
+.alert-warning {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: #ffc107;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.alert-warning i {
+  color: #ffc107;
+}
+
+/* Responsividade para busca de escolas */
+@media (max-width: 768px) {
+  .school-results {
+    max-height: 200px;
+  }
+  
+  .school-item {
+    padding: 10px;
+  }
+  
+  .school-item div:first-child {
+    font-size: 0.9rem;
+  }
+  
+  .school-item small {
+    font-size: 0.8rem;
+  }
+}
+
+/* Estilos para a seção de Bens Declarados */
+.bens-recebidos-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bem-recebido-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.bem-recebido-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.bem-recebido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bem-recebido-header h4 {
+  color: #4CAF50;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.bem-recebido-card .form-group {
+  margin-bottom: 15px;
+}
+
+.bem-recebido-card .form-group label {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+}
+
+.bem-recebido-card .form-group input,
+.bem-recebido-card .form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  min-height: 35px;
+  box-sizing: border-box;
+  line-height: 1.2;
+}
+
+.bem-recebido-card .form-group input:focus,
+.bem-recebido-card .form-group select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.bem-recebido-card .form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.bem-recebido-card .form-group select option {
+  background: #2c3e50;
+  color: #fff;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+/* Ajustes para melhor espaçamento dos bens declarados */
+.bem-recebido-card .row {
+  margin-bottom: 15px;
+}
+
+.bem-recebido-card .col-md-4 {
+  padding: 0 8px;
+  margin-bottom: 10px;
+}
+
+.bem-recebido-card .form-group {
+  margin-bottom: 15px;
+}
+
+.bem-recebido-card .form-group label {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+/* Ajustes específicos para campos menores */
+.bem-recebido-card .form-group input[type="number"] {
+  text-align: center;
+}
+
+.bem-recebido-card .form-group select {
+  cursor: pointer;
+}
+
+/* Melhor espaçamento entre cards */
+.bem-recebido-card {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.bem-recebido-header {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+}
+
+/* Responsividade para bens declarados */
+@media (max-width: 768px) {
+  .bem-recebido-card {
+    padding: 15px;
+  }
+  
+  .bem-recebido-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .bem-recebido-header h4 {
+    font-size: 1rem;
+  }
+}
+
+/* Estilo específico para o botão voltar na seleção do tipo de documento */
+.card-maxwidth .back-button {
+    position: fixed;
+    top: 120px;
+    left: 20px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 999;
+}
+
+.card-maxwidth .back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
 }

@@ -31,3 +31,243 @@
     color: #4CAF50;
 }
 
+.process-flow-list {
+  counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 0 0;
+}
+.process-flow-list li {
+  position: relative;
+  background: rgba(255,255,255,0.07);
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 18px 18px 18px 54px;
+  font-size: 1.1rem;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.process-flow-list li:before {
+  content: counter(step);
+  counter-increment: step;
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #4CAF50;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 6px rgba(76,175,80,0.15);
+}
+
+/* Estilos para o histórico de documentos */
+.history-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(76, 175, 80, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.history-type {
+  color: #4CAF50;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.history-date {
+  color: #ccc;
+  font-size: 0.9rem;
+  background: rgba(76, 175, 80, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.history-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.detail-item {
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 4px 0;
+}
+
+.detail-item strong {
+  color: #4CAF50;
+  margin-right: 8px;
+}
+
+/* Responsividade para o histórico */
+@media (max-width: 768px) {
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .history-details {
+    grid-template-columns: 1fr;
+  }
+  
+  .history-type {
+    font-size: 1rem;
+  }
+  
+  .history-date {
+    font-size: 0.8rem;
+  }
+}
+
+/* Ajustar cor dos títulos dos cards para branco */
+.dashboard-card h3,
+.dashboard-card-btns h3 {
+  color: #fff !important;
+}
+
+.dashboard-card h4,
+.dashboard-card-btns h4 {
+  color: #fff !important;
+}
+
+.dashboard-card h5,
+.dashboard-card-btns h5 {
+  color: #fff !important;
+}
+
+.dashboard-card h6,
+.dashboard-card-btns h6 {
+  color: #fff !important;
+}
+
+/* Garantir que todos os títulos nos cards sejam brancos */
+.dashboard-card .text-light,
+.dashboard-card-btns .text-light {
+  color: #fff !important;
+}
+
+/* Estilos para o perfil do usuário */
+.form-label {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+  color: #fff;
+}
+
+.form-control:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos para as estatísticas */
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(76, 175, 80, 0.4);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  color: #4CAF50;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #ccc;
+  font-weight: 500;
+}
+
+/* Estilos para alertas */
+.alert {
+  border-radius: 8px;
+  border: none;
+}
+
+.alert-success {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border-left: 4px solid #4CAF50;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border-left: 4px solid #dc3545;
+}
+
+/* Responsividade para estatísticas */
+@media (max-width: 768px) {
+  .stat-card {
+    margin-bottom: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+  }
+}
+
