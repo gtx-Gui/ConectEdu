@@ -68,7 +68,6 @@ function header() {
                         <ul className={`dropdown-content ${activeDropdown === 'HowItWorksDropdown' ? 'show' : ''}`}>
                             <li><Link to="/documentation">Documentação</Link></li>
                             <li><Link to="/aboutSystem">Sistema</Link></li>
-                            <li><Link to="/tests">Testes</Link></li>
                         </ul>
                     </li>
                 </ul>
