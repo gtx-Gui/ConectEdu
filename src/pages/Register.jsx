@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import './Register.css';
@@ -13,6 +13,8 @@ function Register() {
         instituicao: { visible: false, data: {} },
         pessoaFisica: { visible: false, data: {} }
     });
+
+
     
     // Estado para os dados do formulário
     const [formData, setFormData] = useState({
@@ -51,34 +53,113 @@ function Register() {
         }
     });
 
+    // Função para aplicar máscaras
+    const applyMask = (value, mask) => {
+        let result = '';
+        let valueIndex = 0;
+        
+        for (let i = 0; i < mask.length && valueIndex < value.length; i++) {
+            if (mask[i] === '#') {
+                result += value[valueIndex];
+                valueIndex++;
+            } else {
+                result += mask[i];
+            }
+        }
+        
+        return result;
+    };
+
+    // Máscaras
+    const masks = {
+        cep: (value) => applyMask(value.replace(/\D/g, ''), '#####-###'),
+        cpf: (value) => applyMask(value.replace(/\D/g, ''), '###.###.###-##'),
+        cnpj: (value) => applyMask(value.replace(/\D/g, ''), '##.###.###/####-##'),
+        telefone: (value) => {
+            const clean = value.replace(/\D/g, '');
+            if (clean.length <= 10) {
+                return applyMask(clean, '(##) ####-####');
+            } else {
+                return applyMask(clean, '(##) #####-####');
+            }
+        }
+    };
+
     const handleInputChange = (type, field, value) => {
+        let processedValue = value;
+        
+        // Aplicar máscaras específicas
+        if (field === 'cep') {
+            // CEP: apenas números permitidos
+            const onlyNumbers = value.replace(/\D/g, '');
+            processedValue = masks.cep(onlyNumbers);
+        } else if (field === 'cpf') {
+            processedValue = masks.cpf(value);
+        } else if (field === 'cnpj') {
+            processedValue = masks.cnpj(value);
+        } else if (field === 'telefone') {
+            processedValue = masks.telefone(value);
+        }
+
         setFormData(prev => ({
             ...prev,
             [type]: {
                 ...prev[type],
-                [field]: value
+                [field]: processedValue
             }
         }));
+
+        // Se for CEP e tiver 8 dígitos, buscar o endereço automaticamente
+        if (field === 'cep') {
+            const cepClean = value.replace(/\D/g, '');
+            if (cepClean.length === 8) {
+                setTimeout(() => {
+                    handleCepSearch(cepClean, type);
+                }, 200);
+            }
+        }
     };
 
     const handleRadioChange = (type) => {
         setFormType(type);
     };
 
-    const handleCepBlur = async (e, type) => {
-        const cep = e.target.value.replace(/\D/g, '');
+
+
+    const handleCepSearch = async (cep, type) => {
+        // Remover máscara do CEP antes de fazer a busca
+        const cepClean = cep.replace(/\D/g, '');
         
-        if (cep.length !== 8) {
-            alert('CEP inválido, digite um CEP com 8 dígitos');
+        // Se o CEP estiver vazio, limpar os dados do endereço
+        if (cepClean.length === 0) {
+            setAddressDetails(prev => ({
+                ...prev,
+                [type]: {
+                    visible: false,
+                    data: {}
+                }
+            }));
             return;
         }
-
+        
+        // Só buscar se tiver 8 dígitos
+        if (cepClean.length !== 8) {
+            return;
+        }
+        
         try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const response = await fetch(`https://viacep.com.br/ws/${cepClean}/json/`);
             const data = await response.json();
 
             if (data.erro) {
-                alert('CEP não encontrado!, verifique se foi digitado corretamente');
+                // Se o CEP não for encontrado, limpar os dados
+                setAddressDetails(prev => ({
+                    ...prev,
+                    [type]: {
+                        visible: false,
+                        data: {}
+                    }
+                }));
                 return;
             }
 
@@ -95,15 +176,47 @@ function Register() {
                 }
             }));
         } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao buscar o CEP');
+            console.error('Erro ao buscar CEP:', error);
         }
+    };
+
+    // Função para forçar a busca do CEP quando preenchido programaticamente
+    const forceCepSearch = (type) => {
+        const cep = formData[type].cep;
+        handleCepSearch(cep, type);
+    };
+
+
+
+
+
+    // Validação de senhas
+    const validatePasswords = (type) => {
+        const { senha, confirmarSenha } = formData[type];
+        
+        if (senha !== confirmarSenha) {
+            alert('As senhas não coincidem!');
+            return false;
+        }
+        
+        if (senha.length < 6) {
+            alert('A senha deve ter pelo menos 6 caracteres!');
+            return false;
+        }
+        
+        return true;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        // Validações
+        if (!validatePasswords(formType)) {
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:5000/register', {
@@ -123,12 +236,12 @@ function Register() {
                   bairro: addressDetails[formType]?.data?.bairro || '',
                   cidade: addressDetails[formType]?.data?.cidade || '',
                   estado: addressDetails[formType]?.data?.estado || '',
-                  senha: formData[formType].senha // <-- ADICIONE ESTA LINHA
+                  senha: formData[formType].senha
                 }),
               });
 
             const data = await response.json();
-            console.log('Resposta do backend:', data); // <-- adicione isso
+            console.log('Resposta do backend:', data);
             if (!response.ok) throw new Error(data.message || 'Erro no cadastro');
 
             alert(data.message);
@@ -153,7 +266,7 @@ function Register() {
 
                 <form className="register-form" onSubmit={handleSubmit}>
                     <div className="register-type-group">
-                        <label className="register-type-label">Selecione o tipo de cadastro:</label>
+                        <label className="register-type-label">Selecione o tipo de cadastro: <span className="required">*</span></label>
                         <div className="register-radio-options">
                             <div className="register-radio-option">
                                 <input 
@@ -207,7 +320,7 @@ function Register() {
                     {formType === 'empresa' && (
                         <div className="register-form-empresa">
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="nome-empresa">Nome da Empresa:</label>
+                                <label className="register-label" htmlFor="nome-empresa">Nome da Empresa: <span className="required">*</span></label>
                                 <input 
                                     type="text" 
                                     id="nome-empresa" 
@@ -220,32 +333,34 @@ function Register() {
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="cnpj-empresa">CNPJ:</label>
+                                <label className="register-label" htmlFor="cnpj-empresa">CNPJ: <span className="required">*</span></label>
                                 <input 
                                     type="text" 
                                     id="cnpj-empresa" 
                                     className="register-input"
                                     value={formData.empresa.cnpj}
                                     onChange={(e) => handleInputChange('empresa', 'cnpj', e.target.value)}
-                                    placeholder="CNPJ" 
+                                    placeholder="00.000.000/0000-00" 
+                                    maxLength="18"
                                     required 
                                 />
                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="cep-empresa">CEP:</label>
-                                <input 
-                                    type="text" 
-                                    id="cep-empresa" 
-                                    className="register-input"
-                                    value={formData.empresa.cep}
-                                    onChange={(e) => handleInputChange('empresa', 'cep', e.target.value)}
-                                    onBlur={(e) => handleCepBlur(e, 'empresa')}
-                                    placeholder="CEP" 
-                                    maxLength="8"
-                                    required 
-                                />
-                            </div>
+                                                                                      <div className="register-form-group">
+                                 <label className="register-label" htmlFor="cep-empresa">CEP: <span className="required">*</span></label>
+                                                                   <input 
+                                      type="text" 
+                                      id="cep-empresa" 
+                                      className="register-input"
+                                      value={formData.empresa.cep}
+                                      onChange={(e) => handleInputChange('empresa', 'cep', e.target.value)}
+                                      onBlur={() => forceCepSearch('empresa')}
+                                                                                                                    
+                                      placeholder="00000-000" 
+                                      maxLength="9"
+                                      required 
+                                  />
+                             </div>
 
                             {addressDetails.empresa.visible && (
                                 <div className="register-address-details">
@@ -266,62 +381,65 @@ function Register() {
                                         className="register-input"
                                         value={formData.empresa.complemento}
                                         onChange={(e) => handleInputChange('empresa', 'complemento', e.target.value)}
-                                        placeholder="Complemento" 
+                                        placeholder="Complemento (opcional)" 
                                     />
                                 </div>
                             )}
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="email-empresa">Email:</label>
+                                <label className="register-label" htmlFor="email-empresa">Email: <span className="required">*</span></label>
                                 <input 
                                     type="email" 
                                     id="email-empresa" 
                                     className="register-input"
                                     value={formData.empresa.email}
                                     onChange={(e) => handleInputChange('empresa', 'email', e.target.value)}
-                                    placeholder="Email" 
+                                    placeholder="email@empresa.com" 
                                     required 
                                 />
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="telefone-empresa">Telefone:</label>
+                                <label className="register-label" htmlFor="telefone-empresa">Telefone: <span className="required">*</span></label>
                                 <input 
                                     type="tel" 
                                     id="telefone-empresa" 
                                     className="register-input"
                                     value={formData.empresa.telefone}
                                     onChange={(e) => handleInputChange('empresa', 'telefone', e.target.value)}
-                                    placeholder="Telefone" 
+                                    placeholder="(00) 00000-0000" 
+                                    maxLength="15"
                                     required 
                                 />
                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="senha-empresa">Senha:</label>
-                                <input 
-                                    type="password" 
-                                    id="senha-empresa" 
-                                    className="register-input"
-                                    value={formData.empresa.senha}
-                                    onChange={(e) => handleInputChange('empresa', 'senha', e.target.value)}
-                                    placeholder="Senha" 
-                                    required 
-                                />
-                            </div>
+                                                         <div className="register-form-group">
+                                 <label className="register-label" htmlFor="senha-empresa">Senha: <span className="required">*</span></label>
+                                 <input 
+                                     type="password" 
+                                     id="senha-empresa" 
+                                     className="register-input"
+                                     value={formData.empresa.senha}
+                                     onChange={(e) => handleInputChange('empresa', 'senha', e.target.value)}
+                                     placeholder="Mínimo 6 caracteres" 
+                                     minLength="6"
+                                     required 
+                                 />
+                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="confirmar-senha-empresa">Confirmar Senha:</label>
-                                <input 
-                                    type="password" 
-                                    id="confirmar-senha-empresa" 
-                                    className="register-input"
-                                    value={formData.empresa.confirmarSenha}
-                                    onChange={(e) => handleInputChange('empresa', 'confirmarSenha', e.target.value)}
-                                    placeholder="Confirmar Senha" 
-                                    required 
-                                />
-                            </div>
+                             <div className="register-form-group">
+                                 <label className="register-label" htmlFor="confirmar-senha-empresa">Confirmar Senha: <span className="required">*</span></label>
+                                 <input 
+                                     type="password" 
+                                     id="confirmar-senha-empresa" 
+                                     className="register-input"
+                                     value={formData.empresa.confirmarSenha}
+                                     onChange={(e) => handleInputChange('empresa', 'confirmarSenha', e.target.value)}
+                                     placeholder="Confirme sua senha" 
+                                     minLength="6"
+                                     required 
+                                 />
+                             </div>
                         </div>
                     )}
 
@@ -329,7 +447,7 @@ function Register() {
                     {formType === 'instituicao' && (
                         <div className="register-form-instituicao">
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="nome-instituicao">Nome da Instituição:</label>
+                                <label className="register-label" htmlFor="nome-instituicao">Nome da Instituição: <span className="required">*</span></label>
                                 <input 
                                     type="text" 
                                     id="nome-instituicao" 
@@ -342,31 +460,33 @@ function Register() {
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="cnpj-instituicao">CNPJ:</label>
+                                <label className="register-label" htmlFor="cnpj-instituicao">CNPJ: <span className="required">*</span></label>
                                 <input 
                                     type="text" 
                                     id="cnpj-instituicao" 
                                     className="register-input"
                                     value={formData.instituicao.cnpj}
                                     onChange={(e) => handleInputChange('instituicao', 'cnpj', e.target.value)}
-                                    placeholder="CNPJ" 
+                                    placeholder="00.000.000/0000-00" 
+                                    maxLength="18"
                                     required 
                                 />
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="cep-instituicao">CEP:</label>
-                                <input 
-                                    type="text" 
-                                    id="cep-instituicao" 
-                                    className="register-input"
-                                    value={formData.instituicao.cep}
-                                    onChange={(e) => handleInputChange('instituicao', 'cep', e.target.value)}
-                                    onBlur={(e) => handleCepBlur(e, 'instituicao')}
-                                    placeholder="CEP" 
-                                    maxLength="8"
-                                    required 
-                                />
+                                <label className="register-label" htmlFor="cep-instituicao">CEP: <span className="required">*</span></label>
+                                                                                                   <input 
+                                      type="text" 
+                                      id="cep-instituicao" 
+                                      className="register-input"
+                                      value={formData.instituicao.cep}
+                                      onChange={(e) => handleInputChange('instituicao', 'cep', e.target.value)}
+                                      onBlur={() => forceCepSearch('instituicao')}
+                                                                                                                    
+                                      placeholder="00000-000" 
+                                      maxLength="9"
+                                      required 
+                                  />
                             </div>
 
                             {addressDetails.instituicao.visible && (
@@ -388,70 +508,73 @@ function Register() {
                                         className="register-input"
                                         value={formData.instituicao.complemento}
                                         onChange={(e) => handleInputChange('instituicao', 'complemento', e.target.value)}
-                                        placeholder="Complemento" 
+                                        placeholder="Complemento (opcional)" 
                                     />
                                 </div>
                             )}
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="email-instituicao">Email:</label>
+                                <label className="register-label" htmlFor="email-instituicao">Email: <span className="required">*</span></label>
                                 <input 
                                     type="email" 
                                     id="email-instituicao" 
                                     className="register-input"
                                     value={formData.instituicao.email}
                                     onChange={(e) => handleInputChange('instituicao', 'email', e.target.value)}
-                                    placeholder="Email" 
+                                    placeholder="email@instituicao.com" 
                                     required 
                                 />
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="telefone-instituicao">Telefone:</label>
+                                <label className="register-label" htmlFor="telefone-instituicao">Telefone: <span className="required">*</span></label>
                                 <input 
                                     type="tel" 
                                     id="telefone-instituicao" 
                                     className="register-input"
                                     value={formData.instituicao.telefone}
                                     onChange={(e) => handleInputChange('instituicao', 'telefone', e.target.value)}
-                                    placeholder="Telefone" 
+                                    placeholder="(00) 00000-0000" 
+                                    maxLength="15"
                                     required 
                                 />
                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="senha-instituicao">Senha:</label>
-                                <input 
-                                    type="password" 
-                                    id="senha-instituicao" 
-                                    className="register-input"
-                                    value={formData.instituicao.senha}
-                                    onChange={(e) => handleInputChange('instituicao', 'senha', e.target.value)}
-                                    placeholder="Senha" 
-                                    required 
-                                />
-                            </div>
+                                                         <div className="register-form-group">
+                                 <label className="register-label" htmlFor="senha-instituicao">Senha: <span className="required">*</span></label>
+                                 <input 
+                                     type="password" 
+                                     id="senha-instituicao" 
+                                     className="register-input"
+                                     value={formData.instituicao.senha}
+                                     onChange={(e) => handleInputChange('instituicao', 'senha', e.target.value)}
+                                     placeholder="Mínimo 6 caracteres" 
+                                     minLength="6"
+                                     required 
+                                 />
+                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="confirmar-senha-instituicao">Confirmar Senha:</label>
-                                <input 
-                                    type="password" 
-                                    id="confirmar-senha-instituicao" 
-                                    className="register-input"
-                                    value={formData.instituicao.confirmarSenha}
-                                    onChange={(e) => handleInputChange('instituicao', 'confirmarSenha', e.target.value)}
-                                    placeholder="Confirmar Senha" 
-                                    required 
-                                />
-                            </div>
+                             <div className="register-form-group">
+                                 <label className="register-label" htmlFor="confirmar-senha-instituicao">Confirmar Senha: <span className="required">*</span></label>
+                                 <input 
+                                     type="password" 
+                                     id="confirmar-senha-instituicao" 
+                                     className="register-input"
+                                     value={formData.instituicao.confirmarSenha}
+                                     onChange={(e) => handleInputChange('instituicao', 'confirmarSenha', e.target.value)}
+                                     placeholder="Confirme sua senha" 
+                                     minLength="6"
+                                     required 
+                                 />
+                             </div>
                         </div>
                     )}
 
-                    {/* Novo formulário para Pessoa Física */}
+                    {/* Formulário para Pessoa Física */}
                     {formType === 'pessoaFisica' && (
                         <div className="register-form-pessoa-fisica">
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="nome-pessoa-fisica">Nome Completo:</label>
+                                <label className="register-label" htmlFor="nome-pessoa-fisica">Nome Completo: <span className="required">*</span></label>
                                 <input 
                                     type="text" 
                                     id="nome-pessoa-fisica" 
@@ -464,31 +587,33 @@ function Register() {
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="cpf-pessoa-fisica">CPF:</label>
+                                <label className="register-label" htmlFor="cpf-pessoa-fisica">CPF: <span className="required">*</span></label>
                                 <input 
                                     type="text" 
                                     id="cpf-pessoa-fisica" 
                                     className="register-input"
                                     value={formData.pessoaFisica.cpf}
                                     onChange={(e) => handleInputChange('pessoaFisica', 'cpf', e.target.value)}
-                                    placeholder="CPF" 
+                                    placeholder="000.000.000-00" 
+                                    maxLength="14"
                                     required 
                                 />
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="cep-pessoa-fisica">CEP:</label>
-                                <input 
-                                    type="text" 
-                                    id="cep-pessoa-fisica" 
-                                    className="register-input"
-                                    value={formData.pessoaFisica.cep}
-                                    onChange={(e) => handleInputChange('pessoaFisica', 'cep', e.target.value)}
-                                    onBlur={(e) => handleCepBlur(e, 'pessoaFisica')}
-                                    placeholder="CEP" 
-                                    maxLength="8"
-                                    required 
-                                />
+                                <label className="register-label" htmlFor="cep-pessoa-fisica">CEP: <span className="required">*</span></label>
+                                                                                                   <input 
+                                      type="text" 
+                                      id="cep-pessoa-fisica" 
+                                      className="register-input"
+                                      value={formData.pessoaFisica.cep}
+                                      onChange={(e) => handleInputChange('pessoaFisica', 'cep', e.target.value)}
+                                      onBlur={() => forceCepSearch('pessoaFisica')}
+                                                                                                                    
+                                      placeholder="00000-000" 
+                                      maxLength="9"
+                                      required 
+                                  />
                             </div>
 
                             {addressDetails.pessoaFisica.visible && (
@@ -510,62 +635,65 @@ function Register() {
                                         className="register-input"
                                         value={formData.pessoaFisica.complemento}
                                         onChange={(e) => handleInputChange('pessoaFisica', 'complemento', e.target.value)}
-                                        placeholder="Complemento" 
+                                        placeholder="Complemento (opcional)" 
                                     />
                                 </div>
                             )}
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="email-pessoa-fisica">Email:</label>
+                                <label className="register-label" htmlFor="email-pessoa-fisica">Email: <span className="required">*</span></label>
                                 <input 
                                     type="email" 
                                     id="email-pessoa-fisica" 
                                     className="register-input"
                                     value={formData.pessoaFisica.email}
                                     onChange={(e) => handleInputChange('pessoaFisica', 'email', e.target.value)}
-                                    placeholder="Email" 
+                                    placeholder="email@exemplo.com" 
                                     required 
                                 />
                             </div>
 
                             <div className="register-form-group">
-                                <label className="register-label" htmlFor="telefone-pessoa-fisica">Telefone:</label>
+                                <label className="register-label" htmlFor="telefone-pessoa-fisica">Telefone: <span className="required">*</span></label>
                                 <input 
                                     type="tel" 
                                     id="telefone-pessoa-fisica" 
                                     className="register-input"
                                     value={formData.pessoaFisica.telefone}
                                     onChange={(e) => handleInputChange('pessoaFisica', 'telefone', e.target.value)}
-                                    placeholder="Telefone" 
+                                    placeholder="(00) 00000-0000" 
+                                    maxLength="15"
                                     required 
                                 />
                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="senha-pessoa-fisica">Senha:</label>
-                                <input 
-                                    type="password" 
-                                    id="senha-pessoa-fisica" 
-                                    className="register-input"
-                                    value={formData.pessoaFisica.senha}
-                                    onChange={(e) => handleInputChange('pessoaFisica', 'senha', e.target.value)}
-                                    placeholder="Senha" 
-                                    required 
-                                />
-                            </div>
+                                                         <div className="register-form-group">
+                                 <label className="register-label" htmlFor="senha-pessoa-fisica">Senha: <span className="required">*</span></label>
+                                 <input 
+                                     type="password" 
+                                     id="senha-pessoa-fisica" 
+                                     className="register-input"
+                                     value={formData.pessoaFisica.senha}
+                                     onChange={(e) => handleInputChange('pessoaFisica', 'senha', e.target.value)}
+                                     placeholder="Mínimo 6 caracteres" 
+                                     minLength="6"
+                                     required 
+                                 />
+                             </div>
 
-                            <div className="register-form-group">
-                                <label className="register-label" htmlFor="confirmar-senha-pessoa-fisica">Confirmar Senha:</label>
-                                <input 
-                                    type="password" 
-                                    id="confirmar-senha-pessoa-fisica" 
-                                    className="register-input"
-                                    value={formData.pessoaFisica.confirmarSenha}
-                                    onChange={(e) => handleInputChange('pessoaFisica', 'confirmarSenha', e.target.value)}
-                                    placeholder="Confirmar Senha" 
-                                    required 
-                                />
-                            </div>
+                             <div className="register-form-group">
+                                 <label className="register-label" htmlFor="confirmar-senha-pessoa-fisica">Confirmar Senha: <span className="required">*</span></label>
+                                 <input 
+                                     type="password" 
+                                     id="confirmar-senha-pessoa-fisica" 
+                                     className="register-input"
+                                     value={formData.pessoaFisica.confirmarSenha}
+                                     onChange={(e) => handleInputChange('pessoaFisica', 'confirmarSenha', e.target.value)}
+                                     placeholder="Confirme sua senha" 
+                                     minLength="6"
+                                     required 
+                                 />
+                             </div>
                         </div>
                     )}
 

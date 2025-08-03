@@ -213,4 +213,25 @@
         padding: 20px;
         margin: 20px;
     }
+}
+
+/* Indicador de campos obrigatórios */
+.required {
+    color: #ff4444;
+    font-weight: bold;
+}
+
+/* Melhorias nos placeholders */
+.register-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Validação visual */
+.register-input:invalid {
+    border-color: #ff4444;
+}
+
+.register-input:valid {
+    border-color: #4CAF50;
 } 

@@ -158,3 +158,589 @@
     }
 }
 
+
+
+/* Hero Section */
+.hub-recycling__hero {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(rgba(25, 25, 25, 0.9), rgba(36, 36, 36, 0.9)), rgba(0, 0, 0, 0.8);
+  color: var(--light-text);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-recycling__hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(76, 175, 80, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+  pointer-events: none;
+}
+
+.hub-recycling__header {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: var(--light-text);
+  position: relative;
+  z-index: 1;
+}
+
+.hub-recycling__subtitle {
+  font-size: 1.3rem;
+  opacity: 0.95;
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--light-text);
+  position: relative;
+  z-index: 1;
+}
+
+/* Stats Section */
+.hub-recycling__stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 50px 20px;
+  background: var(--background-color);
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 30px;
+  border-radius: 15px;
+  margin: 0 20px 40px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.hub-recycling__stat {
+  text-align: center;
+  flex: 1;
+  min-width: 200px;
+  padding: 20px;
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.hub-recycling__stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+}
+
+.hub-recycling__stat-number {
+  display: block;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.hub-recycling__stat-label {
+  font-size: 1rem;
+  color: var(--text-color);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Main Content */
+.hub-recycling__intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hub-recycling__image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+
+.hub-recycling__image:hover {
+  transform: scale(1.02);
+}
+
+.hub-recycling__intro-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.hub-recycling__benefit-card {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border-left: 5px solid var(--primary-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-recycling__benefit-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(33, 150, 243, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hub-recycling__benefit-card:hover::before {
+  opacity: 1;
+}
+
+.hub-recycling__benefit-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(76, 175, 80, 0.2);
+}
+
+.hub-recycling__benefit-card h3 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hub-recycling__benefit-card ul {
+  list-style: none;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.hub-recycling__benefit-card li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.hub-recycling__benefit-card li:hover {
+  color: var(--primary-color);
+}
+
+.hub-recycling__benefit-card li:last-child {
+  border-bottom: none;
+}
+
+/* Donation Section */
+.hub-recycling__donation {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+  color: var(--light-text);
+  padding: 80px 20px;
+  margin: 60px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-recycling__donation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  pointer-events: none;
+}
+
+.hub-recycling__donation-content {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hub-recycling__donation h3 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: var(--light-text);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hub-recycling__donation-benefits {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.hub-recycling__benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+}
+
+.hub-recycling__benefit-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.2);
+}
+
+.hub-recycling__benefit-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* Partners Section */
+.hub-recycling__partners {
+  padding: 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--background-color);
+}
+
+.hub-recycling__subheader {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 25px;
+  color: var(--text-color);
+  position: relative;
+}
+
+.hub-recycling__subheader::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 2px;
+}
+
+.hub-recycling__partners-intro {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  margin-bottom: 50px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.hub-recycling__partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 40px;
+}
+
+.hub-recycling__partner-card {
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.hub-recycling__partner-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.hub-recycling__partner-card:hover::before {
+  transform: scaleX(1);
+}
+
+.hub-recycling__partner-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
+}
+
+.hub-recycling__partner-header {
+  background: linear-gradient(135deg, var(--background-color) 0%, #f8f9fa 100%);
+  padding: 30px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.hub-recycling__partner-image {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.hub-recycling__partner-card:hover .hub-recycling__partner-image {
+  transform: scale(1.1);
+}
+
+.hub-recycling__partner-title {
+  color: var(--text-color);
+  font-size: 1.4rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.hub-recycling__partner-content {
+  padding: 30px;
+}
+
+.hub-recycling__partner-description {
+  margin-bottom: 25px;
+  line-height: 1.7;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.hub-recycling__partner-features {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.hub-recycling__feature {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.2) 100%);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hub-recycling__feature:hover {
+  background: var(--primary-color);
+  color: var(--light-text);
+  transform: translateY(-2px);
+}
+
+.hub-recycling__partner-link {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+  color: var(--light-text);
+  padding: 15px 30px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-recycling__partner-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.hub-recycling__partner-link:hover::before {
+  left: 100%;
+}
+
+.hub-recycling__partner-link:hover {
+  background: linear-gradient(135deg, var(--primary-color-dark) 0%, #388E3C 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(76,175,80,0.4);
+  color: var(--light-text);
+}
+
+/* Call to Action */
+.hub-recycling__cta {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(rgba(25, 25, 25, 0.9), rgba(36, 36, 36, 0.9)), rgba(0, 0, 0, 0.8);
+  color: var(--light-text);
+  margin-top: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-recycling__cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(76, 175, 80, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+  pointer-events: none;
+}
+
+.hub-recycling__cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: var(--light-text);
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hub-recycling__cta p {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  opacity: 0.95;
+  color: var(--light-text);
+  position: relative;
+  z-index: 1;
+}
+
+.hub-recycling__cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.hub-recycling__cta-button {
+  padding: 18px 35px;
+  border-radius: 35px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-recycling__cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.hub-recycling__cta-button:hover::before {
+  left: 100%;
+}
+
+.hub-recycling__cta-button.primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+  color: var(--light-text);
+  box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+}
+
+.hub-recycling__cta-button.primary:hover {
+  background: linear-gradient(135deg, var(--primary-color-dark) 0%, #388E3C 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(76,175,80,0.5);
+}
+
+.hub-recycling__cta-button.secondary {
+  background: transparent;
+  color: var(--light-text);
+  border: 2px solid var(--secondary-color);
+  box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+}
+
+.hub-recycling__cta-button.secondary:hover {
+  background: rgba(33,150,243,0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(33,150,243,0.5);
+  border-color: var(--secondary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hub-recycling__header {
+    font-size: 2.2rem;
+  }
+  
+  .hub-recycling__subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .hub-recycling__intro {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .hub-recycling__stats {
+    flex-direction: column;
+    margin: 0 10px 30px 10px;
+  }
+  
+  .hub-recycling__partners-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .hub-recycling__cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hub-recycling__donation-benefits {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .hub-recycling__benefit-item {
+    padding: 15px;
+  }
+  
+  .hub-recycling__cta h2 {
+    font-size: 2rem;
+  }
+  
+  .hub-recycling__subheader {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hub-recycling__header {
+    font-size: 1.8rem;
+  }
+  
+  .hub-recycling__subtitle {
+    font-size: 1rem;
+  }
+  
+  .hub-recycling__stat-number {
+    font-size: 2.5rem;
+  }
+  
+  .hub-recycling__partner-card {
+    margin: 0 10px;
+  }
+}
+
