@@ -76,10 +76,6 @@ function UserDashboard() {
                                 <a className="nav-link" href="/">Home</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="/">Processo de Doação</a>
-                            </li>
-                            
-                            <li className="nav-item">
                                 <a className="nav-link" href="/about">Sobre</a>
                             </li>
                             <li className="nav-item d-flex align-items-center">

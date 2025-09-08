@@ -505,6 +505,21 @@
   font-weight: 600;
 }
 
+/* Estilos para título em duas linhas */
+.hub-recycling__partner-title .title-line {
+  display: block;
+  line-height: 1.2;
+}
+
+.hub-recycling__partner-title .title-line:first-child {
+  margin-bottom: 2px;
+}
+
+.hub-recycling__partner-title .title-line:last-child {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
 .hub-recycling__partner-content {
   padding: 30px;
 }

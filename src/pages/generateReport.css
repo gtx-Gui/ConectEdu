@@ -121,6 +121,86 @@
     /* Removida a animação transform: translateY(-2px); */
 }
 
+/* Responsividade para os botões */
+@media (max-width: 768px) {
+    .download-button,
+    .digital-signature-button {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .digital-signature-button {
+        margin-top: 8px;
+    }
+}
+
+/* Botão de Assinatura Digital gov.br */
+.digital-signature-button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(45deg, #0066cc, #004499);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0;
+    border: 2px solid transparent;
+}
+
+.digital-signature-button:hover {
+    background: linear-gradient(45deg, #0052a3, #003366);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.digital-signature-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 102, 204, 0.4);
+}
+
+.digital-signature-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+}
+
+/* Indicador de documento assinado */
+.signature-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    animation: slideInUp 0.5s ease-out;
+}
+
+.signature-indicator i {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .report-preview {
     width: 100%;
     max-width: 210mm;

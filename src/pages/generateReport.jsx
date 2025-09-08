@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import ManualReportForm from '../components/ManualReportForm';
 import ManualReportPreview from '../components/ManualReportPreview';
+import GovBrSignature from '../components/GovBrSignature';
 import '../pages/generateReport.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -49,8 +50,10 @@ function GenerateReport() {
   const [userType, setUserType] = useState('');
   const [selectedReport, setSelectedReport] = useState('');
   const [manualFormData, setManualFormData] = useState({});
-  const previewRef = useRef(null);
   const [showLoading, setShowLoading] = useState(true);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [signatureData, setSignatureData] = useState(null);
+  const previewRef = useRef();
 
   // Busca o tipo de usuário ao carregar a página
   useEffect(() => {
@@ -148,6 +151,30 @@ function GenerateReport() {
     }
   };
 
+  // Função para abrir modal de assinatura digital
+  const handleDigitalSignature = () => {
+    setShowSignatureModal(true);
+  };
+
+  // Função para lidar com a conclusão da assinatura
+  const handleSignatureComplete = (signatureData) => {
+    setSignatureData(signatureData);
+    console.log('Assinatura digital gov.br concluída:', signatureData);
+    
+    // Salvar histórico da assinatura
+    if (user && user.id) {
+      saveDocumentHistory(user.id, `${selectedReport}_assinado_govbr`, {
+        ...manualFormData,
+        signature: signatureData
+      });
+    }
+  };
+
+  // Função para fechar o modal
+  const handleCloseSignatureModal = () => {
+    setShowSignatureModal(false);
+  };
+
   return (
     <>
       {/* Botão Voltar posicionado abaixo do header */}
@@ -163,7 +190,7 @@ function GenerateReport() {
               reportType={selectedReport}
               formData={manualFormData}
             />
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '32px 0' }}>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', margin: '32px 0' }}>
               <button 
                 className="download-button" 
                 onClick={handleDownloadPDF}
@@ -172,10 +199,40 @@ function GenerateReport() {
                 <i className="fas fa-download me-2"></i>
                 Baixar PDF
               </button>
+              
+              <button 
+                className="digital-signature-button" 
+                onClick={handleDigitalSignature}
+                style={{ width: 'auto', padding: '12px 32px' }}
+              >
+                <i className="fas fa-signature me-2"></i>
+                Assinatura Digital gov.br
+              </button>
+
+              {/* Indicador de documento assinado */}
+              {signatureData && (
+                <div className="signature-indicator">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Documento assinado digitalmente via gov.br</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal de Assinatura Digital gov.br */}
+      <GovBrSignature
+        isOpen={showSignatureModal}
+        onClose={handleCloseSignatureModal}
+        documentData={{
+          ...manualFormData,
+          reportType: selectedReport,
+          userId: user?.id,
+          timestamp: new Date().toISOString()
+        }}
+        onSignatureComplete={handleSignatureComplete}
+      />
     </>
   );
 }

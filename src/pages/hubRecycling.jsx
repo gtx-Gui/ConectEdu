@@ -4,6 +4,7 @@ import imgSamsung from '../assets/img/recyclingOngsImg/samsung.png';
 import imgEcobraz from '../assets/img/recyclingOngsImg/ecobraz.png';
 import imgEcologica from '../assets/img/recyclingOngsImg/ecologica.png';
 import imgRecycling from '../assets/img/recyclingOngsImg/recyclingImg.jpg';
+import imgProgramandoFuturo from '../assets/img/recyclingOngsImg/programando_o_futuro.png';
 
 const HubRecycling = () => {
   return (
@@ -96,6 +97,40 @@ const HubRecycling = () => {
         </p>
         
         <div className="hub-recycling__partners-grid">
+          <div className="hub-recycling__partner-card">
+            <div className="hub-recycling__partner-header">
+              <img 
+                src={imgProgramandoFuturo} 
+                alt="Logo Programando o Futuro" 
+                className="hub-recycling__partner-image"
+              />
+              <h3 className="hub-recycling__partner-title">
+                <span className="title-line">Programando</span>
+                <span className="title-line">o Futuro</span>
+              </h3>
+            </div>
+            <div className="hub-recycling__partner-content">
+              <p className="hub-recycling__partner-description">
+                <strong>Transformando vidas através da tecnologia</strong><br/>
+                ONG que coleta, recondiciona e doa computadores para escolas e famílias carentes. 
+                Promove inclusão digital e educação tecnológica em todo o Brasil.
+              </p>
+              <div className="hub-recycling__partner-features">
+                <span className="hub-recycling__feature">✅ Gratuito</span>
+                <span className="hub-recycling__feature">✅ Nacional</span>
+                <span className="hub-recycling__feature">✅ Educativo</span>
+              </div>
+              <a 
+                href="https://www.programandoofuturo.org.br/" 
+                target="_blank" 
+                rel="noreferrer"
+                className="hub-recycling__partner-link"
+              >
+                Conhecer ONG →
+              </a>
+            </div>
+          </div>
+
           <div className="hub-recycling__partner-card">
             <div className="hub-recycling__partner-header">
               <img 
