@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 
 export const useAuth = () => {
     const [user, setUser] = useState(null);
@@ -20,15 +21,7 @@ export const useAuth = () => {
 
     const logout = async () => {
         try {
-            const session = localStorage.getItem('session');
-            
-            if (session) {
-                await fetch('http://localhost:5000/logout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ session: JSON.parse(session) })
-                });
-            }
+            await supabase.auth.signOut();
         } catch (error) {
             console.error('Erro no logout:', error);
         } finally {

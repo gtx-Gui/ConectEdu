@@ -22,16 +22,19 @@ function ProtectedRoute({ children }) {
           return;
         }
 
-        // 2. Buscar dados do usuário no backend
+        // 2. Buscar dados do usuário diretamente no Supabase
         try {
-          const response = await fetch(`http://localhost:5000/user-data/${currentSession.user.id}`);
+          const { data: userDataFromDB, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('auth_id', currentSession.user.id)
+            .single();
           
-          if (response.ok) {
-            const userDataFromBackend = await response.json();
-            console.log('Dados do usuário:', userDataFromBackend);
-            setUserData(userDataFromBackend);
+          if (userError || !userDataFromDB) {
+            console.log('Usuário não encontrado na tabela users');
           } else {
-            console.log('Usuário não encontrado no backend');
+            console.log('Dados do usuário:', userDataFromDB);
+            setUserData(userDataFromDB);
           }
         } catch (error) {
           console.error('Erro ao buscar dados do usuário:', error);
@@ -56,12 +59,16 @@ function ProtectedRoute({ children }) {
         setUserData(null);
       } else if (session) {
         setSession(session);
-        // Buscar dados do usuário novamente
+        // Buscar dados do usuário novamente diretamente no Supabase
         try {
-          const response = await fetch(`http://localhost:5000/user-data/${session.user.id}`);
-          if (response.ok) {
-            const userDataFromBackend = await response.json();
-            setUserData(userDataFromBackend);
+          const { data: userDataFromDB, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('auth_id', session.user.id)
+            .single();
+          
+          if (!userError && userDataFromDB) {
+            setUserData(userDataFromDB);
           }
         } catch (error) {
           console.error('Erro ao buscar dados do usuário:', error);

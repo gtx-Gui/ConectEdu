@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import './impactSection.css';
 
 function ImpactSection() {
@@ -12,33 +13,27 @@ function ImpactSection() {
                 setLoading(true);
                 setError(false);
                 
-                console.log('Tentando conectar ao backend...');
+                console.log('Buscando total de documentos no Supabase...');
                 
-                // Por enquanto, vamos usar um valor mock
-                // TODO: Implementar conexão real com o backend quando estiver funcionando
-                const mockTotal = 42; // Valor mock para demonstração
+                // Buscar total de documentos diretamente no Supabase
+                const { count, error: queryError } = await supabase
+                    .from('document_history')
+                    .select('*', { count: 'exact', head: true });
                 
-                // Simular delay de carregamento
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                console.log('Usando valor mock:', mockTotal);
-                setTotalDocuments(mockTotal);
-                
-                // Tentar conectar ao backend em background (para debug)
-                try {
-                    const response = await fetch('http://localhost:5000/total-documents');
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('Backend funcionando! Total real:', data.total);
-                        setTotalDocuments(data.total);
-                    }
-                } catch (backendError) {
-                    console.log('Backend não disponível, usando valor mock');
+                if (queryError) {
+                    console.error('Erro na consulta:', queryError);
+                    setError(true);
+                    setTotalDocuments(0);
+                } else {
+                    const total = count || 0;
+                    console.log('Total de documentos:', total);
+                    setTotalDocuments(total);
                 }
                 
             } catch (error) {
                 console.error('Erro na requisição:', error);
                 setError(true);
+                setTotalDocuments(0);
             } finally {
                 setLoading(false);
             }

@@ -219,32 +219,50 @@ function Register() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  tipo: formType,
-                  nome: formData[formType].nome,
-                  cnpj: formData[formType].cnpj || '',
-                  cpf: formData[formType].cpf || '',
-                  cep: formData[formType].cep,
-                  numero: formData[formType].numero || '',
-                  complemento: formData[formType].complemento || '',
-                  email: formData[formType].email,
-                  telefone: formData[formType].telefone || '',
-                  rua: addressDetails[formType]?.data?.rua || '',
-                  bairro: addressDetails[formType]?.data?.bairro || '',
-                  cidade: addressDetails[formType]?.data?.cidade || '',
-                  estado: addressDetails[formType]?.data?.estado || '',
-                  senha: formData[formType].senha
-                }),
-              });
+            // 1. Criar usuário no Auth do Supabase
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email: formData[formType].email,
+                password: formData[formType].senha
+            });
 
-            const data = await response.json();
-            console.log('Resposta do backend:', data);
-            if (!response.ok) throw new Error(data.message || 'Erro no cadastro');
+            if (authError) {
+                throw new Error(authError.message);
+            }
 
-            alert(data.message);
+            if (!authData || !authData.user || !authData.user.id) {
+                throw new Error('Erro ao criar usuário no Auth do Supabase.');
+            }
+
+            // 2. Pegar o id do usuário criado no Auth
+            const auth_id = authData.user.id;
+
+            // 3. Inserir o usuário na tabela users com o auth_id
+            const userData = {
+                tipo: formType,
+                nome: formData[formType].nome,
+                cnpj: formData[formType].cnpj || '',
+                cpf: formData[formType].cpf || '',
+                cep: formData[formType].cep,
+                numero: formData[formType].numero || '',
+                complemento: formData[formType].complemento || '',
+                email: formData[formType].email,
+                telefone: formData[formType].telefone || '',
+                auth_id,
+                rua: addressDetails[formType]?.data?.rua || '',
+                bairro: addressDetails[formType]?.data?.bairro || '',
+                cidade: addressDetails[formType]?.data?.cidade || '',
+                estado: addressDetails[formType]?.data?.estado || ''
+            };
+
+            const { error: insertError } = await supabase
+                .from('users')
+                .insert([userData]);
+
+            if (insertError) {
+                throw new Error(insertError.message);
+            }
+
+            alert('Usuário cadastrado com sucesso!');
             navigate('/login');
         } catch (error) {
             setError(error.message);

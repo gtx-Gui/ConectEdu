@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 
 const AuthMiddleware = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,11 +30,15 @@ const AuthMiddleware = ({ children }) => {
                     return;
                 }
 
-                // Verificar com o backend se o usuário ainda é válido
+                // Verificar com o Supabase se o usuário ainda é válido
                 const userData = JSON.parse(user);
-                const response = await fetch(`http://localhost:5000/user-data/${userData.auth_id}`);
+                const { data: userDataFromDB, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('auth_id', userData.auth_id)
+                    .single();
                 
-                if (!response.ok) {
+                if (userError || !userDataFromDB) {
                     localStorage.removeItem('user');
                     localStorage.removeItem('session');
                     navigate('/login');

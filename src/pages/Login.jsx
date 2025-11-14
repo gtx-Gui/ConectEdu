@@ -37,27 +37,34 @@ function Login() {
             localStorage.removeItem('user');
             localStorage.removeItem('session');
 
-            // 3. Fazer login via backend
-            const response = await fetch('http://localhost:5000/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+            // 3. Fazer login diretamente no Supabase
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message);
+            if (authError) {
+                throw new Error('Email ou senha inválidos');
             }
 
-            // 4. Salvar nova sessão
-            localStorage.setItem('user', JSON.stringify(data.user));
-            localStorage.setItem('session', JSON.stringify(data.session));
+            const authUserId = authData.user.id;
 
-            // 5. Definir sessão no Supabase client
-            await supabase.auth.setSession(data.session);
+            // 4. Buscar dados do usuário na tabela users
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('auth_id', authUserId)
+                .single();
 
-            console.log('Login bem-sucedido para:', data.user.nome);
+            if (userError || !userData) {
+                throw new Error('Dados do usuário não encontrados');
+            }
+
+            // 5. Salvar nova sessão
+            localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('session', JSON.stringify(authData.session));
+
+            console.log('Login bem-sucedido para:', userData.nome);
             
             // 6. Redirecionar para a página original ou dashboard
             const redirectTo = location.state?.from || '/userdashboard';
