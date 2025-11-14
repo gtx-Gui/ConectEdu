@@ -95,35 +95,27 @@ function ManualReportForm({ reportType, form, setForm }) {
     const fetchUserData = async () => {
       try {
         setLoadingUser(true);
-        console.log('🔍 Buscando dados do usuário...');
         
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error('❌ Erro ao buscar sessão:', sessionError);
           return;
         }
         
-        console.log('✅ Sessão encontrada:', session?.user?.id);
-        
         if (session && session.user) {
+          // Query otimizada: buscar apenas campos necessários para o formulário
           const { data, error } = await supabase
             .from('users')
-            .select('*')
+            .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo, nacionalidade, estadoCivil, profissao')
             .eq('auth_id', session.user.id)
             .single();
 
-          if (error) {
-            console.error('❌ Erro ao buscar dados do usuário:', error);
-          } else if (data && isMounted) {
-            console.log('✅ Dados do usuário carregados:', data.nome);
+          if (!error && data && isMounted) {
             setUserData(data);
           }
-        } else {
-          console.warn('⚠️ Nenhuma sessão encontrada');
         }
       } catch (error) {
-        console.error('❌ Erro inesperado ao buscar dados do usuário:', error);
+        // Erro silencioso
       } finally {
         if (isMounted) {
           setLoadingUser(false);
@@ -145,22 +137,21 @@ function ManualReportForm({ reportType, form, setForm }) {
     const fetchSchools = async () => {
       try {
         setLoadingSchools(true);
-        console.log('🔍 Buscando escolas cadastradas...');
         
+        // Query otimizada: buscar apenas campos necessários
         const { data, error } = await supabase
           .from('users')
-          .select('*')
+          .select('id, nome, cidade, estado, cnpj')
           .eq('tipo', 'instituicao')
           .order('nome');
 
-        if (error) {
-          console.error('❌ Erro ao buscar escolas:', error);
-        } else if (isMounted) {
-          console.log('✅ Escolas carregadas:', data?.length || 0);
-          setSchools(data || []);
-        }
+          if (error) {
+            // Erro silencioso - apenas não carrega escolas
+          } else if (isMounted) {
+            setSchools(data || []);
+          }
       } catch (error) {
-        console.error('❌ Erro inesperado ao buscar escolas:', error);
+        // Erro silencioso
       } finally {
         if (isMounted) {
           setLoadingSchools(false);
@@ -418,25 +409,25 @@ function ManualReportForm({ reportType, form, setForm }) {
       return;
     }
 
-    setLoadingSearch(true);
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('tipo', 'instituicao')
-        .ilike('nome', `%${termo}%`);
+      setLoadingSearch(true);
+      try {
+        // Query otimizada: buscar apenas campos necessários
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, nome, cidade, estado, cnpj')
+          .eq('tipo', 'instituicao')
+          .ilike('nome', `%${termo}%`)
+          .limit(20); // Limitar resultados da busca
 
-      if (error) {
-        console.error('❌ Erro ao buscar escolas:', error);
-      } else {
-        setFilteredSchools(data || []);
-        setShowSchoolResults(true);
+        if (!error) {
+          setFilteredSchools(data || []);
+          setShowSchoolResults(true);
+        }
+      } catch (error) {
+        // Erro silencioso
+      } finally {
+        setLoadingSearch(false);
       }
-    } catch (error) {
-      console.error('❌ Erro inesperado ao buscar escolas:', error);
-    } finally {
-      setLoadingSearch(false);
-    }
   };
 
   const handleSchoolSearch = () => {
@@ -489,25 +480,25 @@ function ManualReportForm({ reportType, form, setForm }) {
       return;
     }
 
-    setLoadingSearch(true);
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('tipo', 'empresa')
-        .ilike('nome', `%${termo}%`);
+      setLoadingSearch(true);
+      try {
+        // Query otimizada: buscar apenas campos necessários
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, nome, cidade, estado, cnpj, cpf')
+          .eq('tipo', 'empresa')
+          .ilike('nome', `%${termo}%`)
+          .limit(20); // Limitar resultados da busca
 
-      if (error) {
-        console.error('❌ Erro ao buscar empresas:', error);
-      } else {
-        setFilteredEmpresas(data || []);
-        setShowEmpresaResults(true);
+        if (!error) {
+          setFilteredEmpresas(data || []);
+          setShowEmpresaResults(true);
+        }
+      } catch (error) {
+        // Erro silencioso
+      } finally {
+        setLoadingSearch(false);
       }
-    } catch (error) {
-      console.error('❌ Erro inesperado ao buscar empresas:', error);
-    } finally {
-      setLoadingSearch(false);
-    }
   };
 
   const selecionarEmpresa = (empresa) => {

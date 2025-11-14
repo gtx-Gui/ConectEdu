@@ -41,10 +41,12 @@ function UserDashboard() {
     // Buscar escolas (usuários do tipo 'instituicao') ao carregar o componente
     useEffect(() => {
         async function fetchSchools() {
+            // Query otimizada: buscar apenas campos necessários para a pesquisa
             const { data, error } = await supabase
                 .from('users')
-                .select('*')
-                .eq('tipo', 'instituicao');
+                .select('id, nome, cidade, estado')
+                .eq('tipo', 'instituicao')
+                .order('nome');
             if (!error) setSchools(data || []);
         }
         fetchSchools();

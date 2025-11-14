@@ -138,37 +138,30 @@ const DocumentHistory = () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Iniciando busca do histórico...');
         
+        // Buscar sessão (sem logs desnecessários)
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('Session:', session);
         
         if (session && session.user) {
           setUser(session.user);
-          console.log('Usuário encontrado:', session.user.id);
           
-          // Buscar histórico de documentos do usuário
+          // Query otimizada: buscar apenas campos necessários e limitar resultados
           const { data, error } = await supabase
             .from('document_history')
-            .select('*')
+            .select('id, document_type, generated_at, form_data')
             .eq('user_id', session.user.id)
-            .order('generated_at', { ascending: false });
-
-          console.log('Resultado da busca:', { data, error });
+            .order('generated_at', { ascending: false })
+            .limit(100); // Limitar a 100 documentos mais recentes
 
           if (error) {
-            console.error('Erro ao buscar histórico:', error);
             setError(error.message);
           } else {
-            console.log('Histórico carregado:', data);
             setHistory(data || []);
           }
         } else {
-          console.log('Nenhuma sessão encontrada');
           setError('Usuário não autenticado');
         }
       } catch (error) {
-        console.error('Erro ao buscar histórico:', error);
         setError(error.message);
       } finally {
         setLoading(false);
