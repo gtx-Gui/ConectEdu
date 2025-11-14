@@ -211,51 +211,45 @@
 }
 
 .preview-paper {
+  --a4-width: min(210mm, 100%);
   background: white;
-  padding: 40px;
+  padding: clamp(16px, 3vw, 40px);
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  margin-bottom: 20px;
-  /* Tamanho A4: 210mm x 297mm */
-  width: 210mm;
-  min-height: 297mm;
-  max-width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   margin: 0 auto 20px auto;
   position: relative;
-  /* Garantir que o conteúdo se ajuste ao tamanho A4 */
+  width: var(--a4-width);
+  min-height: calc(var(--a4-width) * 1.4142); /* 297 / 210 ≈ 1.4142 */
   box-sizing: border-box;
-  font-size: 12pt;
-  line-height: 1.4;
-  /* Garantir proporção A4 no mobile */
+  font-size: clamp(0.85rem, 1vw + 0.6rem, 1rem);
+  line-height: 1.5;
   aspect-ratio: 210 / 297;
+  transform-origin: top center;
 }
 
-/* No mobile, ajustar para caber na tela mantendo proporção A4 */
-@media (max-width: 768px) {
-  .preview-paper {
-    /* No mobile, usar largura total menos padding, mas manter proporção */
-    width: calc(100vw - 40px);
-    max-width: 210mm;
-    /* Altura será calculada automaticamente pelo aspect-ratio */
-    min-height: calc((100vw - 40px) * (297 / 210));
-    padding: 20px;
-    font-size: 10pt;
-    /* Ajustar para caber na viewport */
-    transform-origin: top center;
-  }
-  
+@media (max-width: 1024px) {
   .report-preview {
     padding: 0 10px;
-    overflow-x: hidden;
+  }
+  
+  .preview-paper {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* Para telas muito pequenas, ajustar ainda mais */
+@media (max-width: 768px) {
+  .preview-paper {
+    border-radius: 6px;
+    font-size: clamp(0.8rem, 1vw + 0.5rem, 0.95rem);
+    padding: clamp(14px, 4vw, 24px);
+  }
+}
+
 @media (max-width: 480px) {
   .preview-paper {
-    width: calc(100vw - 20px);
-    padding: 15px;
-    font-size: 9pt;
+    border-radius: 4px;
+    padding: clamp(12px, 4vw, 18px);
+    font-size: clamp(0.75rem, 1vw + 0.4rem, 0.9rem);
   }
 }
 
