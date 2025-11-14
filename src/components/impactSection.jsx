@@ -16,12 +16,20 @@ function ImpactSection() {
                 console.log('Buscando total de documentos no Supabase...');
                 
                 // Buscar total de documentos diretamente no Supabase
-                const { count, error: queryError } = await supabase
+                console.log('🔍 Executando consulta para buscar total de documentos...');
+                const { count, error: queryError, data } = await supabase
                     .from('document_history')
                     .select('*', { count: 'exact', head: true });
                 
+                console.log('📊 Resultado da consulta:', {
+                    count,
+                    hasData: !!data,
+                    hasError: !!queryError,
+                    error: queryError
+                });
+                
                 if (queryError) {
-                    console.error('Erro na consulta:', queryError);
+                    console.error('❌ Erro na consulta:', queryError);
                     console.error('Detalhes do erro:', {
                         message: queryError.message,
                         details: queryError.details,
@@ -31,20 +39,33 @@ function ImpactSection() {
                     
                     // Verificar se é erro de permissão (RLS)
                     if (queryError.code === 'PGRST116' || queryError.message.includes('permission') || queryError.message.includes('RLS')) {
-                        console.warn('Erro de permissão - pode ser necessário ajustar RLS na tabela document_history');
+                        console.warn('🚫 Erro de permissão - pode ser necessário ajustar RLS na tabela document_history');
+                        setError(true);
+                        setTotalDocuments(0);
+                        return;
+                    }
+                    
+                    // Verificar se é erro de API key
+                    if (queryError.message && queryError.message.includes('API key')) {
+                        console.error('🔑 Erro de API key na consulta:', queryError);
+                        setError(true);
+                        setTotalDocuments(0);
+                        return;
                     }
                     
                     setError(true);
                     setTotalDocuments(0);
                 } else {
                     const total = count ?? 0;
-                    console.log('Total de documentos encontrado:', total);
+                    console.log('✅ Total de documentos encontrado:', total);
                     
                     // Verificar se o valor é válido (não negativo)
-                    if (total >= 0) {
+                    if (typeof total === 'number' && total >= 0) {
                         setTotalDocuments(total);
+                        setError(false);
                     } else {
-                        console.warn('Valor inválido retornado:', total);
+                        console.warn('⚠️ Valor inválido retornado:', total, typeof total);
+                        setError(true);
                         setTotalDocuments(0);
                     }
                 }

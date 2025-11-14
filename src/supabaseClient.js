@@ -38,17 +38,15 @@ const customFetch = async (url, options = {}) => {
   const startTime = Date.now();
   
   // Preservar headers originais do Supabase (importante: não sobrescrever apikey!)
-  const headers = new Headers(options.headers || {});
+  // O Supabase já adiciona os headers necessários, então vamos preservá-los
+  const originalHeaders = options.headers || {};
   
-  // Adicionar headers adicionais apenas se não existirem
-  if (!headers.has('Accept')) {
-    headers.set('Accept', 'application/json');
-  }
-  if (!headers.has('Content-Type') && (options.method === 'POST' || options.method === 'PATCH' || options.method === 'PUT')) {
-    headers.set('Content-Type', 'application/json');
-  }
+  // Converter para Headers object se necessário
+  const headers = originalHeaders instanceof Headers 
+    ? originalHeaders 
+    : new Headers(originalHeaders);
   
-  // Garantir que apikey está presente
+  // Garantir que apikey está presente (Supabase deve adicionar, mas garantir por segurança)
   if (!headers.has('apikey') && !headers.has('Authorization')) {
     headers.set('apikey', supabaseKey);
     console.warn('⚠️ apikey não encontrada nos headers, adicionando automaticamente');
@@ -59,38 +57,49 @@ const customFetch = async (url, options = {}) => {
     method: options.method || 'GET',
     isMobile,
     hasApiKey: headers.has('apikey'),
-    headers: Object.fromEntries(headers.entries()),
     timestamp: new Date().toISOString()
   };
   
-  console.log('📡 Requisição Supabase:', requestInfo);
+  console.log('📡 Requisição Supabase:', {
+    ...requestInfo,
+    headersCount: headers instanceof Headers ? Array.from(headers.keys()).length : Object.keys(headers).length
+  });
   
   try {
     const response = await fetch(url, {
       ...options,
-      headers: headers
+      headers: headers instanceof Headers ? headers : Object.fromEntries(headers.entries())
     });
     
     const duration = Date.now() - startTime;
     
-    console.log('✅ Resposta Supabase:', {
+    // Verificar resposta antes de logar
+    const responseStatus = {
       ...requestInfo,
       status: response.status,
       statusText: response.statusText,
       ok: response.ok,
       duration: `${duration}ms`
-    });
+    };
     
-    // Se a resposta não for ok, verificar se é erro de API key
+    console.log(response.ok ? '✅ Resposta Supabase:' : '⚠️ Resposta Supabase com erro:', responseStatus);
+    
+    // Se a resposta não for ok, verificar se é erro de API key ou de dados
     if (!response.ok) {
       const clonedResponse = response.clone();
       try {
         const errorData = await clonedResponse.json();
+        console.error('❌ Erro na resposta:', errorData);
+        
         if (errorData.message && errorData.message.includes('API key')) {
           console.error('🔑 Erro de API key detectado:', errorData);
         }
+        if (errorData.message && errorData.message.includes('permission') || errorData.message.includes('RLS')) {
+          console.error('🚫 Erro de permissão RLS detectado:', errorData);
+        }
       } catch (e) {
-        // Ignorar erros ao parsear JSON
+        // Se não conseguir parsear JSON, pode ser erro de rede
+        console.error('⚠️ Não foi possível parsear resposta de erro:', e);
       }
     }
     
