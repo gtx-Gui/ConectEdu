@@ -33,8 +33,44 @@ const getStorage = () => {
   }
 };
 
-// Configuração do cliente Supabase - usando fetch padrão para melhor compatibilidade
-// O Supabase já gerencia os headers (incluindo apikey) automaticamente
+// Fetch customizado para mobile com timeout maior e melhor tratamento de erros
+const customFetch = async (url, options = {}) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), isMobile ? 30000 : 10000); // 30s mobile, 10s desktop
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        ...options.headers,
+        'apikey': supabaseKey,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error.name === 'AbortError') {
+      throw new Error('Timeout: A conexão demorou muito para responder');
+    }
+    
+    if (isMobile) {
+      console.error('❌ Erro na requisição Supabase (mobile):', {
+        url,
+        error: error.message,
+        type: error.name
+      });
+    }
+    
+    throw error;
+  }
+};
+
+// Configuração do cliente Supabase com fetch customizado para mobile
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
@@ -51,9 +87,10 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
   global: {
     headers: {
-      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`
-    }
-    // Removendo customFetch - deixar Supabase usar fetch padrão que funciona melhor
+      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`,
+      'apikey': supabaseKey
+    },
+    fetch: customFetch // Usar fetch customizado especialmente para mobile
   }
 });
 
