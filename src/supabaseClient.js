@@ -17,43 +17,12 @@ console.log('🔧 Inicializando Supabase Client:', {
   hasSessionStorage: typeof sessionStorage !== 'undefined'
 });
 
-// Configuração de storage para mobile (usar localStorage se disponível, caso contrário usar sessionStorage)
-const getStorage = () => {
-  try {
-    // Testar se localStorage está disponível
-    const test = '__storage_test__';
-    localStorage.setItem(test, test);
-    localStorage.removeItem(test);
-    console.log('✅ localStorage disponível');
-    return localStorage;
-  } catch (e) {
-    // Se localStorage não estiver disponível (modo privado no mobile), usar sessionStorage
-    console.warn('⚠️ localStorage não disponível, usando sessionStorage:', e);
-    return sessionStorage;
-  }
-};
-
-// Configuração do cliente Supabase - usando fetch padrão para melhor compatibilidade
-// O Supabase já gerencia os headers (incluindo apikey) automaticamente
+// Configuração mínima do cliente Supabase (mais simples possível)
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storage: getStorage(),
-    storageKey: 'supabase.auth.token',
-    flowType: 'pkce'
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10
-    }
-  },
-  global: {
-    headers: {
-      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`
-    }
-    // Deixar Supabase usar fetch padrão que funciona melhor
+    detectSessionInUrl: true
   }
 });
 
