@@ -39,22 +39,45 @@ const customFetch = async (url, options = {}) => {
   const timeoutId = setTimeout(() => controller.abort(), isMobile ? 30000 : 10000); // 30s mobile, 10s desktop
 
   try {
+    // Preservar headers originais do Supabase (importante!)
+    const originalHeaders = options.headers || {};
+    const headers = new Headers(originalHeaders);
+    
+    // Garantir que apikey está presente (Supabase geralmente adiciona, mas garantir para mobile)
+    if (!headers.has('apikey')) {
+      headers.set('apikey', supabaseKey);
+    }
+    
+    // Content-Type apenas se não estiver presente
+    if (!headers.has('Content-Type') && (options.method === 'POST' || options.method === 'PATCH' || options.method === 'PUT')) {
+      headers.set('Content-Type', 'application/json');
+    }
+    
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
-      headers: {
-        ...options.headers,
-        'apikey': supabaseKey,
-        'Content-Type': 'application/json'
-      }
+      headers: headers
     });
     
     clearTimeout(timeoutId);
+    
+    // Log apenas no mobile para debug
+    if (isMobile && !response.ok) {
+      console.warn('⚠️ Resposta não OK do Supabase (mobile):', {
+        url,
+        status: response.status,
+        statusText: response.statusText
+      });
+    }
+    
     return response;
   } catch (error) {
     clearTimeout(timeoutId);
     
     if (error.name === 'AbortError') {
+      if (isMobile) {
+        console.error('⏱️ Timeout na requisição Supabase (mobile):', url);
+      }
       throw new Error('Timeout: A conexão demorou muito para responder');
     }
     
