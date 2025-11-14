@@ -7,6 +7,16 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 // Detectar se está em ambiente mobile
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+// Log de diagnóstico
+console.log('🔧 Inicializando Supabase Client:', {
+  isMobile,
+  userAgent: navigator.userAgent,
+  url: supabaseUrl,
+  hasStorage: typeof Storage !== 'undefined',
+  hasLocalStorage: typeof localStorage !== 'undefined',
+  hasSessionStorage: typeof sessionStorage !== 'undefined'
+});
+
 // Configuração de storage para mobile (usar localStorage se disponível, caso contrário usar sessionStorage)
 const getStorage = () => {
   try {
@@ -14,11 +24,68 @@ const getStorage = () => {
     const test = '__storage_test__';
     localStorage.setItem(test, test);
     localStorage.removeItem(test);
+    console.log('✅ localStorage disponível');
     return localStorage;
   } catch (e) {
     // Se localStorage não estiver disponível (modo privado no mobile), usar sessionStorage
-    console.warn('localStorage não disponível, usando sessionStorage');
+    console.warn('⚠️ localStorage não disponível, usando sessionStorage:', e);
     return sessionStorage;
+  }
+};
+
+// Função fetch com logs detalhados para debug mobile
+const customFetch = async (url, options = {}) => {
+  const startTime = Date.now();
+  const requestInfo = {
+    url,
+    method: options.method || 'GET',
+    isMobile,
+    timestamp: new Date().toISOString()
+  };
+  
+  console.log('📡 Requisição Supabase:', requestInfo);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      // Adicionar headers de CORS explícitos para mobile
+      headers: {
+        ...options.headers,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const duration = Date.now() - startTime;
+    
+    console.log('✅ Resposta Supabase:', {
+      ...requestInfo,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      duration: `${duration}ms`
+    });
+    
+    return response;
+  } catch (error) {
+    const duration = Date.now() - startTime;
+    
+    console.error('❌ Erro na requisição Supabase:', {
+      ...requestInfo,
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      },
+      duration: `${duration}ms`
+    });
+    
+    // Se for erro de rede, dar mensagem mais clara
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      console.error('🌐 Erro de rede detectado - possível problema de conexão ou CORS');
+    }
+    
+    throw error;
   }
 };
 
@@ -39,31 +106,12 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
   global: {
     headers: {
-      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`
+      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`,
+      'apikey': supabaseKey
     },
-    fetch: (url, options = {}) => {
-      // Aumentar timeout para conexões móveis que podem ser mais lentas
-      const timeout = isMobile ? 30000 : 10000; // 30s para mobile, 10s para desktop
-      
-      // Criar AbortController para timeout compatível com todos os navegadores
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-      
-      return fetch(url, {
-        ...options,
-        signal: controller.signal
-      }).then((response) => {
-        clearTimeout(timeoutId);
-        return response;
-      }).catch((error) => {
-        clearTimeout(timeoutId);
-        // Tratamento específico para erros de timeout em mobile
-        if (error.name === 'AbortError' || error.message === 'The operation was aborted') {
-          console.error('Timeout na requisição Supabase (mobile):', error);
-          throw new Error('Tempo de conexão excedido. Verifique sua internet e tente novamente.');
-        }
-        throw error;
-      });
-    }
+    fetch: customFetch
   }
 });
+
+// Teste de conexão inicial
+console.log('🚀 Supabase Client criado com sucesso');
