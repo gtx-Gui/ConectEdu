@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../pages/generateReport.css';
@@ -55,6 +55,8 @@ function getBase64FromFetch(imgSrc) {
 
 const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) => {
   const previewRef = useRef();
+  const wrapperRef = useRef();
+  const [scale, setScale] = useState(1);
 
   // Novo método para gerar PDF em formato A4 padrão
   const handleDownloadPDF = async () => {
@@ -62,6 +64,12 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
       const input = previewRef.current;
       // Aguarda renderização
       await new Promise(r => setTimeout(r, 100));
+
+      // Remover transform durante a captura para manter proporção original
+      const previousTransform = input.style.transform;
+      const previousTransformOrigin = input.style.transformOrigin;
+      input.style.transform = 'scale(1)';
+      input.style.transformOrigin = 'top left';
       
       // Configuração A4: 210mm x 297mm
       // jsPDF usa mm por padrão, então vamos usar 'a4' ou [210, 297]
@@ -106,20 +114,57 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
       // Adicionar imagem ao PDF
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
       pdf.save('documento.pdf');
+
+      // Restaurar transform original
+      input.style.transform = previousTransform;
+      input.style.transformOrigin = previousTransformOrigin;
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       alert('Erro ao gerar PDF: ' + error.message);
     }
   };
 
+  useEffect(() => {
+    const updateScale = () => {
+      if (!wrapperRef.current) return;
+      const availableWidth = wrapperRef.current.offsetWidth;
+      const naturalWidth = 794;
+      const newScale = Math.min(1, availableWidth / naturalWidth);
+      setScale(newScale > 0 ? newScale : 1);
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
   useImperativeHandle(ref, () => ({
     handleDownloadPDF
   }));
 
+  const renderWithScale = (children) => (
+    <div
+      className="preview-scale-container"
+      ref={wrapperRef}
+      style={{ minHeight: `${1123 * scale}px` }}
+    >
+      <div
+        ref={previewRef}
+        className="preview-paper"
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: 'top center'
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+
   // Modelos de texto baseados nos exemplos enviados
   if (reportType === 'termo') {
-    return (
-      <div ref={previewRef} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+    return renderWithScale(
+      <div style={{ position: 'relative', overflow: 'hidden' }}>
         {/* Elementos decorativos */}
         <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
         <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
@@ -214,10 +259,10 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
     );
   }
   if (reportType === 'declaracao') {
-    return (
+    return renderWithScale(
       <>
         {/* DECLARAÇÃO DE DOAÇÃO */}
-        <div ref={previewRef} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
           {/* Elementos decorativos */}
           <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
           <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
@@ -323,9 +368,9 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   if (reportType === 'recibo1' || reportType === 'recibo2') {
     const isPessoaJuridica = reportType === 'recibo1';
     
-    return (
+    return renderWithScale(
       <>
-        <div ref={previewRef} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
           {/* Elementos decorativos */}
           <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
           <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
