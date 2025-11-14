@@ -17,16 +17,44 @@ function ImpactSection() {
                 
                 // Buscar total de documentos diretamente no Supabase
                 console.log('🔍 Executando consulta para buscar total de documentos...');
+                console.log('🔍 URL Supabase:', 'https://zosupqbyanlliswinicv.supabase.co');
+                
+                // Primeiro, tentar uma consulta simples para verificar conexão
                 const { count, error: queryError, data } = await supabase
                     .from('document_history')
                     .select('*', { count: 'exact', head: true });
                 
-                console.log('📊 Resultado da consulta:', {
-                    count,
+                console.log('📊 Resultado bruto da consulta:', {
+                    count: count,
+                    countType: typeof count,
                     hasData: !!data,
                     hasError: !!queryError,
-                    error: queryError
+                    error: queryError ? {
+                        message: queryError.message,
+                        code: queryError.code,
+                        details: queryError.details
+                    } : null
                 });
+                
+                // Se count for undefined ou null, pode ser que a consulta não funcionou
+                if (count === undefined || count === null) {
+                    console.warn('⚠️ Count é undefined/null - tentando buscar todos os documentos para contar manualmente');
+                    
+                    // Fallback: buscar todos os documentos e contar manualmente
+                    const { data: allDocs, error: allDocsError } = await supabase
+                        .from('document_history')
+                        .select('id');
+                    
+                    if (!allDocsError && allDocs) {
+                        const manualCount = allDocs.length;
+                        console.log('✅ Total calculado manualmente:', manualCount);
+                        setTotalDocuments(manualCount);
+                        setError(false);
+                        return;
+                    } else {
+                        console.error('❌ Erro ao buscar documentos para contagem manual:', allDocsError);
+                    }
+                }
                 
                 if (queryError) {
                     console.error('❌ Erro na consulta:', queryError);
