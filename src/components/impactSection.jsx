@@ -22,16 +22,36 @@ function ImpactSection() {
                 
                 if (queryError) {
                     console.error('Erro na consulta:', queryError);
+                    console.error('Detalhes do erro:', {
+                        message: queryError.message,
+                        details: queryError.details,
+                        hint: queryError.hint,
+                        code: queryError.code
+                    });
+                    
+                    // Verificar se é erro de permissão (RLS)
+                    if (queryError.code === 'PGRST116' || queryError.message.includes('permission') || queryError.message.includes('RLS')) {
+                        console.warn('Erro de permissão - pode ser necessário ajustar RLS na tabela document_history');
+                    }
+                    
                     setError(true);
                     setTotalDocuments(0);
                 } else {
-                    const total = count || 0;
-                    console.log('Total de documentos:', total);
-                    setTotalDocuments(total);
+                    const total = count ?? 0;
+                    console.log('Total de documentos encontrado:', total);
+                    
+                    // Verificar se o valor é válido (não negativo)
+                    if (total >= 0) {
+                        setTotalDocuments(total);
+                    } else {
+                        console.warn('Valor inválido retornado:', total);
+                        setTotalDocuments(0);
+                    }
                 }
                 
             } catch (error) {
-                console.error('Erro na requisição:', error);
+                console.error('Erro inesperado na requisição:', error);
+                console.error('Stack trace:', error.stack);
                 setError(true);
                 setTotalDocuments(0);
             } finally {
