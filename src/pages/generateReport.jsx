@@ -61,18 +61,38 @@ function GenerateReport() {
   // Busca o tipo de usuário ao carregar a página
   useEffect(() => {
     async function fetchUser() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session && session.user) {
-        // Busca o tipo do usuário na tabela 'users' usando o campo 'auth_id'
-        const { data, error } = await supabase
-          .from('users')
-          .select('tipo')
-          .eq('auth_id', session.user.id)
-          .single();
-        if (data) {
-          setUser(session.user);
-          setUserType(data.tipo);
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Erro ao buscar sessão:', sessionError);
+          return;
         }
+        
+        if (session && session.user) {
+          // Busca o tipo do usuário na tabela 'users' usando o campo 'auth_id'
+          const { data, error } = await supabase
+            .from('users')
+            .select('tipo')
+            .eq('auth_id', session.user.id)
+            .single();
+          
+          if (error) {
+            console.error('Erro ao buscar tipo do usuário:', error);
+            return;
+          }
+          
+          if (data && data.tipo) {
+            setUser(session.user);
+            setUserType(data.tipo);
+          } else {
+            console.error('Tipo de usuário não encontrado');
+          }
+        } else {
+          console.error('Sessão não encontrada');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
       }
     }
     fetchUser();
@@ -144,9 +164,19 @@ function GenerateReport() {
   // Tela do formulário manual e preview lado a lado
   const handleDownloadPDF = async () => {
     if (previewRef.current && previewRef.current.handleDownloadPDF) {
-      // Salvar histórico antes de gerar o PDF
-      if (user && user.id) {
-        await saveDocumentHistory(user.id, selectedReport, manualFormData);
+      try {
+        // Buscar sessão atual para garantir que temos o ID correto
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // Salvar histórico antes de gerar o PDF
+        if (session && session.user && session.user.id) {
+          await saveDocumentHistory(session.user.id, selectedReport, manualFormData);
+        } else {
+          console.warn('Não foi possível salvar histórico: sessão não encontrada');
+        }
+      } catch (error) {
+        console.error('Erro ao salvar histórico:', error);
+        // Continua gerando o PDF mesmo se não conseguir salvar o histórico
       }
       
       // Gerar o PDF
@@ -160,16 +190,25 @@ function GenerateReport() {
   };
 
   // Função para lidar com a conclusão da assinatura
-  const handleSignatureComplete = (signatureData) => {
+  const handleSignatureComplete = async (signatureData) => {
     setSignatureData(signatureData);
     console.log('Assinatura digital gov.br concluída:', signatureData);
     
-    // Salvar histórico da assinatura
-    if (user && user.id) {
-      saveDocumentHistory(user.id, `${selectedReport}_assinado_govbr`, {
-        ...manualFormData,
-        signature: signatureData
-      });
+    try {
+      // Buscar sessão atual para garantir que temos o ID correto
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // Salvar histórico da assinatura
+      if (session && session.user && session.user.id) {
+        await saveDocumentHistory(session.user.id, `${selectedReport}_assinado_govbr`, {
+          ...manualFormData,
+          signature: signatureData
+        });
+      } else {
+        console.warn('Não foi possível salvar histórico da assinatura: sessão não encontrada');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar histórico da assinatura:', error);
     }
   };
 
@@ -231,7 +270,6 @@ function GenerateReport() {
         documentData={{
           ...manualFormData,
           reportType: selectedReport,
-          userId: user?.id,
           timestamp: new Date().toISOString()
         }}
         onSignatureComplete={handleSignatureComplete}
