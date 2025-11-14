@@ -9,18 +9,35 @@ function ProtectedRoute({ children }) {
   const location = useLocation();
 
   useEffect(() => {
+    let isMounted = true;
+
     const checkAuth = async () => {
       try {
+        // Pequeno delay para garantir que a sessão foi sincronizada após login
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        if (!isMounted) return;
+
         // 1. Buscar sessão atual do Supabase
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Erro ao buscar sessão:', sessionError);
+          setLoading(false);
+          return;
+        }
         
         console.log('Sessão atual:', currentSession);
         
         if (!currentSession || !currentSession.user) {
           console.log('Usuário não autenticado');
-          setLoading(false);
+          if (isMounted) {
+            setLoading(false);
+          }
           return;
         }
+
+        if (!isMounted) return;
 
         // 2. Buscar dados do usuário diretamente no Supabase
         try {
@@ -30,8 +47,10 @@ function ProtectedRoute({ children }) {
             .eq('auth_id', currentSession.user.id)
             .single();
           
+          if (!isMounted) return;
+
           if (userError || !userDataFromDB) {
-            console.log('Usuário não encontrado na tabela users');
+            console.log('Usuário não encontrado na tabela users:', userError);
           } else {
             console.log('Dados do usuário:', userDataFromDB);
             setUserData(userDataFromDB);
@@ -40,11 +59,15 @@ function ProtectedRoute({ children }) {
           console.error('Erro ao buscar dados do usuário:', error);
         }
 
-        setSession(currentSession);
+        if (isMounted) {
+          setSession(currentSession);
+        }
       } catch (error) {
         console.error('Erro na verificação de autenticação:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -79,6 +102,7 @@ function ProtectedRoute({ children }) {
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);

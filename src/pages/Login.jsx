@@ -1,6 +1,6 @@
 // src/pages/Login.js
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import './Login.css';
 
@@ -11,6 +11,7 @@ function Login() {
     const [error, setError] = useState(null);
     const [info, setInfo] = useState(null);
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Mostrar mensagem de redirecionamento se houver
     useEffect(() => {
@@ -66,9 +67,12 @@ function Login() {
 
             console.log('Login bem-sucedido para:', userData.nome);
             
-            // 6. Redirecionar para a página original ou dashboard
+            // 6. Aguardar um pouco para garantir que a sessão foi salva
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // 7. Redirecionar para a página original ou dashboard usando navigate (sem recarregar página)
             const redirectTo = location.state?.from || '/userdashboard';
-            window.location.href = redirectTo;
+            navigate(redirectTo, { replace: true });
 
         } catch (error) {
             setError(error.message);
