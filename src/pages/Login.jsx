@@ -31,8 +31,8 @@ function Login() {
         setInfo(null);
 
         try {
-            // 1. Limpar sessão anterior do Supabase
-            await supabase.auth.signOut();
+            // 1. Limpar sessão anterior do Supabase (sem await para não bloquear)
+            supabase.auth.signOut().catch(err => console.log('Erro ao fazer signOut:', err));
             
             // 2. Limpar localStorage
             localStorage.removeItem('user');
@@ -45,7 +45,19 @@ function Login() {
             });
 
             if (authError) {
-                throw new Error('Email ou senha inválidos');
+                console.error('Erro de autenticação:', authError);
+                // Mensagens de erro mais específicas
+                if (authError.message.includes('Invalid login credentials') || authError.message.includes('Email ou senha')) {
+                    throw new Error('Email ou senha inválidos');
+                } else if (authError.message.includes('Failed to fetch') || authError.message.includes('Network')) {
+                    throw new Error('Erro de conexão. Verifique sua internet e tente novamente.');
+                } else {
+                    throw new Error(authError.message || 'Erro ao fazer login');
+                }
+            }
+
+            if (!authData || !authData.user) {
+                throw new Error('Erro ao autenticar usuário');
             }
 
             const authUserId = authData.user.id;
@@ -57,7 +69,15 @@ function Login() {
                 .eq('auth_id', authUserId)
                 .single();
 
-            if (userError || !userData) {
+            if (userError) {
+                console.error('Erro ao buscar dados do usuário:', userError);
+                if (userError.message.includes('Failed to fetch') || userError.message.includes('Network')) {
+                    throw new Error('Erro de conexão ao buscar dados do usuário. Tente novamente.');
+                }
+                throw new Error('Dados do usuário não encontrados');
+            }
+
+            if (!userData) {
                 throw new Error('Dados do usuário não encontrados');
             }
 
@@ -75,7 +95,13 @@ function Login() {
             navigate(redirectTo, { replace: true });
 
         } catch (error) {
-            setError(error.message);
+            console.error('Erro completo no login:', error);
+            // Exibir mensagem de erro mais amigável
+            if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+                setError('Erro de conexão. Verifique sua internet e tente novamente. Se o problema persistir, verifique se o Supabase está acessível.');
+            } else {
+                setError(error.message || 'Erro ao fazer login. Tente novamente.');
+            }
         } finally {
             setLoading(false);
         }
