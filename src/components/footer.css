@@ -119,3 +119,96 @@ footer {
 .youtube::before {
     background-color: #FF0000;
 }
+
+/* Media Queries para Responsividade do Footer */
+/* Tablet (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+    footer {
+        padding: 35px 20px;
+    }
+    
+    .nav-links-footer li {
+        margin: 0 12px;
+    }
+    
+    .social-buttons {
+        gap: 18px;
+    }
+}
+
+/* Mobile (480px - 768px) */
+@media screen and (max-width: 768px) {
+    footer {
+        padding: 30px 15px;
+    }
+    
+    .nav-links-footer {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+    
+    .nav-links-footer li {
+        margin: 0;
+    }
+    
+    .nav-links-footer a {
+        font-size: 1em;
+        padding: 5px 0;
+    }
+    
+    .social-buttons {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .social-buttons .btn-footer {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+    }
+}
+
+/* Mobile Pequeno (até 480px) */
+@media screen and (max-width: 480px) {
+    footer {
+        padding: 25px 10px;
+    }
+    
+    .nav-links-footer {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .nav-links-footer a {
+        font-size: 0.9em;
+    }
+    
+    .social-buttons {
+        gap: 12px;
+    }
+    
+    .social-buttons .btn-footer {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* Telas muito pequenas (até 360px) */
+@media screen and (max-width: 360px) {
+    footer {
+        padding: 20px 8px;
+    }
+    
+    .nav-links-footer a {
+        font-size: 0.85em;
+    }
+    
+    .social-buttons .btn-footer {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+}

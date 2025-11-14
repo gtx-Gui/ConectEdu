@@ -208,10 +208,162 @@
 }
 
 /* Responsividade específica */
-@media (max-width: 480px) {
+/* Tablet (768px - 1024px) */
+@media screen and (max-width: 1024px) {
     .register-page .register-container {
+        max-width: 480px;
+        padding: 35px;
+        margin-top: 18vh;
+    }
+    
+    .register-page .register-title {
+        font-size: 2.2em;
+    }
+    
+    .register-page .register-form {
+        padding: 25px;
+    }
+}
+
+/* Mobile (480px - 768px) */
+@media screen and (max-width: 768px) {
+    .register-page {
+        padding: 10px;
+    }
+    
+    .register-page .register-container {
+        max-width: 90%;
+        padding: 30px;
+        margin: 20px auto;
+        margin-top: 15vh;
+        margin-bottom: 8vh;
+    }
+    
+    .register-page .register-title {
+        font-size: 2em;
+        margin-bottom: 25px;
+    }
+    
+    .register-page .register-form {
         padding: 20px;
-        margin: 20px;
+        gap: 20px;
+    }
+    
+    .register-page .register-input {
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .register-page .register-submit-btn {
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .register-page .register-address-details {
+        gap: 12px;
+    }
+}
+
+/* Mobile Pequeno (até 480px) */
+@media screen and (max-width: 480px) {
+    .register-page {
+        padding: 10px;
+    }
+    
+    .register-page .register-container {
+        padding: 25px 20px;
+        margin: 15px auto;
+        margin-top: 12vh;
+        margin-bottom: 5vh;
+        border-radius: 15px;
+    }
+    
+    .register-page .register-title {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    
+    .register-page .register-form {
+        padding: 15px;
+        gap: 18px;
+    }
+    
+    .register-page .register-input,
+    .register-page .register-address-input {
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+    
+    .register-page .register-submit-btn {
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+    
+    .register-page .register-type-group {
+        margin-bottom: 20px;
+    }
+    
+    .register-page .register-radio-options {
+        gap: 10px;
+    }
+    
+    .register-page .register-radio-label {
+        padding: 8px;
+        font-size: 14px;
+    }
+    
+    .register-page .register-address-details {
+        gap: 10px;
+        margin-top: 12px;
+    }
+    
+    .register-page .register-links {
+        margin-top: 15px;
+    }
+    
+    .register-page .register-links a,
+    .register-page .register-links p {
+        font-size: 13px;
+    }
+}
+
+/* Telas muito pequenas (até 360px) */
+@media screen and (max-width: 360px) {
+    .register-page .register-container {
+        padding: 20px 15px;
+        margin-top: 10vh;
+    }
+    
+    .register-page .register-title {
+        font-size: 1.6em;
+        margin-bottom: 18px;
+    }
+    
+    .register-page .register-form {
+        padding: 12px;
+        gap: 15px;
+    }
+    
+    .register-page .register-input,
+    .register-page .register-address-input {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .register-page .register-submit-btn {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .register-page .register-radio-label {
+        font-size: 13px;
+    }
+    
+    .register-page .register-links a,
+    .register-page .register-links p {
+        font-size: 12px;
     }
 }
 

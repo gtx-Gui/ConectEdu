@@ -132,9 +132,122 @@ body {
 
 
 /* Estilos responsivos */
-@media (max-width: 480px) {
+/* Tablet (768px - 1024px) */
+@media screen and (max-width: 1024px) {
     .containerLogin {
-        padding: 20px; /* Reduzir o padding em telas pequenas */
-        margin: 20px; /* Adicionar margem em telas pequenas */
+        max-width: 380px;
+        padding: 35px;
+        margin-top: 18vh;
+    }
+    
+    .h1Login {
+        font-size: 2.2em;
+    }
+}
+
+/* Mobile (480px - 768px) */
+@media screen and (max-width: 768px) {
+    .containerLogin {
+        max-width: 90%;
+        padding: 30px;
+        margin: 20px auto;
+        margin-top: 15vh;
+        margin-bottom: 8vh;
+    }
+    
+    .h1Login {
+        font-size: 2em;
+        margin-bottom: 25px;
+    }
+    
+    .formLogin {
+        gap: 20px;
+    }
+    
+    .inputLogin {
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .buttonLogin {
+        padding: 12px;
+        font-size: 15px;
+    }
+}
+
+/* Mobile Pequeno (até 480px) */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .containerLogin {
+        padding: 25px 20px;
+        margin: 15px auto;
+        margin-top: 12vh;
+        margin-bottom: 5vh;
+        border-radius: 15px;
+    }
+    
+    .h1Login {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    
+    .formLogin {
+        gap: 18px;
+    }
+    
+    .inputLogin {
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+    
+    .buttonLogin {
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+    
+    .linksLogin {
+        margin-top: 15px;
+    }
+    
+    .linksLogin a,
+    .linksLogin p {
+        font-size: 13px;
+    }
+}
+
+/* Telas muito pequenas (até 360px) */
+@media screen and (max-width: 360px) {
+    .containerLogin {
+        padding: 20px 15px;
+        margin-top: 10vh;
+    }
+    
+    .h1Login {
+        font-size: 1.6em;
+        margin-bottom: 18px;
+    }
+    
+    .formLogin {
+        gap: 15px;
+    }
+    
+    .inputLogin {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .buttonLogin {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .linksLogin a,
+    .linksLogin p {
+        font-size: 12px;
     }
 }

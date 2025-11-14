@@ -50,4 +50,97 @@
     margin-bottom: 20px;
 }
 
+/* Media Queries para Responsividade */
+/* Tablet (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+    .how-it-works {
+        padding: 60px 20px;
+    }
+    
+    .steps-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 25px;
+    }
+    
+    .step-card {
+        padding: 25px;
+    }
+}
+
+/* Mobile (480px - 768px) */
+@media screen and (max-width: 768px) {
+    .how-it-works {
+        padding: 50px 15px;
+    }
+    
+    .how-it-works h2 {
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+    
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 10px;
+    }
+    
+    .step-card {
+        padding: 20px;
+    }
+    
+    .step-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3em;
+    }
+    
+    .step-icon {
+        font-size: 2.5em;
+    }
+}
+
+/* Mobile Pequeno (até 480px) */
+@media screen and (max-width: 480px) {
+    .how-it-works {
+        padding: 40px 10px;
+    }
+    
+    .how-it-works h2 {
+        font-size: 1.6em;
+        margin-bottom: 25px;
+    }
+    
+    .steps-grid {
+        gap: 15px;
+        padding: 0;
+    }
+    
+    .step-card {
+        padding: 15px;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+    
+    .step-icon {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+}
+
+/* Telas muito pequenas (até 360px) */
+@media screen and (max-width: 360px) {
+    .how-it-works h2 {
+        font-size: 1.4em;
+    }
+    
+    .step-card {
+        padding: 12px;
+    }
+}
+
 

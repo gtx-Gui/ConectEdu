@@ -1,4 +1,14 @@
 /* Estilos gerais */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -7,11 +17,45 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background-color: var(--dark-bg);
     color: var(--light-text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
     width: 100%;
     min-height: 100vh;
+}
+
+/* Responsividade geral */
+@media screen and (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+    
+    body {
+        font-size: 0.95rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+    
+    body {
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    html {
+        font-size: 13px;
+    }
+    
+    body {
+        font-size: 0.85rem;
+    }
 }
 
 
