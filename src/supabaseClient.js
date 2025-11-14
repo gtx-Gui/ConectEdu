@@ -17,12 +17,28 @@ console.log('🔧 Inicializando Supabase Client:', {
   hasSessionStorage: typeof sessionStorage !== 'undefined'
 });
 
-// Configuração mínima do cliente Supabase (mais simples possível)
+// Storage resiliente (localStorage > sessionStorage)
+const getStorage = () => {
+  try {
+    const testKey = '__supabaseTest__';
+    localStorage.setItem(testKey, testKey);
+    localStorage.removeItem(testKey);
+    console.log('✅ localStorage disponível');
+    return localStorage;
+  } catch (err) {
+    console.warn('⚠️ localStorage indisponível, usando sessionStorage:', err?.message);
+    return sessionStorage;
+  }
+};
+
+// Configuração do cliente Supabase com fallback de storage
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    storage: getStorage(),
+    storageKey: 'conectedu.supabase.auth'
   }
 });
 
