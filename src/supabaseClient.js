@@ -36,10 +36,30 @@ const getStorage = () => {
 // Função fetch com logs detalhados para debug mobile
 const customFetch = async (url, options = {}) => {
   const startTime = Date.now();
+  
+  // Preservar headers originais do Supabase (importante: não sobrescrever apikey!)
+  const headers = new Headers(options.headers || {});
+  
+  // Adicionar headers adicionais apenas se não existirem
+  if (!headers.has('Accept')) {
+    headers.set('Accept', 'application/json');
+  }
+  if (!headers.has('Content-Type') && (options.method === 'POST' || options.method === 'PATCH' || options.method === 'PUT')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  
+  // Garantir que apikey está presente
+  if (!headers.has('apikey') && !headers.has('Authorization')) {
+    headers.set('apikey', supabaseKey);
+    console.warn('⚠️ apikey não encontrada nos headers, adicionando automaticamente');
+  }
+  
   const requestInfo = {
     url,
     method: options.method || 'GET',
     isMobile,
+    hasApiKey: headers.has('apikey'),
+    headers: Object.fromEntries(headers.entries()),
     timestamp: new Date().toISOString()
   };
   
@@ -48,12 +68,7 @@ const customFetch = async (url, options = {}) => {
   try {
     const response = await fetch(url, {
       ...options,
-      // Adicionar headers de CORS explícitos para mobile
-      headers: {
-        ...options.headers,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+      headers: headers
     });
     
     const duration = Date.now() - startTime;
@@ -65,6 +80,19 @@ const customFetch = async (url, options = {}) => {
       ok: response.ok,
       duration: `${duration}ms`
     });
+    
+    // Se a resposta não for ok, verificar se é erro de API key
+    if (!response.ok) {
+      const clonedResponse = response.clone();
+      try {
+        const errorData = await clonedResponse.json();
+        if (errorData.message && errorData.message.includes('API key')) {
+          console.error('🔑 Erro de API key detectado:', errorData);
+        }
+      } catch (e) {
+        // Ignorar erros ao parsear JSON
+      }
+    }
     
     return response;
   } catch (error) {
@@ -106,8 +134,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
   global: {
     headers: {
-      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`,
-      'apikey': supabaseKey
+      'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`
     },
     fetch: customFetch
   }
