@@ -260,6 +260,119 @@
     padding: clamp(18px, 6vw, 24px);
     font-size: 0.85rem;
   }
+
+.preview-structure {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.preview-header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.preview-header span {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.preview-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.preview-section {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.preview-section h3 {
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  color: #1e1e1e;
+}
+
+.preview-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px 20px;
+}
+
+.preview-info-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-info-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: #6c757d;
+  letter-spacing: 0.6px;
+}
+
+.preview-info-value {
+  font-weight: 600;
+  color: #111;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.preview-table th,
+.preview-table td {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 8px 10px;
+}
+
+.preview-table thead th {
+  background: rgba(0, 0, 0, 0.05);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.6px;
+}
+
+.preview-list {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 1.5;
+}
+
+.preview-footer {
+  margin-top: 30px;
+  padding-top: 16px;
+  border-top: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.preview-footer img {
+  width: 90px;
+  opacity: 0.9;
+}
 }
 
 .preview-header {
@@ -718,6 +831,12 @@
   background-color: #6c757d !important;
   border-color: #6c757d !important;
   transform: none;
+}
+
+.auto-fill-hint {
+  max-width: 320px;
+  font-size: 0.85rem;
+  line-height: 1.3;
 }
 
 /* Indicador de limite */
