@@ -226,6 +226,37 @@
   box-sizing: border-box;
   font-size: 12pt;
   line-height: 1.4;
+  /* Garantir proporção A4 no mobile */
+  aspect-ratio: 210 / 297;
+}
+
+/* No mobile, ajustar para caber na tela mantendo proporção A4 */
+@media (max-width: 768px) {
+  .preview-paper {
+    /* No mobile, usar largura total menos padding, mas manter proporção */
+    width: calc(100vw - 40px);
+    max-width: 210mm;
+    /* Altura será calculada automaticamente pelo aspect-ratio */
+    min-height: calc((100vw - 40px) * (297 / 210));
+    padding: 20px;
+    font-size: 10pt;
+    /* Ajustar para caber na viewport */
+    transform-origin: top center;
+  }
+  
+  .report-preview {
+    padding: 0 10px;
+    overflow-x: hidden;
+  }
+}
+
+/* Para telas muito pequenas, ajustar ainda mais */
+@media (max-width: 480px) {
+  .preview-paper {
+    width: calc(100vw - 20px);
+    padding: 15px;
+    font-size: 9pt;
+  }
 }
 
 .preview-header {

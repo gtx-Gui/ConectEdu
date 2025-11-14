@@ -56,22 +56,58 @@ function getBase64FromFetch(imgSrc) {
 const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) => {
   const previewRef = useRef();
 
-  // Novo método para gerar PDF idêntico ao preview
+  // Novo método para gerar PDF em formato A4 padrão
   const handleDownloadPDF = async () => {
     try {
       const input = previewRef.current;
       // Aguarda renderização
       await new Promise(r => setTimeout(r, 100));
-      const canvas = await html2canvas(input, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/png');
+      
+      // Configuração A4: 210mm x 297mm
+      // jsPDF usa mm por padrão, então vamos usar 'a4' ou [210, 297]
       const pdf = new jsPDF({
         orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
+        unit: 'mm',
+        format: 'a4' // Formato A4 padrão: 210mm x 297mm
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      
+      // Capturar o elemento com escala adequada para A4
+      // Calcular a escala baseada no tamanho A4 em pixels (considerando 96 DPI)
+      // 210mm = 794px, 297mm = 1123px (aproximadamente)
+      const scale = 1.5; // Escala reduzida para melhor qualidade/performance
+      
+      const canvas = await html2canvas(input, { 
+        scale: scale,
+        useCORS: true,
+        logging: false,
+        width: 794, // Largura A4 em pixels (210mm)
+        height: 1123 // Altura A4 em pixels (297mm)
+      });
+      
+      const imgData = canvas.toDataURL('image/png', 0.95);
+      
+      // Calcular dimensões da imagem para caber no A4
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      
+      // Proporção do canvas
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      
+      // Calcular dimensões finais mantendo proporção
+      const finalWidth = imgWidth * ratio;
+      const finalHeight = imgHeight * ratio;
+      
+      // Centralizar na página
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+      
+      // Adicionar imagem ao PDF
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
       pdf.save('documento.pdf');
     } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
       alert('Erro ao gerar PDF: ' + error.message);
     }
   };
