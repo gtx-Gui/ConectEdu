@@ -155,9 +155,9 @@ function ProtectedRoute({ children }) {
   }
 
   // Se há sessão mas não há dados do usuário, ainda permite acesso
-  // (pode ser um problema temporário de conexão com o backend)
+  // (pode ser um problema temporário de conexão com o Supabase)
   if (!userData) {
-    console.log('Usuário autenticado mas dados não encontrados no backend');
+    console.log('Usuário autenticado mas dados não encontrados no Supabase');
   }
 
   console.log('Usuário autenticado:', session.user.email);
