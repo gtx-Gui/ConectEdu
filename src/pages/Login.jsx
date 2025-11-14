@@ -61,8 +61,11 @@ function Login() {
             }
 
             const authUserId = authData.user.id;
+            console.log('✅ Autenticação bem-sucedida. Auth User ID:', authUserId);
 
             // 4. Buscar dados do usuário na tabela users
+            console.log('🔍 Buscando dados do usuário na tabela users com auth_id:', authUserId);
+            
             const { data: userData, error: userError } = await supabase
                 .from('users')
                 .select('*')
@@ -70,16 +73,45 @@ function Login() {
                 .single();
 
             if (userError) {
-                console.error('Erro ao buscar dados do usuário:', userError);
-                if (userError.message.includes('Failed to fetch') || userError.message.includes('Network')) {
-                    throw new Error('Erro de conexão ao buscar dados do usuário. Tente novamente.');
+                console.error('❌ Erro ao buscar dados do usuário:', userError);
+                console.error('Detalhes do erro:', {
+                    message: userError.message,
+                    details: userError.details,
+                    hint: userError.hint,
+                    code: userError.code
+                });
+                
+                // Verificar se é erro de permissão (RLS)
+                if (userError.code === 'PGRST116' || userError.message.includes('permission') || userError.message.includes('RLS')) {
+                    console.error('🚫 Erro de permissão detectado - pode ser necessário ajustar RLS na tabela users');
+                    throw new Error('Erro de permissão ao buscar dados do usuário. Entre em contato com o suporte.');
                 }
-                throw new Error('Dados do usuário não encontrados');
+                
+                // Verificar se é erro de rede
+                if (userError.message.includes('Failed to fetch') || userError.message.includes('Network')) {
+                    throw new Error('Erro de conexão ao buscar dados do usuário. Verifique sua internet e tente novamente.');
+                }
+                
+                // Verificar se usuário não existe
+                if (userError.code === 'PGRST116' || userError.message.includes('No rows')) {
+                    console.error('⚠️ Usuário não encontrado na tabela users. O usuário pode não ter completado o cadastro.');
+                    throw new Error('Usuário não encontrado no sistema. Verifique se completou o cadastro corretamente.');
+                }
+                
+                throw new Error(`Erro ao buscar dados: ${userError.message}`);
             }
 
             if (!userData) {
-                throw new Error('Dados do usuário não encontrados');
+                console.error('⚠️ userData é null/undefined. Auth ID usado:', authUserId);
+                throw new Error('Dados do usuário não encontrados no sistema. Entre em contato com o suporte.');
             }
+            
+            console.log('✅ Dados do usuário encontrados:', {
+                id: userData.id,
+                nome: userData.nome,
+                email: userData.email,
+                tipo: userData.tipo
+            });
 
             // 5. Salvar nova sessão
             localStorage.setItem('user', JSON.stringify(userData));
