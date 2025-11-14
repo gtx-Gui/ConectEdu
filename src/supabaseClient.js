@@ -33,100 +33,8 @@ const getStorage = () => {
   }
 };
 
-// Função fetch com logs detalhados para debug mobile
-const customFetch = async (url, options = {}) => {
-  const startTime = Date.now();
-  
-  // Preservar headers originais do Supabase (importante: não sobrescrever apikey!)
-  // O Supabase já adiciona os headers necessários, então vamos preservá-los
-  const originalHeaders = options.headers || {};
-  
-  // Converter para Headers object se necessário
-  const headers = originalHeaders instanceof Headers 
-    ? originalHeaders 
-    : new Headers(originalHeaders);
-  
-  // Garantir que apikey está presente (Supabase deve adicionar, mas garantir por segurança)
-  if (!headers.has('apikey') && !headers.has('Authorization')) {
-    headers.set('apikey', supabaseKey);
-    console.warn('⚠️ apikey não encontrada nos headers, adicionando automaticamente');
-  }
-  
-  const requestInfo = {
-    url,
-    method: options.method || 'GET',
-    isMobile,
-    hasApiKey: headers.has('apikey'),
-    timestamp: new Date().toISOString()
-  };
-  
-  console.log('📡 Requisição Supabase:', {
-    ...requestInfo,
-    headersCount: headers instanceof Headers ? Array.from(headers.keys()).length : Object.keys(headers).length
-  });
-  
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers: headers instanceof Headers ? headers : Object.fromEntries(headers.entries())
-    });
-    
-    const duration = Date.now() - startTime;
-    
-    // Verificar resposta antes de logar
-    const responseStatus = {
-      ...requestInfo,
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      duration: `${duration}ms`
-    };
-    
-    console.log(response.ok ? '✅ Resposta Supabase:' : '⚠️ Resposta Supabase com erro:', responseStatus);
-    
-    // Se a resposta não for ok, verificar se é erro de API key ou de dados
-    if (!response.ok) {
-      const clonedResponse = response.clone();
-      try {
-        const errorData = await clonedResponse.json();
-        console.error('❌ Erro na resposta:', errorData);
-        
-        if (errorData.message && errorData.message.includes('API key')) {
-          console.error('🔑 Erro de API key detectado:', errorData);
-        }
-        if (errorData.message && errorData.message.includes('permission') || errorData.message.includes('RLS')) {
-          console.error('🚫 Erro de permissão RLS detectado:', errorData);
-        }
-      } catch (e) {
-        // Se não conseguir parsear JSON, pode ser erro de rede
-        console.error('⚠️ Não foi possível parsear resposta de erro:', e);
-      }
-    }
-    
-    return response;
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    
-    console.error('❌ Erro na requisição Supabase:', {
-      ...requestInfo,
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      },
-      duration: `${duration}ms`
-    });
-    
-    // Se for erro de rede, dar mensagem mais clara
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      console.error('🌐 Erro de rede detectado - possível problema de conexão ou CORS');
-    }
-    
-    throw error;
-  }
-};
-
-// Configuração do cliente Supabase com opções otimizadas para mobile
+// Configuração do cliente Supabase - usando fetch padrão para melhor compatibilidade
+// O Supabase já gerencia os headers (incluindo apikey) automaticamente
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
@@ -144,8 +52,8 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   global: {
     headers: {
       'x-client-info': `conectedu-web/${isMobile ? 'mobile' : 'desktop'}`
-    },
-    fetch: customFetch
+    }
+    // Removendo customFetch - deixar Supabase usar fetch padrão que funciona melhor
   }
 });
 
