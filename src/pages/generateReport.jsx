@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import ManualReportForm from '../components/ManualReportForm';
 import ManualReportPreview from '../components/ManualReportPreview';
@@ -45,6 +46,8 @@ const saveDocumentHistory = async (userId, documentType, formData) => {
 };
 
 function GenerateReport() {
+  const navigate = useNavigate();
+  
   // Estados principais
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState('');
@@ -104,7 +107,7 @@ function GenerateReport() {
           {/* Botão de voltar posicionado para sobreposição pelo header */}
           <button
             className="back-button"
-            onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/dashboard')}
+            onClick={() => navigate('/userdashboard')}
           >
             ← Voltar
           </button>

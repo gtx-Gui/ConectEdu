@@ -1,5 +1,6 @@
 // src/pages/userDashboard.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './userDashboard.css'; 
@@ -10,26 +11,26 @@ import UserProfile from '../components/UserProfile';
 import ChangePassword from '../components/ChangePassword';
 
 function UserDashboard() {
+    const navigate = useNavigate();
+
     const logout = async () => {
         await supabase.auth.signOut();
-        window.location.href = "/login"; // Redirecionar para a página inicial
+        navigate('/login', { replace: true });
     };
 
     const newDonation = () => {
         console.log("Nova doação");
-        window.location.href = "/newDonation";
-    
+        navigate('/newDonation');
     };
 
     const requestEquipment = () => {
         console.log("Solicitar equipamento");
-        window.location.href = "/requestEquipment";
+        navigate('/requestEquipment');
     };
 
     const generateReport = () => {
         console.log("Gerar Documentos");
-         window.location.href = "/generateReport";
-         // Redireciona para a página GeradorDocs.html
+        navigate('/generateReport');
     };
 
     // Estados para pesquisa de escolas
