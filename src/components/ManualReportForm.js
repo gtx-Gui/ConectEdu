@@ -83,15 +83,28 @@ function ManualReportForm({ reportType, form, setForm }) {
   const [filteredEmpresas, setFilteredEmpresas] = useState([]);
   const [showEmpresaResults, setShowEmpresaResults] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingSchools, setLoadingSchools] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
   const [autoFilled, setAutoFilled] = useState(false);
   
   // Buscar dados do usuário logado
   useEffect(() => {
+    let isMounted = true; // Flag para evitar atualização em componente desmontado
+    
     const fetchUserData = async () => {
       try {
-        setLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
+        setLoadingUser(true);
+        console.log('🔍 Buscando dados do usuário...');
+        
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('❌ Erro ao buscar sessão:', sessionError);
+          return;
+        }
+        
+        console.log('✅ Sessão encontrada:', session?.user?.id);
         
         if (session && session.user) {
           const { data, error } = await supabase
@@ -100,25 +113,40 @@ function ManualReportForm({ reportType, form, setForm }) {
             .eq('auth_id', session.user.id)
             .single();
 
-          if (data && !error) {
+          if (error) {
+            console.error('❌ Erro ao buscar dados do usuário:', error);
+          } else if (data && isMounted) {
+            console.log('✅ Dados do usuário carregados:', data.nome);
             setUserData(data);
           }
+        } else {
+          console.warn('⚠️ Nenhuma sessão encontrada');
         }
       } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
+        console.error('❌ Erro inesperado ao buscar dados do usuário:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoadingUser(false);
+        }
       }
     };
 
     fetchUserData();
+    
+    return () => {
+      isMounted = false; // Limpar flag quando componente desmontar
+    };
   }, []);
 
   // Buscar escolas cadastradas
   useEffect(() => {
+    let isMounted = true; // Flag para evitar atualização em componente desmontado
+    
     const fetchSchools = async () => {
       try {
-        setLoading(true);
+        setLoadingSchools(true);
+        console.log('🔍 Buscando escolas cadastradas...');
+        
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -126,18 +154,25 @@ function ManualReportForm({ reportType, form, setForm }) {
           .order('nome');
 
         if (error) {
-          console.error('Erro ao buscar escolas:', error);
-        } else {
+          console.error('❌ Erro ao buscar escolas:', error);
+        } else if (isMounted) {
+          console.log('✅ Escolas carregadas:', data?.length || 0);
           setSchools(data || []);
         }
       } catch (error) {
-        console.error('Erro ao buscar escolas:', error);
+        console.error('❌ Erro inesperado ao buscar escolas:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoadingSchools(false);
+        }
       }
     };
 
     fetchSchools();
+    
+    return () => {
+      isMounted = false; // Limpar flag quando componente desmontar
+    };
   }, []);
 
   // Filtrar escolas conforme o termo de busca
@@ -383,7 +418,7 @@ function ManualReportForm({ reportType, form, setForm }) {
       return;
     }
 
-    setLoading(true);
+    setLoadingSearch(true);
     try {
       const { data, error } = await supabase
         .from('users')
@@ -392,15 +427,15 @@ function ManualReportForm({ reportType, form, setForm }) {
         .ilike('nome', `%${termo}%`);
 
       if (error) {
-        console.error('Erro ao buscar escolas:', error);
+        console.error('❌ Erro ao buscar escolas:', error);
       } else {
         setFilteredSchools(data || []);
         setShowSchoolResults(true);
       }
     } catch (error) {
-      console.error('Erro ao buscar escolas:', error);
+      console.error('❌ Erro inesperado ao buscar escolas:', error);
     } finally {
-      setLoading(false);
+      setLoadingSearch(false);
     }
   };
 
@@ -454,7 +489,7 @@ function ManualReportForm({ reportType, form, setForm }) {
       return;
     }
 
-    setLoading(true);
+    setLoadingSearch(true);
     try {
       const { data, error } = await supabase
         .from('users')
@@ -463,15 +498,15 @@ function ManualReportForm({ reportType, form, setForm }) {
         .ilike('nome', `%${termo}%`);
 
       if (error) {
-        console.error('Erro ao buscar empresas:', error);
+        console.error('❌ Erro ao buscar empresas:', error);
       } else {
         setFilteredEmpresas(data || []);
         setShowEmpresaResults(true);
       }
     } catch (error) {
-      console.error('Erro ao buscar empresas:', error);
+      console.error('❌ Erro inesperado ao buscar empresas:', error);
     } finally {
-      setLoading(false);
+      setLoadingSearch(false);
     }
   };
 
@@ -496,7 +531,7 @@ function ManualReportForm({ reportType, form, setForm }) {
       </h2>
       
       {/* Indicador de carregamento */}
-      {loading && (
+      {loadingUser && (
         <div style={{ textAlign: 'center', marginBottom: '20px', color: '#4CAF50' }}>
           <i className="fas fa-spinner fa-spin me-2"></i>
           Carregando dados do usuário...
@@ -570,9 +605,10 @@ function ManualReportForm({ reportType, form, setForm }) {
             type="button"
             className="btn btn-primary"
             onClick={preencherAutomaticamente}
+            disabled={loadingUser || loadingSchools}
           >
-            <i className="fas fa-sync me-2"></i>
-            Preencher Automaticamente
+            <i className={`fas ${loadingUser || loadingSchools ? 'fa-spinner fa-spin' : 'fa-sync'} me-2`}></i>
+            {loadingUser || loadingSchools ? 'Carregando...' : 'Preencher Automaticamente'}
           </button>
         )}
 
