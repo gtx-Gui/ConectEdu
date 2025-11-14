@@ -20,17 +20,19 @@ const UserProfile = () => {
     try {
       setLoading(true);
       setError('');
+      
+      // Buscar sessão uma vez
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session && session.user) {
+        // Query otimizada: buscar apenas campos necessários para o perfil
         const { data, error } = await supabase
           .from('users')
-          .select('*')
+          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
           .eq('auth_id', session.user.id)
           .single();
 
         if (error) {
-          console.error('Erro ao buscar dados do usuário:', error);
           setError('Erro ao carregar dados do perfil: ' + error.message);
         } else if (data) {
           setUserData(data);
@@ -55,7 +57,6 @@ const UserProfile = () => {
         setError('Usuário não autenticado');
       }
     } catch (error) {
-      console.error('Erro ao buscar dados do usuário:', error);
       setError('Erro inesperado ao carregar dados: ' + error.message);
     } finally {
       setLoading(false);
