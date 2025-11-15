@@ -61,40 +61,106 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   const wrapperRef = useRef();
   const [scale, setScale] = useState(1);
   const [shouldScale, setShouldScale] = useState(false);
+  const [scaledWidth, setScaledWidth] = useState(A4_WIDTH);
 
   // Novo método para gerar PDF em formato A4 padrão
   const handleDownloadPDF = async () => {
     try {
       const input = previewRef.current;
-      await new Promise(r => setTimeout(r, 100));
+      const wrapper = wrapperRef.current;
+      
+      if (!input) {
+        alert('Erro: elemento de preview não encontrado');
+        return;
+      }
 
+      // Verificar se está no mobile
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+      
+      // Salvar estilos atuais do elemento
+      const previousWidth = input.style.width;
+      const previousMaxWidth = input.style.maxWidth;
+      const previousMinWidth = input.style.minWidth;
       const previousTransform = input.style.transform;
       const previousTransformOrigin = input.style.transformOrigin;
+      const previousWrapperWidth = wrapper ? wrapper.style.width : null;
+      const previousWrapperMaxWidth = wrapper ? wrapper.style.maxWidth : null;
+      const previousWrapperMinWidth = wrapper ? wrapper.style.minWidth : null;
+
+      // NO MOBILE: Forçar tamanho A4 antes de capturar
+      if (isMobile) {
+        // Forçar wrapper para largura A4 temporariamente
+        if (wrapper) {
+          wrapper.style.width = `${A4_WIDTH}px`;
+          wrapper.style.maxWidth = `${A4_WIDTH}px`;
+          wrapper.style.minWidth = `${A4_WIDTH}px`;
+        }
+        
+        // Forçar preview-paper para tamanho A4
+        input.style.width = `${A4_WIDTH}px`;
+        input.style.maxWidth = `${A4_WIDTH}px`;
+        input.style.minWidth = `${A4_WIDTH}px`;
+      }
+      
+      // Remover qualquer transform
       input.style.transform = 'scale(1)';
       input.style.transformOrigin = 'top left';
       
+      // Aguardar renderização
+      await new Promise(r => setTimeout(r, 200));
+      
+      // Criar PDF em formato A4
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
       
+      // Capturar elemento com largura A4
       const canvas = await html2canvas(input, { 
         scale: 2,
         useCORS: true,
-        logging: false
+        logging: false,
+        width: A4_WIDTH,
+        height: A4_HEIGHT
       });
       
       const imgData = canvas.toDataURL('image/png', 0.95);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
       
       // Preencher toda a área útil da folha A4
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       pdf.save('documento.pdf');
 
+      // Restaurar estilos originais
+      if (isMobile) {
+        // Restaurar wrapper
+        if (wrapper) {
+          if (previousWrapperWidth !== null) wrapper.style.width = previousWrapperWidth;
+          else wrapper.style.width = '';
+          
+          if (previousWrapperMaxWidth !== null) wrapper.style.maxWidth = previousWrapperMaxWidth;
+          else wrapper.style.maxWidth = '';
+          
+          if (previousWrapperMinWidth !== null) wrapper.style.minWidth = previousWrapperMinWidth;
+          else wrapper.style.minWidth = '';
+        }
+        
+        // Restaurar preview-paper
+        if (previousWidth !== null) input.style.width = previousWidth;
+        else input.style.width = '';
+        
+        if (previousMaxWidth !== null) input.style.maxWidth = previousMaxWidth;
+        else input.style.maxWidth = '';
+        
+        if (previousMinWidth !== null) input.style.minWidth = previousMinWidth;
+        else input.style.minWidth = '';
+      }
+      
       input.style.transform = previousTransform;
       input.style.transformOrigin = previousTransformOrigin;
+      
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       alert('Erro ao gerar PDF: ' + error.message);
@@ -104,20 +170,18 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   useEffect(() => {
     const updateScale = () => {
       if (typeof window === 'undefined') return;
-      const isMobile = window.innerWidth <= 768;
-      const parentWidth =
-        wrapperRef.current?.parentElement?.offsetWidth ||
-        window.innerWidth ||
-        A4_WIDTH;
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth || A4_WIDTH;
+      const isMobile = viewportWidth <= 768;
 
       if (isMobile) {
-        const gutter = 24; // respiro lateral
-        const availableWidth = Math.max(parentWidth - gutter, 280);
-        const newScale = Math.min(availableWidth / A4_WIDTH, 1);
-        setScale(newScale > 0 ? newScale : 1);
-        setShouldScale(true);
+        // NO MOBILE: Não usar scale, deixar CSS fazer o trabalho com 100vw
+        setScale(1);
+        setScaledWidth(viewportWidth);
+        setShouldScale(false); // Desabilitar scale no mobile
+        
       } else {
         setScale(1);
+        setScaledWidth(A4_WIDTH);
         setShouldScale(false);
       }
     };
@@ -132,32 +196,66 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   }));
 
   const renderWithScale = (children) => {
-    const appliedScale = shouldScale ? scale : 1;
-    const wrapperStyles = shouldScale
-      ? {
-          width: '100%',
-          maxWidth: '100%',
-          minHeight: A4_HEIGHT * appliedScale,
-          display: 'flex',
-          justifyContent: 'center',
-          paddingBottom: 24
-        }
-      : {
+    const viewportWidth = typeof window !== 'undefined' ? (window.innerWidth || document.documentElement.clientWidth) : A4_WIDTH;
+    const isMobile = viewportWidth <= 768;
+
+    // NO MOBILE: Simplificar completamente - sem scale, apenas CSS
+    if (isMobile) {
+      return (
+        <div
+          className="preview-scale-container"
+          ref={wrapperRef}
+          style={{
+            width: '100vw',
+            maxWidth: '100vw',
+            minWidth: '100vw',
+            margin: 0,
+            padding: 0,
+            position: 'relative',
+            boxSizing: 'border-box',
+            overflow: 'visible' // Garantir que decores não sejam cortados
+          }}
+        >
+          <div
+            ref={previewRef}
+            className="preview-paper"
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              minHeight: 'auto',
+              transform: 'none',
+              transformOrigin: 'top center',
+              overflow: 'visible', // Garantir que decores não sejam cortados
+              position: 'relative'
+            }}
+          >
+            {children}
+          </div>
+        </div>
+      );
+    }
+
+    // DESKTOP: Comportamento original
+    return (
+      <div
+        className="preview-scale-container"
+        ref={wrapperRef}
+        style={{
           width: A4_WIDTH,
           maxWidth: '100%',
-          minHeight: A4_HEIGHT
-        };
-
-    return (
-      <div className="preview-scale-container" ref={wrapperRef} style={wrapperStyles}>
+          margin: '0 auto',
+          padding: 0,
+          position: 'relative'
+        }}
+      >
         <div
           ref={previewRef}
           className="preview-paper"
           style={{
             width: A4_WIDTH,
             minHeight: A4_HEIGHT,
-            transform: shouldScale ? `scale(${appliedScale})` : 'none',
-            transformOrigin: shouldScale ? 'top left' : 'top center'
+            transform: 'none',
+            transformOrigin: 'top center'
           }}
         >
           {children}
@@ -168,17 +266,20 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
 
   // Modelos de texto baseados nos exemplos enviados
   if (reportType === 'termo') {
+    const viewportWidth = typeof window !== 'undefined' ? (window.innerWidth || document.documentElement.clientWidth) : A4_WIDTH;
+    const isMobile = viewportWidth <= 768;
+    
     return renderWithScale(
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
         {/* Elementos decorativos */}
-        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
-        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
-        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
-        <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.2rem', marginBottom: 16, fontWeight: 600, letterSpacing: 1 }}>TERMO DE DOAÇÃO</h1>
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+        <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: 16, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>TERMO DE DOAÇÃO</h1>
         </div>
-        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
-          <p style={{ fontWeight: 500, marginBottom: 12 }}>
+        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+          <p style={{ fontWeight: 500, marginBottom: 12, paddingLeft: 0, marginLeft: 0, textIndent: 0 }}>
             PELO PRESENTE INSTRUMENTO PARTICULAR DE DOAÇÃO, <b>{formData.nomeDoador || '[NOME DO DOADOR]'}</b>, INSCRITO NO CPF/CNPJ SOB O Nº <b>{formData.cpfCnpjDoador || '[XXX]'}</b>, COM ENDEREÇO EM <b>{formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}</b>, DECLARA QUE DOA À ASSOCIAÇÃO DE PAIS E MESTRES DA ESCOLA <b>{formData.nomeEscola || '[NOME DA ESCOLA]'}</b>, INSCRITA NO CNPJ SOB O Nº <b>{formData.cnpjEscola || '[XXX]'}</b>, COM SEDE EM <b>{formData.enderecoEscola || '[ENDEREÇO]'}</b>, OS SEGUINTES BENS:
           </p>
           
@@ -264,22 +365,25 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
     );
   }
   if (reportType === 'declaracao') {
+    const viewportWidth = typeof window !== 'undefined' ? (window.innerWidth || document.documentElement.clientWidth) : A4_WIDTH;
+    const isMobile = viewportWidth <= 768;
+    
     return renderWithScale(
       <>
         {/* DECLARAÇÃO DE DOAÇÃO */}
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
           {/* Elementos decorativos */}
-          <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
-          <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
-          <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
+          <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+          <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+          <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
           
-          <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
-            <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1 }}>DECLARAÇÃO DE DOAÇÃO</h1>
+          <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+            <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>DECLARAÇÃO DE DOAÇÃO</h1>
           </div>
           
-          <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
+          <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
             {/* Parágrafo introdutório */}
-            <p style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 24, paddingLeft: 0, marginLeft: 0, textIndent: 0 }}>
               EU, <b>{formData.nomeDoador || '[NOME COMPLETO DO DOADOR]'}</b>, <b>{formData.nacionalidade || '[NACIONALIDADE]'}</b>, <b>{formData.estadoCivil || '[ESTADO CIVIL]'}</b>, <b>{formData.profissao || '[PROFISSÃO]'}</b>, INSCRITO NO CPF SOB O N° <b>{formData.cpfCnpjDoador || '[CPF]'}</b>, RESIDENTE À <b>{formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}</b>, DECLARO, PARA OS DEVIDOS FINS, QUE ESTOU DOANDO DE FORMA GRATUITA, IRREVOGÁVEL E IRRETRATÁVEL, OS SEGUINTES BENS À:
             </p>
 
@@ -372,20 +476,22 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   }
   if (reportType === 'recibo1' || reportType === 'recibo2') {
     const isPessoaJuridica = reportType === 'recibo1';
+    const viewportWidth = typeof window !== 'undefined' ? (window.innerWidth || document.documentElement.clientWidth) : A4_WIDTH;
+    const isMobile = viewportWidth <= 768;
     
     return renderWithScale(
       <>
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
           {/* Elementos decorativos */}
-          <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
-          <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
-          <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
+          <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+          <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+          <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
           
-          <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
-            <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1 }}>RECIBO DE DOAÇÃO</h1>
+          <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+            <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>RECIBO DE DOAÇÃO</h1>
           </div>
           
-          <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
+          <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
             {/* Seção RECEBEMOS DE */}
             <div style={{ marginBottom: 24 }}>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>

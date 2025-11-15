@@ -27,6 +27,21 @@ body {
     min-height: 100vh;
 }
 
+/* Mobile - garantir que containers ocupem 100vw */
+@media (max-width: 768px) {
+    html, body, #root {
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+    
+    .App {
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+}
+
 /* Responsividade geral */
 @media screen and (max-width: 768px) {
     html {

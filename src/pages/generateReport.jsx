@@ -60,42 +60,134 @@ function GenerateReport() {
 
   // Busca o tipo de usuário ao carregar a página
   useEffect(() => {
+    let isMounted = true;
+    let timeoutId;
+
     async function fetchUser() {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('Erro ao buscar sessão:', sessionError);
+          if (isMounted) {
+            setShowLoading(false);
+          }
           return;
         }
         
         if (session && session.user) {
+          // Tenta buscar do localStorage primeiro como fallback
+          try {
+            const cachedUser = localStorage.getItem('user');
+            if (cachedUser) {
+              const userData = JSON.parse(cachedUser);
+              if (userData && userData.tipo) {
+                console.log('Usando dados do cache:', userData.tipo);
+                if (isMounted) {
+                  setUser(session.user);
+                  setUserType(userData.tipo);
+                  setShowLoading(false);
+                  return;
+                }
+              }
+            }
+          } catch (cacheError) {
+            console.warn('Erro ao ler cache:', cacheError);
+          }
+
           // Busca o tipo do usuário na tabela 'users' usando o campo 'auth_id'
+          console.log('🔍 Buscando tipo do usuário com auth_id:', session.user.id);
+          
           const { data, error } = await supabase
             .from('users')
             .select('tipo')
             .eq('auth_id', session.user.id)
             .single();
           
+          if (!isMounted) return;
+
           if (error) {
-            console.error('Erro ao buscar tipo do usuário:', error);
+            console.error('❌ Erro ao buscar tipo do usuário:', {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+              auth_id: session.user.id
+            });
+            
+            // Se o erro for PGRST116 (nenhum resultado), o usuário não existe na tabela
+            if (error.code === 'PGRST116') {
+              console.warn('⚠️ Usuário autenticado mas não encontrado na tabela users. auth_id:', session.user.id);
+              
+              // Tentar usar cache novamente como último recurso
+              try {
+                const cachedUser = localStorage.getItem('user');
+                if (cachedUser) {
+                  const userData = JSON.parse(cachedUser);
+                  if (userData && userData.tipo) {
+                    console.log('⚠️ Usando cache como fallback após erro:', userData.tipo);
+                    if (isMounted) {
+                      setUser(session.user);
+                      setUserType(userData.tipo);
+                      // O useEffect vai desabilitar o loading
+                      return;
+                    }
+                  }
+                }
+              } catch (cacheError) {
+                console.warn('Erro ao ler cache no fallback:', cacheError);
+              }
+            }
+            
+            // Se não conseguir usar cache, desabilita loading e mostra erro
+            if (isMounted) {
+              setShowLoading(false);
+            }
             return;
           }
           
           if (data && data.tipo) {
-            setUser(session.user);
-            setUserType(data.tipo);
+            console.log('✅ Tipo do usuário encontrado:', data.tipo);
+            if (isMounted) {
+              setUser(session.user);
+              setUserType(data.tipo);
+              // Não desabilitar loading aqui - o useEffect vai fazer isso após 1.5s
+            }
           } else {
-            console.error('Tipo de usuário não encontrado');
+            console.warn('⚠️ Query retornou sem erro mas tipo não encontrado. Dados:', data);
+            if (isMounted) {
+              setShowLoading(false);
+            }
           }
         } else {
           console.error('Sessão não encontrada');
+          if (isMounted) {
+            setShowLoading(false);
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar usuário:', error);
+        if (isMounted) {
+          setShowLoading(false);
+        }
       }
     }
+
     fetchUser();
+
+    // Timeout de segurança - máximo 8 segundos
+    timeoutId = setTimeout(() => {
+      if (isMounted) {
+        console.warn('Timeout ao carregar tipo de usuário - desabilitando loading');
+        setShowLoading(false);
+      }
+    }, 8000);
+
+    return () => {
+      isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   // Exibe loading até carregar o tipo de usuário
@@ -106,15 +198,48 @@ function GenerateReport() {
     }
   }, [userType]);
 
+
   // Relatórios disponíveis para o tipo de usuário
   const availableReports = userType ? reportTypes[userType] || [] : [];
 
-  // Exibe loading enquanto carrega
-  if (!userType || showLoading) {
+  // Exibe loading enquanto carrega (mas com timeout)
+  if (showLoading && !userType) {
     return (
       <div className="loading-container">
         <div className="custom-spinner"></div>
         <span className="loading-text">Carregando...</span>
+      </div>
+    );
+  }
+
+  // Se não tem userType após o loading, mostra mensagem de erro
+  if (!showLoading && !userType) {
+    return (
+      <div className="container min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark p-4">
+        <div className="card bg-secondary bg-opacity-75 p-5 shadow-lg border-0 text-light" style={{ maxWidth: '600px', width: '100%' }}>
+          <div className="text-center">
+            <i className="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+            <h2 className="mb-3">Dados do usuário não encontrados</h2>
+            <p className="mb-4">
+              Não foi possível carregar suas informações do banco de dados. 
+              Por favor, verifique sua conexão ou entre em contato com o suporte.
+            </p>
+            <button
+              className="btn btn-primary me-2"
+              onClick={() => window.location.reload()}
+            >
+              <i className="fas fa-sync me-2"></i>
+              Tentar novamente
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => navigate('/userdashboard')}
+            >
+              <i className="fas fa-arrow-left me-2"></i>
+              Voltar ao Dashboard
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -219,9 +344,9 @@ function GenerateReport() {
 
   return (
     <>
-      {/* Botão Voltar posicionado abaixo do header */}
-      <button className="back-button" onClick={() => setSelectedReport('')}>← Voltar</button>
       <div className="report-page">
+        {/* Botão Voltar no topo */}
+        <button className="back-button" onClick={() => setSelectedReport('')}>← Voltar</button>
         <div className="report-container">
           {/* Formulário manual para preenchimento dos dados */}
           <ManualReportForm reportType={selectedReport} form={manualFormData} setForm={setManualFormData} />

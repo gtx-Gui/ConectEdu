@@ -34,7 +34,7 @@ const AuthMiddleware = ({ children }) => {
                 const userData = JSON.parse(user);
                 const { data: userDataFromDB, error: userError } = await supabase
                     .from('users')
-                    .select('*')
+                    .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
                     .eq('auth_id', userData.auth_id)
                     .single();
                 

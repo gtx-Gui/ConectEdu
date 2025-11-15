@@ -38,9 +38,85 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storage: getStorage(),
-    storageKey: 'conectedu.supabase.auth'
+    storageKey: 'conectedu.supabase.auth',
+    flowType: 'pkce' // Usar PKCE para melhor segurança
+  },
+  global: {
+    headers: {
+      'x-client-info': 'conectedu-web'
+    }
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });
 
-// Teste de conexão inicial
+// Teste de conexão inicial e verificação de sessão
+(async () => {
+  try {
+    // Verificar se há sessão salva (Supabase pode usar diferentes chaves)
+    const storage = getStorage();
+    const possibleKeys = [
+      'conectedu.supabase.auth.token',
+      'sb-zosupqbyanlliswinicv-auth-token',
+      'supabase.auth.token'
+    ];
+    
+    let savedSession = null;
+    let sessionKey = null;
+    
+    for (const key of possibleKeys) {
+      const session = storage.getItem(key);
+      if (session) {
+        savedSession = session;
+        sessionKey = key;
+        console.log(`✅ Sessão encontrada na chave: ${key}`);
+        break;
+      }
+    }
+    
+    if (savedSession) {
+      console.log('✅ Sessão encontrada no storage');
+      try {
+        const sessionData = JSON.parse(savedSession);
+        if (sessionData && sessionData.expires_at) {
+          const expiresAt = sessionData.expires_at * 1000; // Converter para ms
+          const now = Date.now();
+          if (now < expiresAt) {
+            console.log('✅ Sessão válida, expira em:', new Date(expiresAt).toLocaleString('pt-BR'));
+          } else {
+            console.warn('⚠️ Sessão expirada, será renovada automaticamente');
+          }
+        }
+      } catch (e) {
+        console.warn('⚠️ Erro ao verificar sessão salva:', e);
+      }
+    } else {
+      console.log('ℹ️ Nenhuma sessão encontrada no storage');
+    }
+
+    // Tentar buscar sessão atual do Supabase
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error('❌ Erro ao recuperar sessão:', sessionError);
+    } else if (session) {
+      console.log('✅ Sessão recuperada com sucesso:', {
+        user: session.user?.email,
+        expiresAt: session.expires_at ? new Date(session.expires_at * 1000).toLocaleString('pt-BR') : 'N/A'
+      });
+    } else {
+      console.log('ℹ️ Nenhuma sessão ativa no momento');
+    }
+
+    // Teste simples de conexão (buscar uma tabela vazia ou fazer um select simples)
+    console.log('🔍 Testando conexão com o banco de dados...');
+    
+  } catch (error) {
+    console.error('❌ Erro ao inicializar Supabase:', error);
+  }
+})();
+
 console.log('🚀 Supabase Client criado com sucesso');

@@ -68,7 +68,7 @@ function Login() {
             
             const { data: userData, error: userError } = await supabase
                 .from('users')
-                .select('*')
+                .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
                 .eq('auth_id', authUserId)
                 .single();
 

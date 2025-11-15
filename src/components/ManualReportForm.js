@@ -118,7 +118,7 @@ function ManualReportForm({ reportType, form, setForm }) {
       if (session && session.user) {
         const { data, error } = await supabase
           .from('users')
-          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo, nacionalidade, estadoCivil, profissao')
+          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
           .eq('auth_id', session.user.id)
           .single();
 
@@ -271,9 +271,9 @@ function ManualReportForm({ reportType, form, setForm }) {
     } else if (reportType === 'declaracao') {
       dadosPreenchidos = {
         nomeDoador: userData.nome || '',
-        nacionalidade: userData.nacionalidade || 'Brasileira',
-        estadoCivil: userData.estadoCivil || 'Solteiro(a)',
-        profissao: userData.profissao || '',
+        nacionalidade: 'Brasileira', // Valor padrão, coluna não existe no banco
+        estadoCivil: 'Solteiro(a)', // Valor padrão, coluna não existe no banco
+        profissao: '', // Valor padrão vazio, coluna não existe no banco
         cpfCnpjDoador: userData.cpf || '',
         enderecoDoador: `${userData.rua || ''}, ${userData.numero || ''}, ${userData.bairro || ''}, ${userData.cidade || ''} - ${userData.estado || ''}`.replace(/^,\s*/, '').replace(/,\s*,/g, ','),
         local: userData.cidade || '',
