@@ -88,15 +88,9 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
       const imgData = canvas.toDataURL('image/png', 0.95);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const finalWidth = imgWidth * ratio;
-      const finalHeight = imgHeight * ratio;
-      const xOffset = (pdfWidth - finalWidth) / 2;
-      const yOffset = (pdfHeight - finalHeight) / 2;
       
-      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+      // Preencher toda a área útil da folha A4
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       pdf.save('documento.pdf');
 
       input.style.transform = previousTransform;
