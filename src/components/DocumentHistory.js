@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect, forwardRef, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -115,7 +115,256 @@ const DocumentPreview = forwardRef(({ documentType, formData }, ref) => {
     );
   }
   
-  // Para outros tipos de documento, retornar uma mensagem simples
+  if (documentType === 'declaracao') {
+    return (
+      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Elementos decorativos */}
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
+        
+        <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1 }}>DECLARAÇÃO DE DOAÇÃO</h1>
+        </div>
+        
+        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
+          <p style={{ marginBottom: 24 }}>
+            EU, <b>{formData.nomeDoador || '[NOME COMPLETO DO DOADOR]'}</b>, <b>{formData.nacionalidade || '[NACIONALIDADE]'}</b>, <b>{formData.estadoCivil || '[ESTADO CIVIL]'}</b>, <b>{formData.profissao || '[PROFISSÃO]'}</b>, INSCRITO NO CPF SOB O N° <b>{formData.cpfCnpjDoador || '[CPF]'}</b>, RESIDENTE À <b>{formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}</b>, DECLARO, PARA OS DEVIDOS FINS, QUE ESTOU DOANDO DE FORMA GRATUITA, IRREVOGÁVEL E IRRETRATÁVEL, OS SEGUINTES BENS À:
+          </p>
+
+          {/* Seção DONATÁRIO */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 8 }}>
+              <b>ASSOCIAÇÃO DE PAIS E MESTRES (APM) DA {formData.nomeEscola || '[NOME DA ESCOLA]'}</b>
+            </p>
+            <p style={{ marginBottom: 8 }}>
+              <b>CNPJ:</b> {formData.cnpjApm || '[CNPJ DA APM]'}
+            </p>
+            <p style={{ marginBottom: 8 }}>
+              <b>ENDEREÇO:</b> {formData.enderecoApm || '[ENDEREÇO DA ESCOLA]'}
+            </p>
+          </div>
+
+          {/* Tabela de bens declarados */}
+          <div style={{ marginBottom: 24 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #000', fontSize: '0.9rem' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f0f0f0' }}>
+                  <th style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>Item nº</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Descrição do Equipamento</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Marca/Modelo</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Nº de Série</th>
+                  <th style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>Quantidade</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Estado de Conservação</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Valor Estimado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.bensRecebidos && formData.bensRecebidos.length > 0 ? (
+                  formData.bensRecebidos.map((bem, index) => (
+                    <tr key={bem.id || index}>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{index + 1}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{bem.descricao || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{bem.marca || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{bem.serie || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{bem.quantidade || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{bem.estado || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{bem.valor ? `R$ ${bem.valor}` : ''}</td>
+                    </tr>
+                  ))
+                ) : (
+                  Array.from({ length: 4 }, (_, index) => (
+                    <tr key={index}>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{index + 1}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Declarações */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 16 }}>
+              DECLARO QUE OS BENS FORAM ENTREGUES À REFERIDA UNIDADE ESCOLAR NA DATA DE <b>{formData.dataEntrega || '[DATA DE ENTREGA]'}</b>, ESTANDO, SALVO INDICAÇÃO CONTRÁRIA, EM CONDIÇÕES NORMAIS DE USO E FUNCIONAMENTO.
+            </p>
+            <p style={{ marginBottom: 24 }}>
+              ESTA DOAÇÃO DESTINA-SE A CONTRIBUIR COM O DESENVOLVIMENTO DAS ATIVIDADES PEDAGÓGICAS E ADMINISTRATIVAS DA UNIDADE ESCOLAR, CONFORME OS OBJETIVOS SOCIAIS DA APM.
+            </p>
+          </div>
+
+          {/* Data e Assinaturas */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 16 }}>
+              <b>{formData.local || '[LOCAL]'}</b>, <b>{formData.dia || '[DIA]'}</b> DE <b>{formData.mes || '[MÊS POR EXTENSO]'}</b> DE <b>{formData.ano || '[ANO]'}</b>.
+            </p>
+            
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ marginBottom: 8 }}>__________________________________</div>
+              <div>[NOME COMPLETO]</div>
+              <div>CPF: {formData.cpfCnpjDoador || '[CPF]'}</div>
+            </div>
+          </div>
+        </div>
+        <img src={logoConectEdu} alt="Logo Conect Edu" style={{ position: 'absolute', bottom: 24, right: 24, width: 90, zIndex: 2 }} />
+      </div>
+    );
+  }
+  
+  if (documentType === 'recibo1' || documentType === 'recibo2') {
+    const isPessoaJuridica = documentType === 'recibo1';
+    return (
+      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Elementos decorativos */}
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
+        
+        <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1 }}>RECIBO DE DOAÇÃO</h1>
+        </div>
+        
+        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
+          {/* Seção RECEBEMOS DE */}
+          <div style={{ marginBottom: 24 }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>
+              {isPessoaJuridica ? 'RECEBEMOS DA EMPRESA:' : 'RECEBEMOS DE:'}
+            </h3>
+            
+            {isPessoaJuridica ? (
+              <>
+                <p style={{ marginBottom: 8 }}>
+                  <b>RAZÃO SOCIAL:</b> {formData.razaoSocial || '[RAZÃO SOCIAL DO DOADOR]'}
+                </p>
+                <p style={{ marginBottom: 8 }}>
+                  <b>CNPJ:</b> {formData.cnpjDoador || '[CNPJ]'}
+                </p>
+                <p style={{ marginBottom: 8 }}>
+                  <b>ENDEREÇO:</b> {formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}
+                </p>
+                <p style={{ marginBottom: 8 }}>
+                  <b>REPRESENTANTE LEGAL:</b> {formData.nomeRepresentante || '[NOME DO REPRESENTANTE]'} - CPF: {formData.cpfRepresentante || '[CPF]'}
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={{ marginBottom: 8 }}>
+                  <b>NOME:</b> {formData.nomeDoador || '[NOME COMPLETO DO DOADOR]'}
+                </p>
+                <p style={{ marginBottom: 8 }}>
+                  <b>CPF:</b> {formData.cpfDoador || '[CPF]'}
+                </p>
+                <p style={{ marginBottom: 8 }}>
+                  <b>ENDEREÇO:</b> {formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}
+                </p>
+              </>
+            )}
+          </div>
+
+          {/* Cláusula introdutória */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 16 }}>
+              {isPessoaJuridica 
+                ? 'A DOAÇÃO, DE FORMA GRATUITA E SEM ÔNUS, DOS SEGUINTES BENS:'
+                : 'A DOAÇÃO, DE FORMA GRATUITA, IRREVOGÁVEL E IRRETRATÁVEL, DOS SEGUINTES BENS:'
+              }
+            </p>
+          </div>
+
+          {/* Tabela de equipamentos */}
+          <div style={{ marginBottom: 24 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #000', fontSize: '0.9rem' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f0f0f0' }}>
+                  <th style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>Item nº</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Descrição do Equipamento</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Marca/Modelo</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Nº de Série</th>
+                  <th style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>Quantidade</th>
+                  <th style={{ border: '1px solid #000', padding: '8px' }}>Estado de Conservação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.equipamentosRecibo && formData.equipamentosRecibo.length > 0 ? (
+                  formData.equipamentosRecibo.map((equipamento, index) => (
+                    <tr key={equipamento.id || index}>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{index + 1}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{equipamento.descricao || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{equipamento.marca || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{equipamento.serie || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{equipamento.quantidade || ''}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>{equipamento.estado || ''}</td>
+                    </tr>
+                  ))
+                ) : (
+                  Array.from({ length: 5 }, (_, index) => (
+                    <tr key={index}>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{index + 1}</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}></td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}></td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Data da entrega e finalidade */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 12 }}>
+              <b>DATA DA ENTREGA:</b> {formData.dataEntrega || '[DATA DA ENTREGA]'}
+            </p>
+            <p style={{ marginBottom: 12 }}>
+              <b>FINALIDADE DA DOAÇÃO:</b> {isPessoaJuridica 
+                ? 'APOIO ÀS ATIVIDADES PEDAGÓGICAS E ADMINISTRATIVAS DA UNIDADE ESCOLAR.'
+                : 'USO EXCLUSIVO NAS ATIVIDADES PEDAGÓGICAS E ADMINISTRATIVAS DA UNIDADE ESCOLAR.'
+              }
+            </p>
+          </div>
+
+          {/* Seção DONATÁRIO */}
+          <div style={{ marginBottom: 24 }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>DONATÁRIO:</h3>
+            <p style={{ marginBottom: 8 }}>
+              <b>ASSOCIAÇÃO DE PAIS E MESTRES (APM) DA {formData.nomeEscola || '[NOME DA ESCOLA]'}</b>
+            </p>
+            <p style={{ marginBottom: 8 }}>
+              <b>CNPJ:</b> {formData.cnpjApm || '[CNPJ DA APM]'}
+            </p>
+            <p style={{ marginBottom: 8 }}>
+              <b>ENDEREÇO:</b> {formData.enderecoApm || '[ENDEREÇO DA ESCOLA]'}
+            </p>
+          </div>
+
+          {/* Local, Data e Assinatura */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ marginBottom: 16 }}>
+              <b>{formData.local || '[LOCAL]'}</b>, <b>{formData.dia || '[DIA]'}</b> DE <b>{formData.mes || '[MÊS POR EXTENSO]'}</b> DE <b>{formData.ano || '[ANO]'}</b>.
+            </p>
+            
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ marginBottom: 8 }}>__________________________________</div>
+              <div>[NOME COMPLETO]</div>
+              <div>PRESIDENTE DA APM - CPF: [CPF]</div>
+            </div>
+          </div>
+        </div>
+        
+        <img src={logoConectEdu} alt="Logo Conect Edu" style={{ position: 'absolute', bottom: 24, right: 24, width: 90, zIndex: 2 }} />
+      </div>
+    );
+  }
+  
+  // Para tipos desconhecidos, retornar uma mensagem simples
   return (
     <div ref={ref} style={{ padding: '20px', textAlign: 'center' }}>
       <h3>{getDocumentTypeLabel(documentType)}</h3>
@@ -131,7 +380,7 @@ const DocumentHistory = () => {
   const [error, setError] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
-  const [previewRef, setPreviewRef] = useState(null);
+  const previewRef = useRef(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -191,9 +440,9 @@ const DocumentHistory = () => {
 
   // Função para gerar PDF do documento selecionado em formato A4 padrão
   const handleDownloadPDF = async () => {
-    if (previewRef) {
+    if (previewRef.current) {
       try {
-        const input = previewRef;
+        const input = previewRef.current;
         await new Promise(r => setTimeout(r, 100));
         
         // Configuração A4: 210mm x 297mm
@@ -401,7 +650,7 @@ const DocumentHistory = () => {
             
             <div className="modal-body">
               <DocumentPreview 
-                ref={setPreviewRef}
+                ref={previewRef}
                 documentType={selectedDocument.document_type}
                 formData={selectedDocument.form_data}
               />
