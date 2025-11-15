@@ -7,6 +7,9 @@ import decorTopRight from '../assets/img/DocVisualElements/top-rigth.png';
 import decorBottomLeft from '../assets/img/DocVisualElements/bottom-left.png';
 import logoConectEdu from '../assets/img/LogoConectEdu7.png';
 
+const A4_WIDTH = 794; // px (~210mm)
+const A4_HEIGHT = 1123; // px (~297mm)
+
 // Função utilitária para converter imagem importada em base64 usando canvas
 function getBase64FromImage(imgSrc) {
   return new Promise((resolve, reject) => {
@@ -63,60 +66,39 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   const handleDownloadPDF = async () => {
     try {
       const input = previewRef.current;
-      // Aguarda renderização
       await new Promise(r => setTimeout(r, 100));
 
-      // Remover transform durante a captura para manter proporção original
       const previousTransform = input.style.transform;
       const previousTransformOrigin = input.style.transformOrigin;
       input.style.transform = 'scale(1)';
       input.style.transformOrigin = 'top left';
       
-      // Configuração A4: 210mm x 297mm
-      // jsPDF usa mm por padrão, então vamos usar 'a4' ou [210, 297]
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4' // Formato A4 padrão: 210mm x 297mm
+        format: 'a4'
       });
       
-      // Capturar o elemento com escala adequada para A4
-      // Calcular a escala baseada no tamanho A4 em pixels (considerando 96 DPI)
-      // 210mm = 794px, 297mm = 1123px (aproximadamente)
-      const scale = 1.5; // Escala reduzida para melhor qualidade/performance
-      
       const canvas = await html2canvas(input, { 
-        scale: scale,
+        scale: 2,
         useCORS: true,
-        logging: false,
-        width: 794, // Largura A4 em pixels (210mm)
-        height: 1123 // Altura A4 em pixels (297mm)
+        logging: false
       });
       
       const imgData = canvas.toDataURL('image/png', 0.95);
-      
-      // Calcular dimensões da imagem para caber no A4
-      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
-      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
-      
-      // Proporção do canvas
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      
-      // Calcular dimensões finais mantendo proporção
       const finalWidth = imgWidth * ratio;
       const finalHeight = imgHeight * ratio;
-      
-      // Centralizar na página
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = (pdfHeight - finalHeight) / 2;
       
-      // Adicionar imagem ao PDF
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
       pdf.save('documento.pdf');
 
-      // Restaurar transform original
       input.style.transform = previousTransform;
       input.style.transformOrigin = previousTransformOrigin;
     } catch (error) {
@@ -126,19 +108,14 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   };
 
   useEffect(() => {
-    const naturalWidth = 794;
-
     const updateScale = () => {
-      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-      if (!wrapperRef.current) {
-        setScale(1);
-        setShouldScale(isMobile);
-        return;
-      }
+      if (typeof window === 'undefined') return;
+      const isMobile = window.innerWidth <= 768;
 
       if (isMobile) {
-        const availableWidth = wrapperRef.current.offsetWidth || naturalWidth;
-        const newScale = Math.min(availableWidth / naturalWidth, 1);
+        const gutter = 24; // espaço lateral
+        const availableWidth = Math.max(window.innerWidth - gutter, 320);
+        const newScale = Math.min(availableWidth / A4_WIDTH, 1);
         setScale(newScale > 0 ? newScale : 1);
         setShouldScale(true);
       } else {
@@ -158,17 +135,25 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
 
   const renderWithScale = (children) => {
     const appliedScale = shouldScale ? scale : 1;
+    const wrapperWidth = shouldScale ? A4_WIDTH * appliedScale : A4_WIDTH;
+    const wrapperHeight = shouldScale ? A4_HEIGHT * appliedScale : A4_HEIGHT;
 
     return (
       <div
         className="preview-scale-container"
         ref={wrapperRef}
-        style={{ minHeight: `${1123 * appliedScale}px` }}
+        style={{
+          width: wrapperWidth,
+          maxWidth: '100%',
+          minHeight: wrapperHeight
+        }}
       >
         <div
           ref={previewRef}
           className="preview-paper"
           style={{
+            width: A4_WIDTH,
+            minHeight: A4_HEIGHT,
             transform: shouldScale ? `scale(${appliedScale})` : 'none',
             transformOrigin: 'top center'
           }}

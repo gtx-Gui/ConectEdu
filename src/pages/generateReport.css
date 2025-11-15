@@ -856,11 +856,10 @@
 }
 
 @media (max-width: 768px) {
-  .preview-paper {
-    width: 100%;
-    padding: 20px;
-    font-size: 10pt;
-  }
+    .preview-paper {
+        padding: 28px;
+        font-size: 10pt;
+    }
     .preview-scale-container {
         padding: 0;
         overflow: visible;
