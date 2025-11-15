@@ -861,6 +861,10 @@
     padding: 20px;
     font-size: 10pt;
   }
+    .preview-scale-container {
+        padding: 0;
+        overflow: visible;
+    }
 }
 
 /* Ajustar o container do preview para centralizar o A4 */

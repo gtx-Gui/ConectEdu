@@ -57,6 +57,7 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   const previewRef = useRef();
   const wrapperRef = useRef();
   const [scale, setScale] = useState(1);
+  const [shouldScale, setShouldScale] = useState(false);
 
   // Novo método para gerar PDF em formato A4 padrão
   const handleDownloadPDF = async () => {
@@ -125,12 +126,25 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
   };
 
   useEffect(() => {
+    const naturalWidth = 794;
+
     const updateScale = () => {
-      if (!wrapperRef.current) return;
-      const availableWidth = wrapperRef.current.offsetWidth;
-      const naturalWidth = 794;
-      const newScale = Math.min(1, availableWidth / naturalWidth);
-      setScale(newScale > 0 ? newScale : 1);
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+      if (!wrapperRef.current) {
+        setScale(1);
+        setShouldScale(isMobile);
+        return;
+      }
+
+      if (isMobile) {
+        const availableWidth = wrapperRef.current.offsetWidth || naturalWidth;
+        const newScale = Math.min(availableWidth / naturalWidth, 1);
+        setScale(newScale > 0 ? newScale : 1);
+        setShouldScale(true);
+      } else {
+        setScale(1);
+        setShouldScale(false);
+      }
     };
 
     updateScale();
@@ -142,24 +156,28 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
     handleDownloadPDF
   }));
 
-  const renderWithScale = (children) => (
-    <div
-      className="preview-scale-container"
-      ref={wrapperRef}
-      style={{ minHeight: `${1123 * scale}px` }}
-    >
+  const renderWithScale = (children) => {
+    const appliedScale = shouldScale ? scale : 1;
+
+    return (
       <div
-        ref={previewRef}
-        className="preview-paper"
-        style={{
-          transform: `scale(${scale})`,
-          transformOrigin: 'top center'
-        }}
+        className="preview-scale-container"
+        ref={wrapperRef}
+        style={{ minHeight: `${1123 * appliedScale}px` }}
       >
-        {children}
+        <div
+          ref={previewRef}
+          className="preview-paper"
+          style={{
+            transform: shouldScale ? `scale(${appliedScale})` : 'none',
+            transformOrigin: 'top center'
+          }}
+        >
+          {children}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Modelos de texto baseados nos exemplos enviados
   if (reportType === 'termo') {
