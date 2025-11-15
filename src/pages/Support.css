@@ -139,9 +139,10 @@
 }
 
 .suporte-contato {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
 }
 
 .suporte-form {
@@ -202,6 +203,9 @@
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     height: fit-content;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
 }
 
 .suporte-info-titulo {
@@ -242,11 +246,11 @@
 
 @media (max-width: 968px) {
     .suporte-contato {
-        grid-template-columns: 1fr;
+        justify-content: center;
     }
 
     .suporte-info {
-        order: -1;
+        max-width: 100%;
     }
 }
 

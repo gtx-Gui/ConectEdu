@@ -23,7 +23,7 @@ function footer() {
                 <a href="https://youtube.com/@conectedu-q6f?si=-ry3RsRVXmXcdWVu" className="btn-footer youtube" target="_blank" rel="noopener noreferrer"><i className="fab fa-youtube"></i></a>
             </div>
 
-            <p>&copy; Todos os direitos reservados</p>
+            <p>&copy; Todos os direitos reservados | Versão 1.0.0</p>
         </footer>
     );
 }

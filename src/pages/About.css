@@ -79,30 +79,11 @@ ul {
     left: 0;
 }
 
-@media (max-width: 600px) {
-    .about-container {
-        padding: 20px;
-    }
-
-    .about-container h1 {
-        font-size: 2em;
-    }
-
-    h2 {
-        font-size: 1.5em;
-    }
-
-    p, li {
-        font-size: 1em;
-    }
-}
-
 .team-image {
     height: 350px;
     width: 100%;
     max-width: 800px;
     border-radius: 5px;
-  
 }
 
 .dev-profile {
@@ -125,4 +106,159 @@ ul {
 
 .profile-text {
     flex: 1;
+}
+
+/* Responsividade para tablets */
+@media (max-width: 1024px) {
+    .about-container {
+        max-width: 90%;
+        margin-top: 15vh;
+        padding: 30px;
+    }
+
+    .about-container h1 {
+        font-size: 2.2em;
+        margin-bottom: 30px;
+    }
+
+    .about-container h2 {
+        font-size: 1.6em;
+        margin-top: 25px;
+    }
+
+    .team-image {
+        height: 300px;
+    }
+
+    .profile-image {
+        height: 150px;
+        width: 150px;
+    }
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .about-container {
+        max-width: 95%;
+        margin-top: 12vh;
+        margin-bottom: 5vh;
+        padding: 20px;
+    }
+
+    .about-container h1 {
+        font-size: 1.8em;
+        margin-bottom: 25px;
+    }
+
+    .about-container h2 {
+        font-size: 1.4em;
+        margin-top: 20px;
+    }
+
+    section {
+        margin-bottom: 30px;
+    }
+
+    .pContainerSobre {
+        font-size: 1em;
+        line-height: 1.6;
+    }
+
+    .li-aboutValues {
+        font-size: 1em;
+        padding: 8px 0;
+        padding-left: 20px;
+    }
+
+    .team-image {
+        height: 250px;
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .dev-profile {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin: 30px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+    }
+
+    .dev-profile:first-of-type {
+        margin-top: 30px;
+    }
+
+    .profile-image {
+        height: 120px;
+        width: 120px;
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .profile-text {
+        font-size: 0.95em;
+        line-height: 1.6;
+        max-width: 100%;
+    }
+}
+
+/* Responsividade para mobile pequeno */
+@media (max-width: 480px) {
+    .about-container {
+        margin-top: 10vh;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .about-container h1 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .about-container h2 {
+        font-size: 1.2em;
+        margin-top: 18px;
+    }
+
+    section {
+        margin-bottom: 25px;
+    }
+
+    .pContainerSobre {
+        font-size: 0.9em;
+        text-align: left;
+    }
+
+    .li-aboutValues {
+        font-size: 0.9em;
+        padding: 6px 0;
+        padding-left: 18px;
+    }
+
+    .team-image {
+        height: 200px;
+        margin-bottom: 15px;
+    }
+
+    .dev-profile {
+        margin: 20px 0;
+        padding: 15px;
+    }
+
+    .dev-profile:first-of-type {
+        margin-top: 20px;
+    }
+
+    .profile-image {
+        height: 100px;
+        width: 100px;
+        margin-bottom: 12px;
+    }
+
+    .profile-text {
+        font-size: 0.85em;
+    }
 }
