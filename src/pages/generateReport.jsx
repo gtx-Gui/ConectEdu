@@ -39,6 +39,13 @@ const saveDocumentHistory = async (userId, documentType, formData) => {
       console.error('Erro ao salvar histórico:', error);
     } else {
       console.log('Histórico salvo com sucesso');
+      // Invalidar cache do histórico para forçar atualização na próxima visualização
+      const cachedUserId = localStorage.getItem('document_history_user_id');
+      if (cachedUserId && cachedUserId === String(userId)) {
+        localStorage.removeItem('document_history');
+        localStorage.removeItem('document_history_user_id');
+        localStorage.removeItem('document_history_timestamp');
+      }
     }
   } catch (error) {
     console.error('Erro ao salvar histórico:', error);

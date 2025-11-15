@@ -21,17 +21,20 @@ const getDocumentTypeLabel = (type) => {
 
 // Componente para preview do documento
 const DocumentPreview = forwardRef(({ documentType, formData }, ref) => {
+  const viewportWidth = typeof window !== 'undefined' ? (window.innerWidth || document.documentElement.clientWidth) : 800;
+  const isMobile = viewportWidth <= 768;
+  
   if (documentType === 'termo') {
     return (
-      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
         {/* Elementos decorativos */}
-        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
-        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
-        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
-        <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.2rem', marginBottom: 16, fontWeight: 600, letterSpacing: 1 }}>TERMO DE DOAÇÃO</h1>
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '0px' : 0, width: isMobile ? 55 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '0px' : 0, width: isMobile ? 55 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: 16, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>TERMO DE DOAÇÃO</h1>
         </div>
-        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
+        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
           <p style={{ fontWeight: 500, marginBottom: 12 }}>
             PELO PRESENTE INSTRUMENTO PARTICULAR DE DOAÇÃO, <b>{formData.nomeDoador || '[NOME DO DOADOR]'}</b>, INSCRITO NO CPF/CNPJ SOB O Nº <b>{formData.cpfCnpjDoador || '[XXX]'}</b>, COM ENDEREÇO EM <b>{formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}</b>, DECLARA QUE DOA À ASSOCIAÇÃO DE PAIS E MESTRES DA ESCOLA <b>{formData.nomeEscola || '[NOME DA ESCOLA]'}</b>, INSCRITA NO CNPJ SOB O Nº <b>{formData.cnpjEscola || '[XXX]'}</b>, COM SEDE EM <b>{formData.enderecoEscola || '[ENDEREÇO]'}</b>, OS SEGUINTES BENS:
           </p>
@@ -117,18 +120,18 @@ const DocumentPreview = forwardRef(({ documentType, formData }, ref) => {
   
   if (documentType === 'declaracao') {
     return (
-      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
         {/* Elementos decorativos */}
-        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
-        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
-        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
         
-        <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1 }}>DECLARAÇÃO DE DOAÇÃO</h1>
+        <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>DECLARAÇÃO DE DOAÇÃO</h1>
         </div>
         
-        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
-          <p style={{ marginBottom: 24 }}>
+        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+          <p style={{ marginBottom: 24, paddingLeft: 0, marginLeft: 0, textIndent: 0 }}>
             EU, <b>{formData.nomeDoador || '[NOME COMPLETO DO DOADOR]'}</b>, <b>{formData.nacionalidade || '[NACIONALIDADE]'}</b>, <b>{formData.estadoCivil || '[ESTADO CIVIL]'}</b>, <b>{formData.profissao || '[PROFISSÃO]'}</b>, INSCRITO NO CPF SOB O N° <b>{formData.cpfCnpjDoador || '[CPF]'}</b>, RESIDENTE À <b>{formData.enderecoDoador || '[ENDEREÇO COMPLETO]'}</b>, DECLARO, PARA OS DEVIDOS FINS, QUE ESTOU DOANDO DE FORMA GRATUITA, IRREVOGÁVEL E IRRETRATÁVEL, OS SEGUINTES BENS À:
           </p>
 
@@ -220,17 +223,17 @@ const DocumentPreview = forwardRef(({ documentType, formData }, ref) => {
   if (documentType === 'recibo1' || documentType === 'recibo2') {
     const isPessoaJuridica = documentType === 'recibo1';
     return (
-      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: 'hidden' }}>
+      <div ref={ref} className="preview-paper" style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
         {/* Elementos decorativos */}
-        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: 0, width: 80, zIndex: 1 }} />
-        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: 0, width: 80, zIndex: 1 }} />
-        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: 0, width: 80, zIndex: 1 }} />
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
         
-        <div className="preview-header" style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1 }}>RECIBO DE DOAÇÃO</h1>
+        <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: 24, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>RECIBO DE DOAÇÃO</h1>
         </div>
         
-        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2 }}>
+        <div className="preview-content" style={{ textAlign: 'justify', fontSize: '1.05rem', position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
           {/* Seção RECEBEMOS DE */}
           <div style={{ marginBottom: 24 }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>
@@ -388,6 +391,60 @@ const DocumentHistory = () => {
         setLoading(true);
         setError(null);
         
+        // PRIMEIRO: Tentar carregar do cache (mais rápido)
+        try {
+          const cachedHistory = localStorage.getItem('document_history');
+          const cachedUserId = localStorage.getItem('document_history_user_id');
+          
+          if (cachedHistory && cachedUserId) {
+            // Buscar sessão para verificar se ainda é o mesmo usuário
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session && session.user && String(session.user.id) === cachedUserId) {
+              try {
+                const historyData = JSON.parse(cachedHistory);
+                const cacheTimestamp = parseInt(localStorage.getItem('document_history_timestamp') || '0', 10);
+                const now = Date.now();
+                const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+                
+                // Se o cache é recente (menos de 5 minutos), usar ele
+                if (now - cacheTimestamp < CACHE_DURATION) {
+                  console.log('✅ Histórico carregado do cache');
+                  setUser(session.user);
+                  setHistory(historyData);
+                  setLoading(false);
+                  
+                  // Atualizar em background sem bloquear
+                  setTimeout(async () => {
+                    const { data, error } = await supabase
+                      .from('document_history')
+                      .select('id, document_type, generated_at, form_data')
+                      .eq('user_id', session.user.id)
+                      .order('generated_at', { ascending: false })
+                      .limit(100);
+                    
+                    if (!error && data) {
+                      localStorage.setItem('document_history', JSON.stringify(data));
+                      localStorage.setItem('document_history_user_id', String(session.user.id));
+                      localStorage.setItem('document_history_timestamp', Date.now().toString());
+                      setHistory(data);
+                    }
+                  }, 0);
+                  return;
+                }
+              } catch (parseError) {
+                console.warn('⚠️ Erro ao ler cache do histórico:', parseError);
+              }
+            }
+          }
+        } catch (cacheError) {
+          console.warn('⚠️ Erro ao verificar cache do histórico:', cacheError);
+        }
+        
+        // SEGUNDO: Se não há cache válido, buscar do Supabase
+        // Aguardar um pouco para garantir que a sessão está pronta
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         // Buscar sessão (sem logs desnecessários)
         const { data: { session } } = await supabase.auth.getSession();
         
@@ -405,7 +462,12 @@ const DocumentHistory = () => {
           if (error) {
             setError(error.message);
           } else {
-            setHistory(data || []);
+            const historyData = data || [];
+            setHistory(historyData);
+            // Salvar no cache
+            localStorage.setItem('document_history', JSON.stringify(historyData));
+            localStorage.setItem('document_history_user_id', String(session.user.id));
+            localStorage.setItem('document_history_timestamp', Date.now().toString());
           }
         } else {
           setError('Usuário não autenticado');
@@ -469,23 +531,59 @@ const DocumentHistory = () => {
       }
       
       // Configuração A4: 210mm x 297mm
+      const A4_WIDTH = 794; // Largura A4 em pixels (210mm em 96dpi)
+      const A4_HEIGHT = 1123; // Altura A4 em pixels (297mm em 96dpi)
+      
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
       
+      // No mobile, salvar estilos originais e forçar A4 antes de capturar
+      let previousWidth, previousMaxWidth, previousMinWidth, previousPadding;
+      if (isMobile) {
+        previousWidth = input.style.width;
+        previousMaxWidth = input.style.maxWidth;
+        previousMinWidth = input.style.minWidth;
+        previousPadding = input.style.padding;
+        
+        // Forçar dimensões A4 para captura
+        input.style.width = `${A4_WIDTH}px`;
+        input.style.maxWidth = `${A4_WIDTH}px`;
+        input.style.minWidth = `${A4_WIDTH}px`;
+        // Manter padding proporcional mas garantir espaço suficiente
+        input.style.padding = '40px 40px';
+        
+        await new Promise(r => setTimeout(r, 100));
+      }
+      
       // Capturar o elemento com escala adequada para A4
-      const scale = isMobile ? 1.5 : 1.5; // Scale otimizado para mobile
+      const scale = isMobile ? 2 : 2;
       const canvas = await html2canvas(input, { 
         scale: scale,
         useCORS: true,
         logging: false,
         allowTaint: false,
         backgroundColor: '#ffffff',
-        width: 794, // Largura A4 em pixels (210mm)
-        height: 1123 // Altura A4 em pixels (297mm)
+        windowWidth: A4_WIDTH,
+        windowHeight: A4_HEIGHT
       });
+      
+      // Restaurar estilos originais no mobile
+      if (isMobile) {
+        if (previousWidth) input.style.width = previousWidth;
+        else input.style.width = '';
+        
+        if (previousMaxWidth) input.style.maxWidth = previousMaxWidth;
+        else input.style.maxWidth = '';
+        
+        if (previousMinWidth) input.style.minWidth = previousMinWidth;
+        else input.style.minWidth = '';
+        
+        if (previousPadding) input.style.padding = previousPadding;
+        else input.style.padding = '';
+      }
       
       const imgData = canvas.toDataURL('image/png', 0.95);
       
@@ -493,10 +591,14 @@ const DocumentHistory = () => {
       const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
       const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
       
-      // Proporção do canvas
+      // Usar as dimensões reais do canvas capturado
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      
+      // Calcular proporção para caber no A4 mantendo aspect ratio
+      const widthRatio = pdfWidth / imgWidth;
+      const heightRatio = pdfHeight / imgHeight;
+      const ratio = Math.min(widthRatio, heightRatio);
       
       // Calcular dimensões finais mantendo proporção
       const finalWidth = imgWidth * ratio;
@@ -506,7 +608,7 @@ const DocumentHistory = () => {
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = (pdfHeight - finalHeight) / 2;
       
-      // Adicionar imagem ao PDF
+      // Adicionar imagem ao PDF - usar toda a largura do A4 se possível
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
       
       // Gerar nome único com timestamp para evitar conflitos

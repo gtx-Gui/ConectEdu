@@ -14,8 +14,69 @@ function ProtectedRoute({ children }) {
 
     const checkAuth = async () => {
       try {
-        // Pequeno delay para garantir que a sessão foi sincronizada após login
-        await new Promise(resolve => setTimeout(resolve, 200));
+        // Verificar se já temos uma sessão válida em cache primeiro (mais rápido)
+        try {
+          const cachedUser = localStorage.getItem('user');
+          if (cachedUser) {
+            const userDataFromCache = JSON.parse(cachedUser);
+            // Pequeno delay apenas se não há cache (para sincronização após login)
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            if (!isMounted) return;
+            
+            // Tentar verificar sessão rapidamente
+            const { data: { session: quickSession } } = await supabase.auth.getSession();
+            if (quickSession && quickSession.user && quickSession.user.id === userDataFromCache.auth_id) {
+              // Sessão válida encontrada rapidamente - permitir acesso imediato
+              if (isMounted) {
+                setSession(quickSession);
+                setUserData(userDataFromCache);
+                setLoading(false);
+                
+                // Atualizar em background sem bloquear (com retry)
+                setTimeout(async () => {
+                  let userDataFromDB = null;
+                  try {
+                    const result = await supabase
+                      .from('users')
+                      .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                      .eq('auth_id', quickSession.user.id)
+                      .single();
+                    userDataFromDB = result.data;
+                  } catch (error) {
+                    // Tentar novamente após 1 segundo
+                    setTimeout(async () => {
+                      try {
+                        const retryResult = await supabase
+                          .from('users')
+                          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                          .eq('auth_id', quickSession.user.id)
+                          .single();
+                        if (retryResult.data && isMounted) {
+                          localStorage.setItem('user', JSON.stringify(retryResult.data));
+                          setUserData(retryResult.data);
+                        }
+                      } catch (retryError) {
+                        console.error('❌ Erro ao atualizar dados em background:', retryError);
+                      }
+                    }, 1000);
+                  }
+                  
+                  if (userDataFromDB && isMounted) {
+                    localStorage.setItem('user', JSON.stringify(userDataFromDB));
+                    setUserData(userDataFromDB);
+                  }
+                }, 0);
+                return;
+              }
+            }
+          }
+        } catch (cacheError) {
+          // Continuar com verificação normal se cache falhar
+        }
+        
+        // Delay menor para verificação normal
+        await new Promise(resolve => setTimeout(resolve, 50));
         
         if (!isMounted) return;
 
@@ -134,12 +195,34 @@ function ProtectedRoute({ children }) {
                 if (isMounted) {
                   setUserData(userDataFromCache);
                 }
-                // Verificar sessão em background para atualizar se necessário
-                const { data: userDataFromDB } = await supabase
-                  .from('users')
-                  .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
-                  .eq('auth_id', currentSession.user.id)
-                  .single();
+                // Verificar sessão em background para atualizar se necessário (com retry)
+                let userDataFromDB = null;
+                try {
+                  const result = await supabase
+                    .from('users')
+                    .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                    .eq('auth_id', currentSession.user.id)
+                    .single();
+                  userDataFromDB = result.data;
+                } catch (error) {
+                  console.warn('⚠️ Erro ao atualizar dados em background:', error);
+                  // Tentar novamente após 1 segundo
+                  setTimeout(async () => {
+                    try {
+                      const retryResult = await supabase
+                        .from('users')
+                        .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                        .eq('auth_id', currentSession.user.id)
+                        .single();
+                      if (retryResult.data && isMounted) {
+                        localStorage.setItem('user', JSON.stringify(retryResult.data));
+                        setUserData(retryResult.data);
+                      }
+                    } catch (retryError) {
+                      console.error('❌ Erro ao tentar novamente em background:', retryError);
+                    }
+                  }, 1000);
+                }
                 
                 if (userDataFromDB && isMounted) {
                   // Atualizar cache se houver mudanças
@@ -153,14 +236,48 @@ function ProtectedRoute({ children }) {
             }
           }
           
-          // Se não há cache válido, buscar do Supabase
+          // Se não há cache válido, buscar do Supabase com retry
           console.log('🔍 Buscando dados do usuário com auth_id:', currentSession.user.id);
           
-          const { data: userDataFromDB, error: userError } = await supabase
-            .from('users')
-            .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
-            .eq('auth_id', currentSession.user.id)
-            .single();
+          let userDataFromDB = null;
+          let userError = null;
+          const maxRetries = 3;
+          let retryCount = 0;
+          
+          // Tentar buscar até 3 vezes em caso de falha
+          while (retryCount < maxRetries && !userDataFromDB) {
+            try {
+              const result = await supabase
+                .from('users')
+                .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                .eq('auth_id', currentSession.user.id)
+                .single();
+              
+              userDataFromDB = result.data;
+              userError = result.error;
+              
+              if (userDataFromDB) {
+                break; // Sucesso, sair do loop
+              }
+              
+              if (userError && userError.code !== 'PGRST116') {
+                // Se não for "não encontrado", pode ser um erro temporário, tentar novamente
+                retryCount++;
+                if (retryCount < maxRetries) {
+                  console.warn(`⚠️ Tentativa ${retryCount} falhou, tentando novamente em 500ms...`);
+                  await new Promise(resolve => setTimeout(resolve, 500 * retryCount)); // Backoff exponencial
+                }
+              } else {
+                break; // Erro definitivo ou não encontrado, sair do loop
+              }
+            } catch (error) {
+              console.error('❌ Exceção ao buscar dados:', error);
+              retryCount++;
+              if (retryCount < maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, 500 * retryCount));
+              }
+            }
+          }
           
           if (!isMounted) return;
 
@@ -170,7 +287,8 @@ function ProtectedRoute({ children }) {
               message: userError.message,
               details: userError.details,
               hint: userError.hint,
-              auth_id: currentSession.user.id
+              auth_id: currentSession.user.id,
+              tentativas: retryCount
             });
             
             // Se o erro for PGRST116 (nenhum resultado), o usuário não existe na tabela
@@ -178,13 +296,29 @@ function ProtectedRoute({ children }) {
               console.warn('⚠️ Usuário autenticado mas não encontrado na tabela users. Verifique se o registro existe com auth_id:', currentSession.user.id);
             }
           } else if (!userDataFromDB) {
-            console.warn('⚠️ Query retornou sem erro mas sem dados. auth_id:', currentSession.user.id);
+            console.warn('⚠️ Query retornou sem erro mas sem dados após', maxRetries, 'tentativas. auth_id:', currentSession.user.id);
+            // Tentar usar cache antigo se existir (mesmo que inválido)
+            const fallbackCache = localStorage.getItem('user');
+            if (fallbackCache) {
+              try {
+                const fallbackData = JSON.parse(fallbackCache);
+                if (fallbackData && fallbackData.auth_id === currentSession.user.id) {
+                  console.warn('⚠️ Usando cache antigo como fallback');
+                  if (isMounted) {
+                    setUserData(fallbackData);
+                  }
+                }
+              } catch (e) {
+                console.error('❌ Erro ao usar cache de fallback:', e);
+              }
+            }
           } else {
             console.log('✅ Dados do usuário encontrados:', {
               id: userDataFromDB.id,
               nome: userDataFromDB.nome,
               email: userDataFromDB.email,
-              tipo: userDataFromDB.tipo
+              tipo: userDataFromDB.tipo,
+              tentativas: retryCount + 1
             });
             if (isMounted) {
               setUserData(userDataFromDB);
