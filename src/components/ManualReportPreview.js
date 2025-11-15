@@ -133,19 +133,23 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
 
   const renderWithScale = (children) => {
     const appliedScale = shouldScale ? scale : 1;
-    const wrapperWidth = shouldScale ? A4_WIDTH * appliedScale : A4_WIDTH;
-    const wrapperHeight = shouldScale ? A4_HEIGHT * appliedScale : A4_HEIGHT;
+    const wrapperStyles = shouldScale
+      ? {
+          width: '100%',
+          maxWidth: '100%',
+          minHeight: A4_HEIGHT * appliedScale,
+          display: 'flex',
+          justifyContent: 'center',
+          paddingBottom: 24
+        }
+      : {
+          width: A4_WIDTH,
+          maxWidth: '100%',
+          minHeight: A4_HEIGHT
+        };
 
     return (
-      <div
-        className="preview-scale-container"
-        ref={wrapperRef}
-        style={{
-          width: wrapperWidth,
-          maxWidth: '100%',
-          minHeight: wrapperHeight
-        }}
-      >
+      <div className="preview-scale-container" ref={wrapperRef} style={wrapperStyles}>
         <div
           ref={previewRef}
           className="preview-paper"
@@ -153,7 +157,7 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
             width: A4_WIDTH,
             minHeight: A4_HEIGHT,
             transform: shouldScale ? `scale(${appliedScale})` : 'none',
-            transformOrigin: 'top center'
+            transformOrigin: shouldScale ? 'top left' : 'top center'
           }}
         >
           {children}
