@@ -8,7 +8,7 @@ function documentationSection() {
       <div className="documentation-grid">
           <div className="documentation-card">
               <div className="documentation-icon">
-                  <i class="fas fa-file-contract"></i>
+                  <i className="fas fa-file-contract"></i>
               </div>
               <h3>Termos Automáticos</h3>
               <p>Nossa plataforma gera automaticamente todos os termos e contratos necessários para a doação.</p>

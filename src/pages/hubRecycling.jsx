@@ -91,7 +91,7 @@ const HubRecycling = () => {
 
       {/* Partners Section */}
       <section className="hub-recycling__partners">
-        <h2 className="hub-recycling__subheader">Ongs Confiáveis</h2>
+        <h2 className="hub-recycling__subheader">Ongs</h2>
         <p className="hub-recycling__partners-intro">
           Conheça organizações que fazem a diferença na reciclagem e destino correto de eletrônicos
         </p>

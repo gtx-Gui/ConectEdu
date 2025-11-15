@@ -68,24 +68,8 @@ function UserDashboard() {
     return (
         <div className="bg-dark">
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
-                <div className="container">
-
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span className="navbar-toggler-icon"></span>
-                   </button>
-                    <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-                        <ul className="navbar-nav ms-auto">
-                            <li className="nav-item">
-                                <a className="nav-link" href="/">Home</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="/about">Sobre</a>
-                            </li>
-                            <li className="nav-item d-flex align-items-center">
-                                <button className="btn btn-danger btn-sm" onClick={logout}>Sair</button>
-                            </li>
-                        </ul>
-                    </div>
+                <div className="container d-flex justify-content-end">
+                    <button className="btn btn-danger btn-sm" onClick={logout}>Sair</button>
                 </div>
             </nav>
 

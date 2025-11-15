@@ -6,6 +6,41 @@
     min-height: 40vh;
 }
 
+/* Estilos para a navbar simplificada */
+.navbar {
+    padding: 1.5rem 0;
+    min-height: auto;
+    margin-top: 12vh;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Ocultar toggle menu no mobile */
+.navbar-toggler {
+    display: none !important;
+}
+
+/* Responsividade para a navbar */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem 0;
+        margin-top: 12vh;
+    }
+    
+    .navbar .container {
+        padding: 0.3rem 15px;
+    }
+    
+    .navbar .btn {
+        font-size: 0.875rem;
+        padding: 0.4rem 0.9rem;
+    }
+}
+
 
 .dashboard-card {
     background: rgba(255, 255, 255, 0.1);

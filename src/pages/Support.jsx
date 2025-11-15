@@ -8,15 +8,11 @@ const Support = () => {
     const [faqItems] = useState([
         { 
             pergunta: 'Como faço para doar um equipamento?',
-            resposta: 'O processo de doação é simples e gratuito. Primeiro, crie sua conta gratuitamente no site. Em seguida, no painel do usuário, clique em "Gerar documentos" e preencha as informações necessárias. O sistema gerará os documentos que você deve imprimir e levar até a escola selecionada para assinatura presencial. Por fim, se necessário, solicite o recibo de doação diretamente na escola.'
-        },
-        { 
-            pergunta: 'Quem pode solicitar equipamentos?',
-            resposta: 'Escolas e instituições de ensino públicas cadastradas em nossa plataforma podem solicitar equipamentos. É necessário ter um cadastro verificado e apresentar a documentação necessária da instituição.'
+            resposta: 'O processo de doação é simples e gratuito. Primeiro, crie sua conta gratuitamente no site. Em seguida, no painel do usuário, clique em "Gerar documentos" e preencha as informações necessárias. O sistema gerará os documentos. Você pode optar por assinar digitalmente através do site do Gov.br (clicando no botão disponível na plataforma) ou realizar a assinatura presencialmente na escola. Por fim, se necessário, solicite o recibo de doação diretamente na escola.'
         },
         { 
             pergunta: 'Como funciona o processo de doação?',
-            resposta: 'O processo de doação segue 4 etapas: 1) Cadastro no site - Crie sua conta gratuitamente para acessar o painel do usuário; 2) Gerar os documentos - No painel, clique em "Gerar documentos" e preencha as informações necessárias; 3) Entregar e assinar - Leve os documentos até a escola selecionada e realize a assinatura presencialmente; 4) Solicitar recibo - Se necessário, solicite o recibo de doação diretamente na escola.'
+            resposta: 'O processo de doação segue 4 etapas: 1) Cadastro no site - Crie sua conta gratuitamente para acessar o painel do usuário; 2) Gerar os documentos - No painel, clique em "Gerar documentos" e preencha as informações necessárias; 3) Assinar os documentos - Você pode optar por assinar digitalmente através do site do Gov.br (clicando no botão disponível na plataforma) ou realizar a assinatura presencialmente na escola selecionada; 4) Solicitar recibo - Se necessário, solicite o recibo de doação diretamente na escola.'
         },
         { 
             pergunta: 'Quais tipos de equipamentos posso doar?',
@@ -43,19 +39,19 @@ const Support = () => {
             resposta: 'O recibo de doação pode ser solicitado diretamente na escola onde você fez a doação, ou pode ser gerado no site da ConectEdu através do painel de usuário das instituições públicas.'
         },
         {
-            pergunta: 'Preciso ir pessoalmente à escola para assinar os documentos?',
-            resposta: 'Sim, a assinatura dos documentos de doação deve ser feita presencialmente na escola selecionada. Isso garante a autenticidade e validade legal da doação.'
+            pergunta: 'Como funciona a assinatura digital dos documentos?',
+            resposta: 'Após gerar os documentos, você pode optar por assinar digitalmente através do site do Gov.br. Para isso, clique no botão disponível na plataforma que o levará ao site do Gov.br, onde você realizará a assinatura digital dos documentos de forma segura e com validade legal. É necessário ter uma conta no Gov.br (nível prata ou ouro) para realizar a assinatura digital. A assinatura digital é opcional - você também pode optar por assinar presencialmente na escola.'
         },
         {
             pergunta: 'O que acontece após gerar os documentos?',
-            resposta: 'Após gerar os documentos, você deve imprimi-los e levá-los até a escola selecionada para assinatura presencial. O sistema salva o histórico dos documentos gerados, mas o acompanhamento da doação deve ser feito diretamente com a escola.'
+            resposta: 'Após gerar os documentos, você pode escolher entre duas opções: 1) Assinar digitalmente - Clique no botão disponível na plataforma para acessar o site do Gov.br e realizar a assinatura digital dos documentos; 2) Assinar presencialmente - Leve os documentos até a escola selecionada e realize a assinatura presencialmente. Os documentos ficarão disponíveis no seu histórico e você poderá acompanhar o status da doação diretamente com a escola.'
+        },
+        {
+            pergunta: 'Posso assinar os documentos presencialmente na escola?',
+            resposta: 'Sim, você pode optar por assinar os documentos presencialmente na escola. Basta imprimir os documentos gerados e levá-los até a escola selecionada para realizar a assinatura. A assinatura presencial é válida e tem o mesmo efeito legal da assinatura digital.'
         }
     ]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission
-    };
 
     return (
         <div className="suporte-page">
@@ -109,9 +105,9 @@ const Support = () => {
                             </div>
                             <div className="processo-card">
                                 <div className="processo-numero">3</div>
-                                <h3 className="processo-titulo">Entregar e assinar:</h3>
+                                <h3 className="processo-titulo">Assinar os documentos:</h3>
                                 <p className="processo-descricao">
-                                    Leve os documentos gerados até a escola selecionada e realize a assinatura presencialmente.
+                                    Você pode optar por assinar digitalmente através do site do Gov.br (clicando no botão disponível na plataforma) ou realizar a assinatura presencialmente na escola selecionada. Para assinatura digital, é necessário ter uma conta no Gov.br (nível prata ou ouro). Ambas as opções têm validade legal.
                                 </p>
                             </div>
                             <div className="processo-card">
@@ -134,48 +130,11 @@ const Support = () => {
                     </div>
                 ) : (
                     <div className="suporte-contato">
-                        <form onSubmit={handleSubmit} className="suporte-form">
-                            <div className="suporte-form-grupo">
-                                <label className="suporte-form-label">Nome</label>
-                                <input 
-                                    type="text" 
-                                    className="suporte-form-input"
-                                    placeholder="Seu nome completo"
-                                />
-                            </div>
-                            <div className="suporte-form-grupo">
-                                <label className="suporte-form-label">E-mail</label>
-                                <input 
-                                    type="email" 
-                                    className="suporte-form-input"
-                                    placeholder="seu@email.com"
-                                />
-                            </div>
-                            <div className="suporte-form-grupo">
-                                <label className="suporte-form-label">Assunto</label>
-                                <input 
-                                    type="text" 
-                                    className="suporte-form-input"
-                                    placeholder="Assunto da mensagem"
-                                />
-                            </div>
-                            <div className="suporte-form-grupo">
-                                <label className="suporte-form-label">Mensagem</label>
-                                <textarea 
-                                    className="suporte-form-textarea"
-                                    rows="5"
-                                    placeholder="Descreva sua dúvida ou problema"
-                                ></textarea>
-                            </div>
-                            <button type="submit" className="suporte-enviar-btn">
-                                Enviar Mensagem
-                            </button>
-                        </form>
                         <div className="suporte-info">
-                            <h3 className="suporte-info-titulo">Outras formas de contato</h3>
+                            <h3 className="suporte-info-titulo">Entre em contato</h3>
                             <p className="suporte-info-texto">
                                 <strong>E-mail:</strong><br />
-                                suporte@conectedu.com.br
+                                conectedu.org@gmail.com
                             </p>
                             <p className="suporte-info-texto">
                                 <strong>Telefone:</strong><br />

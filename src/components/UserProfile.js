@@ -21,7 +21,65 @@ const UserProfile = () => {
       setLoading(true);
       setError('');
       
-      // Buscar sessão uma vez
+      // PRIMEIRO: Tentar carregar do cache
+      try {
+        const cachedUser = localStorage.getItem('user');
+        if (cachedUser) {
+          const userDataFromCache = JSON.parse(cachedUser);
+          if (userDataFromCache) {
+            console.log('✅ Dados do perfil carregados do cache');
+            setUserData(userDataFromCache);
+            setFormData({
+              nome: userDataFromCache.nome || '',
+              email: userDataFromCache.email || '',
+              telefone: userDataFromCache.telefone || '',
+              cpf: userDataFromCache.cpf || '',
+              cnpj: userDataFromCache.cnpj || '',
+              cep: userDataFromCache.cep || '',
+              rua: userDataFromCache.rua || '',
+              numero: userDataFromCache.numero || '',
+              complemento: userDataFromCache.complemento || '',
+              bairro: userDataFromCache.bairro || '',
+              cidade: userDataFromCache.cidade || '',
+              estado: userDataFromCache.estado || ''
+            });
+            setLoading(false);
+            // Verificar se há atualizações em background (sem bloquear UI)
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session && session.user) {
+              const { data } = await supabase
+                .from('users')
+                .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                .eq('auth_id', session.user.id)
+                .single();
+              if (data) {
+                // Atualizar cache e dados se houver mudanças
+                localStorage.setItem('user', JSON.stringify(data));
+                setUserData(data);
+                setFormData({
+                  nome: data.nome || '',
+                  email: data.email || '',
+                  telefone: data.telefone || '',
+                  cpf: data.cpf || '',
+                  cnpj: data.cnpj || '',
+                  cep: data.cep || '',
+                  rua: data.rua || '',
+                  numero: data.numero || '',
+                  complemento: data.complemento || '',
+                  bairro: data.bairro || '',
+                  cidade: data.cidade || '',
+                  estado: data.estado || ''
+                });
+              }
+            }
+            return;
+          }
+        }
+      } catch (cacheError) {
+        console.warn('⚠️ Erro ao ler cache, buscando do Supabase:', cacheError);
+      }
+      
+      // SEGUNDO: Se não há cache, buscar do Supabase
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session && session.user) {
@@ -50,6 +108,8 @@ const UserProfile = () => {
             cidade: data.cidade || '',
             estado: data.estado || ''
           });
+          // Atualizar cache
+          localStorage.setItem('user', JSON.stringify(data));
         } else {
           setError('Nenhum dado encontrado para este usuário');
         }

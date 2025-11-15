@@ -6,10 +6,10 @@
     margin-bottom: 10vh;
     padding: 40px;
     width: 80%;
+    max-width: 1400px;
     background-color: var(--background-darkbg-color);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
 }
 
 .hub-recycling__header {
@@ -694,23 +694,122 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .hub-recycling-container {
+    width: 90%;
+    padding: 30px;
+    margin-top: 15vh;
+  }
+  
+  .hub-recycling__intro {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+  
+  .hub-recycling__image {
+    height: 300px;
+  }
+  
+  .hub-recycling__partners-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+}
+
 @media (max-width: 768px) {
+  .hub-recycling-container {
+    width: 95%;
+    padding: 20px;
+    margin-top: 12vh;
+    margin-bottom: 5vh;
+  }
+  
+  .hub-recycling__hero {
+    padding: 60px 15px;
+    margin-bottom: 30px;
+  }
+  
   .hub-recycling__header {
     font-size: 2.2rem;
   }
   
   .hub-recycling__subtitle {
     font-size: 1.1rem;
-  }
-  
-  .hub-recycling__intro {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    padding: 0 10px;
   }
   
   .hub-recycling__stats {
     flex-direction: column;
     margin: 0 10px 30px 10px;
+    padding: 30px 20px;
+    gap: 20px;
+  }
+  
+  .hub-recycling__stat {
+    min-width: 100%;
+    padding: 20px;
+  }
+  
+  .hub-recycling__stat-number {
+    font-size: 2.5rem;
+  }
+  
+  .hub-recycling__intro {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 30px 15px;
+  }
+  
+  .hub-recycling__image {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 20px;
+  }
+  
+  .hub-recycling__benefit-card {
+    padding: 20px;
+  }
+  
+  .hub-recycling__benefit-card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .hub-recycling__donation {
+    padding: 50px 15px;
+    margin: 40px 0;
+  }
+  
+  .hub-recycling__donation h3 {
+    font-size: 1.6rem;
+  }
+  
+  .hub-recycling__donation-benefits {
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .hub-recycling__benefit-item {
+    padding: 15px;
+  }
+  
+  .hub-recycling__benefit-icon {
+    font-size: 2rem;
+  }
+  
+  .hub-recycling__partners {
+    padding: 50px 15px;
+  }
+  
+  .hub-recycling__subheader {
+    font-size: 1.8rem;
+  }
+  
+  .hub-recycling__partners-intro {
+    font-size: 1rem;
+    padding: 0 10px;
+    margin-bottom: 40px;
   }
   
   .hub-recycling__partners-grid {
@@ -718,44 +817,248 @@
     gap: 30px;
   }
   
-  .hub-recycling__cta-buttons {
-    flex-direction: column;
-    align-items: center;
+  .hub-recycling__partner-card {
+    margin: 0;
   }
   
-  .hub-recycling__donation-benefits {
-    flex-direction: column;
-    gap: 20px;
+  .hub-recycling__partner-header {
+    padding: 20px;
   }
   
-  .hub-recycling__benefit-item {
-    padding: 15px;
+  .hub-recycling__partner-image {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 15px;
+  }
+  
+  .hub-recycling__partner-title {
+    font-size: 1.2rem;
+  }
+  
+  .hub-recycling__partner-content {
+    padding: 20px;
+  }
+  
+  .hub-recycling__partner-description {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+  
+  .hub-recycling__partner-features {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .hub-recycling__feature {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  
+  .hub-recycling__partner-link {
+    padding: 12px 25px;
+    font-size: 0.9rem;
+  }
+  
+  .hub-recycling__cta {
+    padding: 50px 15px;
   }
   
   .hub-recycling__cta h2 {
     font-size: 2rem;
   }
   
-  .hub-recycling__subheader {
-    font-size: 1.8rem;
+  .hub-recycling__cta p {
+    font-size: 1rem;
+    padding: 0 10px;
+  }
+  
+  .hub-recycling__cta-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .hub-recycling__cta-button {
+    width: 100%;
+    max-width: 300px;
+    padding: 15px 30px;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
+  .hub-recycling-container {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10vh;
+    margin-bottom: 5vh;
+    border-radius: 0;
+  }
+  
+  .hub-recycling__hero {
+    padding: 40px 10px;
+    margin-bottom: 20px;
+  }
+  
   .hub-recycling__header {
     font-size: 1.8rem;
+    line-height: 1.3;
   }
   
   .hub-recycling__subtitle {
     font-size: 1rem;
+    padding: 0 5px;
+  }
+  
+  .hub-recycling__stats {
+    margin: 0 5px 20px 5px;
+    padding: 25px 15px;
+    gap: 15px;
+  }
+  
+  .hub-recycling__stat {
+    padding: 15px;
   }
   
   .hub-recycling__stat-number {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
   
-  .hub-recycling__partner-card {
-    margin: 0 10px;
+  .hub-recycling__stat-label {
+    font-size: 0.9rem;
+  }
+  
+  .hub-recycling__intro {
+    padding: 20px 10px;
+    gap: 20px;
+  }
+  
+  .hub-recycling__image {
+    height: 200px;
+  }
+  
+  .hub-recycling__benefit-card {
+    padding: 15px;
+  }
+  
+  .hub-recycling__benefit-card h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+  
+  .hub-recycling__benefit-card li {
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+  
+  .hub-recycling__donation {
+    padding: 40px 10px;
+    margin: 30px 0;
+  }
+  
+  .hub-recycling__donation h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  
+  .hub-recycling__donation-text p {
+    font-size: 0.95rem;
+  }
+  
+  .hub-recycling__donation-benefits {
+    gap: 15px;
+    margin-top: 25px;
+  }
+  
+  .hub-recycling__benefit-item {
+    padding: 12px;
+  }
+  
+  .hub-recycling__benefit-icon {
+    font-size: 1.8rem;
+  }
+  
+  .hub-recycling__partners {
+    padding: 40px 10px;
+  }
+  
+  .hub-recycling__subheader {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+  }
+  
+  .hub-recycling__partners-intro {
+    font-size: 0.95rem;
+    padding: 0 5px;
+    margin-bottom: 30px;
+  }
+  
+  .hub-recycling__partners-grid {
+    gap: 25px;
+  }
+  
+  .hub-recycling__partner-header {
+    padding: 15px;
+  }
+  
+  .hub-recycling__partner-image {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+  }
+  
+  .hub-recycling__partner-title {
+    font-size: 1.1rem;
+  }
+  
+  .hub-recycling__partner-content {
+    padding: 15px;
+  }
+  
+  .hub-recycling__partner-description {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+  
+  .hub-recycling__partner-features {
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  
+  .hub-recycling__feature {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+  
+  .hub-recycling__partner-link {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+  
+  .hub-recycling__cta {
+    padding: 40px 10px;
+  }
+  
+  .hub-recycling__cta h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+  
+  .hub-recycling__cta p {
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+    padding: 0 5px;
+  }
+  
+  .hub-recycling__cta-buttons {
+    gap: 12px;
+  }
+  
+  .hub-recycling__cta-button {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px 25px;
+    font-size: 0.95rem;
   }
 }
 

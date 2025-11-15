@@ -122,8 +122,38 @@ function ProtectedRoute({ children }) {
           setSession(currentSession);
         }
 
-        // 2. Buscar dados do usuário diretamente no Supabase
+        // 2. Buscar dados do usuário - PRIMEIRO do cache, depois do Supabase se necessário
         try {
+          // Tentar carregar do cache primeiro
+          const cachedUser = localStorage.getItem('user');
+          if (cachedUser) {
+            try {
+              const userDataFromCache = JSON.parse(cachedUser);
+              if (userDataFromCache && userDataFromCache.auth_id === currentSession.user.id) {
+                console.log('✅ Dados carregados do cache:', userDataFromCache.nome);
+                if (isMounted) {
+                  setUserData(userDataFromCache);
+                }
+                // Verificar sessão em background para atualizar se necessário
+                const { data: userDataFromDB } = await supabase
+                  .from('users')
+                  .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                  .eq('auth_id', currentSession.user.id)
+                  .single();
+                
+                if (userDataFromDB && isMounted) {
+                  // Atualizar cache se houver mudanças
+                  localStorage.setItem('user', JSON.stringify(userDataFromDB));
+                  setUserData(userDataFromDB);
+                }
+                return;
+              }
+            } catch (cacheError) {
+              console.warn('⚠️ Erro ao ler cache, buscando do Supabase:', cacheError);
+            }
+          }
+          
+          // Se não há cache válido, buscar do Supabase
           console.log('🔍 Buscando dados do usuário com auth_id:', currentSession.user.id);
           
           const { data: userDataFromDB, error: userError } = await supabase
@@ -158,6 +188,8 @@ function ProtectedRoute({ children }) {
             });
             if (isMounted) {
               setUserData(userDataFromDB);
+              // Atualizar cache
+              localStorage.setItem('user', JSON.stringify(userDataFromDB));
             }
           }
         } catch (error) {

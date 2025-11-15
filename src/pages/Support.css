@@ -218,7 +218,7 @@
 
 .suporte-voltar-btn {
     position: absolute;
-    top: 60px;
+    top: 40px;
     left: 40px;
     padding: 12px 24px;
     background: rgba(255, 255, 255, 0.1);
@@ -256,7 +256,7 @@
     }
 
     .suporte-voltar-btn {
-        top: 45px;
+        top: 30px;
         left: 20px;
     }
 

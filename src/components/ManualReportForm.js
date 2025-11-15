@@ -109,6 +109,32 @@ function ManualReportForm({ reportType, form, setForm }) {
       setLoadingUser(true);
       setUserError(null);
       
+      // PRIMEIRO: Tentar carregar do cache (localStorage)
+      const cacheLoaded = loadCachedUserData();
+      if (cacheLoaded) {
+        console.log('✅ Dados carregados do cache');
+        setLoadingUser(false);
+        
+        // Verificar sessão em background (sem bloquear UI)
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (!sessionError && session && session.user) {
+          // Verificar se há atualizações em background
+          const { data } = await supabase
+            .from('users')
+            .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+            .eq('auth_id', session.user.id)
+            .single();
+          
+          if (data) {
+            // Atualizar cache e dados se houver mudanças
+            localStorage.setItem('user', JSON.stringify(data));
+            setUserData(data);
+          }
+          return;
+        }
+      }
+      
+      // SEGUNDO: Se não há cache ou sessão inválida, buscar do Supabase
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -129,6 +155,8 @@ function ManualReportForm({ reportType, form, setForm }) {
         if (data) {
           setUserData(data);
           setUserError(null);
+          // Atualizar cache com novos dados
+          localStorage.setItem('user', JSON.stringify(data));
           return;
         }
       }

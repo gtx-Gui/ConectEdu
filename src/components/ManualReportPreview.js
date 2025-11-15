@@ -272,9 +272,9 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
     return renderWithScale(
       <div style={{ position: 'relative', overflow: isMobile ? 'visible' : 'hidden', paddingLeft: 0, marginLeft: 0 }}>
         {/* Elementos decorativos */}
-        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
-        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
-        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1 }} />
+        <img src={decorTopLeft} alt="decor top left" style={{ position: 'absolute', top: 0, left: isMobile ? '0px' : 0, width: isMobile ? 55 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorTopRight} alt="decor top right" style={{ position: 'absolute', top: 0, right: isMobile ? '4px' : 0, width: isMobile ? 60 : 80, zIndex: 1, pointerEvents: 'none' }} />
+        <img src={decorBottomLeft} alt="decor bottom left" style={{ position: 'absolute', bottom: 0, left: isMobile ? '0px' : 0, width: isMobile ? 55 : 80, zIndex: 1, pointerEvents: 'none' }} />
         <div className="preview-header" style={{ position: 'relative', zIndex: 2, paddingLeft: 0, marginLeft: 0 }}>
           <h1 style={{ fontSize: '2.2rem', marginBottom: 16, fontWeight: 600, letterSpacing: 1, paddingLeft: 0, marginLeft: 0 }}>TERMO DE DOAÇÃO</h1>
         </div>
