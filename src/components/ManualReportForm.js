@@ -589,43 +589,18 @@ function ManualReportForm({ reportType, form, setForm }) {
       )}
 
       {/* Botões de ação */}
-      <div className="mb-4 d-flex flex-wrap gap-2 align-items-center">
+      <div className="mb-4 d-flex gap-2">
         {/* Botão para preencher automaticamente */}
-        {reportType && (
-          <div className="d-flex flex-column">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={preencherAutomaticamente}
-              disabled={
-                loadingUser ||
-                loadingSchools ||
-                !userData ||
-                !podePreencherAutomaticamente()
-              }
-            >
-              <i
-                className={`fas ${
-                  loadingUser || loadingSchools ? 'fa-spinner fa-spin' : 'fa-sync'
-                } me-2`}
-              ></i>
-              {loadingUser
-                ? 'Carregando dados...'
-                : userData && podePreencherAutomaticamente()
-                ? 'Preencher Automaticamente'
-                : 'Auto-preenchimento indisponível'}
-            </button>
-            {!loadingUser && !userData && (
-              <small className="text-muted mt-1 auto-fill-hint">
-                Faça login ou aguarde a sincronização para liberar o auto-preenchimento.
-              </small>
-            )}
-            {userData && !podePreencherAutomaticamente() && (
-              <small className="text-muted mt-1 auto-fill-hint">
-                Esse tipo de documento não permite auto-preenchimento para o seu perfil.
-              </small>
-            )}
-          </div>
+        {userData && podePreencherAutomaticamente() && (
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={preencherAutomaticamente}
+            disabled={loadingUser || loadingSchools}
+          >
+            <i className={`fas ${loadingUser || loadingSchools ? 'fa-spinner fa-spin' : 'fa-sync'} me-2`}></i>
+            {loadingUser || loadingSchools ? 'Carregando...' : 'Preencher Automaticamente'}
+          </button>
         )}
 
         {/* Botão para limpar formulário */}
