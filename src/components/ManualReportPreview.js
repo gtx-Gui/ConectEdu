@@ -111,10 +111,14 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
     const updateScale = () => {
       if (typeof window === 'undefined') return;
       const isMobile = window.innerWidth <= 768;
+      const parentWidth =
+        wrapperRef.current?.parentElement?.offsetWidth ||
+        window.innerWidth ||
+        A4_WIDTH;
 
       if (isMobile) {
-        const gutter = 24; // espaço lateral
-        const availableWidth = Math.max(window.innerWidth - gutter, 320);
+        const gutter = 24; // respiro lateral
+        const availableWidth = Math.max(parentWidth - gutter, 280);
         const newScale = Math.min(availableWidth / A4_WIDTH, 1);
         setScale(newScale > 0 ? newScale : 1);
         setShouldScale(true);

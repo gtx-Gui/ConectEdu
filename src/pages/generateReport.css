@@ -53,6 +53,12 @@
     margin-left: 60px;
 }
 
+@media (max-width: 1200px) {
+    .report-container {
+        margin-left: 0;
+    }
+}
+
 .report-form {
     width: 400px;
     background: rgba(43, 43, 43, 0.95);
@@ -775,7 +781,7 @@
 
 @media (max-width: 768px) {
     .report-page {
-        padding: 140px 15px 40px 60px;
+        padding: 120px 15px 40px 15px;
     }
 
     .back-button {
@@ -856,6 +862,15 @@
 }
 
 @media (max-width: 768px) {
+    .report-container {
+        padding: 10px 0 0 0;
+        align-items: stretch;
+    }
+
+    .report-preview {
+        max-width: 100%;
+    }
+
     .preview-paper {
         padding: 28px;
         font-size: 10pt;
@@ -863,6 +878,7 @@
     .preview-scale-container {
         padding: 0;
         overflow: visible;
+        justify-content: center;
     }
 }
 

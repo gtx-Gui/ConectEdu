@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import '../pages/generateReport.css';
 
@@ -87,48 +87,79 @@ function ManualReportForm({ reportType, form, setForm }) {
   const [loadingSchools, setLoadingSchools] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [autoFilled, setAutoFilled] = useState(false);
+  const [userError, setUserError] = useState(null);
   
-  // Buscar dados do usuário logado
-  useEffect(() => {
-    let isMounted = true; // Flag para evitar atualização em componente desmontado
-    
-    const fetchUserData = async () => {
-      try {
-        setLoadingUser(true);
-        
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
+  const loadCachedUserData = useCallback(() => {
+    try {
+      const cached = localStorage.getItem('user');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setUserData(parsed);
+        setUserError(null);
+        return true;
+      }
+    } catch (error) {
+      console.warn('Erro ao ler cache do usuário:', error);
+    }
+    return false;
+  }, []);
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      setLoadingUser(true);
+      setUserError(null);
+      
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        throw sessionError;
+      }
+      
+      if (session && session.user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo, nacionalidade, estadoCivil, profissao')
+          .eq('auth_id', session.user.id)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          setUserData(data);
+          setUserError(null);
           return;
         }
-        
-        if (session && session.user) {
-          // Query otimizada: buscar apenas campos necessários para o formulário
-          const { data, error } = await supabase
-            .from('users')
-            .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo, nacionalidade, estadoCivil, profissao')
-            .eq('auth_id', session.user.id)
-            .single();
-
-          if (!error && data && isMounted) {
-            setUserData(data);
-          }
-        }
-      } catch (error) {
-        // Erro silencioso
-      } finally {
-        if (isMounted) {
-          setLoadingUser(false);
-        }
       }
+
+      if (!loadCachedUserData()) {
+        setUserError('Não foi possível localizar seus dados automaticamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
+      const cacheLoaded = loadCachedUserData();
+      if (!cacheLoaded) {
+        setUserError('Não foi possível carregar seus dados automaticamente. Verifique sua conexão e tente novamente.');
+      }
+    } finally {
+      setLoadingUser(false);
+    }
+  }, [loadCachedUserData]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const init = async () => {
+      await fetchUserData();
     };
 
-    fetchUserData();
-    
+    init();
+
     return () => {
-      isMounted = false; // Limpar flag quando componente desmontar
+      isMounted = false;
     };
-  }, []);
+  }, [fetchUserData]);
 
   // Buscar escolas cadastradas
   useEffect(() => {
@@ -523,9 +554,25 @@ function ManualReportForm({ reportType, form, setForm }) {
       
       {/* Indicador de carregamento */}
       {loadingUser && (
-        <div style={{ textAlign: 'center', marginBottom: '20px', color: '#4CAF50' }}>
+        <div className="alert alert-info mb-3">
           <i className="fas fa-spinner fa-spin me-2"></i>
-          Carregando dados do usuário...
+          Carregando seus dados para o auto-preenchimento...
+        </div>
+      )}
+
+      {userError && !loadingUser && (
+        <div className="alert alert-warning mb-3 d-flex flex-column flex-sm-row gap-2 align-items-sm-center">
+          <div>
+            <i className="fas fa-exclamation-triangle me-2"></i>
+            {userError}
+          </div>
+          <button
+            type="button"
+            className="btn btn-outline-warning btn-sm"
+            onClick={fetchUserData}
+          >
+            Tentar novamente
+          </button>
         </div>
       )}
 
@@ -605,12 +652,6 @@ function ManualReportForm({ reportType, form, setForm }) {
           <i className={`fas ${loadingUser || loadingSchools ? 'fa-spinner fa-spin' : 'fa-sync'} me-2`}></i>
           {loadingUser || loadingSchools ? 'Carregando...' : 'Preencher Automaticamente'}
         </button>
-
-        {!loadingUser && !userData && (
-          <small className="text-muted">
-            Aguardando carregamento dos seus dados para liberar o auto-preenchimento.
-          </small>
-        )}
 
         {/* Botão para limpar formulário */}
         <button
