@@ -131,7 +131,33 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
       
       // Preencher toda a área útil da folha A4
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-      pdf.save('documento.pdf');
+      
+      // Gerar nome único com timestamp para evitar conflitos
+      const timestamp = new Date().getTime();
+      const fileName = `documento_${timestamp}.pdf`;
+      
+      // No mobile, usar uma abordagem diferente para garantir que o download funcione múltiplas vezes
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobileDevice) {
+        // Criar um blob e usar download via link para melhor compatibilidade com mobile
+        const pdfBlob = pdf.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Liberar o URL após um delay
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 1000);
+      } else {
+        // No desktop, usar o método padrão
+        pdf.save(fileName);
+      }
 
       // Restaurar estilos originais
       if (isMobile) {

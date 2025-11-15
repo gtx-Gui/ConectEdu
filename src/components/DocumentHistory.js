@@ -440,54 +440,103 @@ const DocumentHistory = () => {
 
   // Função para gerar PDF do documento selecionado em formato A4 padrão
   const handleDownloadPDF = async () => {
-    if (previewRef.current) {
-      try {
-        const input = previewRef.current;
-        await new Promise(r => setTimeout(r, 100));
-        
-        // Configuração A4: 210mm x 297mm
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4' // Formato A4 padrão: 210mm x 297mm
-        });
-        
-        // Capturar o elemento com escala adequada para A4
-        const scale = 1.5;
-        const canvas = await html2canvas(input, { 
-          scale: scale,
-          useCORS: true,
-          logging: false,
-          width: 794, // Largura A4 em pixels (210mm)
-          height: 1123 // Altura A4 em pixels (297mm)
-        });
-        
-        const imgData = canvas.toDataURL('image/png', 0.95);
-        
-        // Calcular dimensões da imagem para caber no A4
-        const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
-        const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
-        
-        // Proporção do canvas
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        
-        // Calcular dimensões finais mantendo proporção
-        const finalWidth = imgWidth * ratio;
-        const finalHeight = imgHeight * ratio;
-        
-        // Centralizar na página
-        const xOffset = (pdfWidth - finalWidth) / 2;
-        const yOffset = (pdfHeight - finalHeight) / 2;
-        
-        // Adicionar imagem ao PDF
-        pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
-        pdf.save(`${selectedDocument.document_type}_${new Date().getTime()}.pdf`);
-      } catch (error) {
-        console.error('Erro ao gerar PDF:', error);
-        alert('Erro ao gerar PDF: ' + error.message);
+    if (!previewRef.current) {
+      alert('Erro: preview não disponível. Por favor, feche e abra novamente o preview.');
+      return;
+    }
+
+    try {
+      const input = previewRef.current;
+      
+      // Verificar se o elemento ainda existe no DOM
+      if (!input || !input.parentElement) {
+        alert('Erro: elemento não encontrado. Por favor, feche e abra novamente o preview.');
+        return;
       }
+
+      // No mobile, adicionar um pequeno delay para garantir que o elemento está pronto
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        await new Promise(r => setTimeout(r, 300));
+      } else {
+        await new Promise(r => setTimeout(r, 100));
+      }
+
+      // Verificar novamente após o delay
+      if (!previewRef.current) {
+        alert('Erro: preview não disponível.');
+        return;
+      }
+      
+      // Configuração A4: 210mm x 297mm
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // Capturar o elemento com escala adequada para A4
+      const scale = isMobile ? 1.5 : 1.5; // Scale otimizado para mobile
+      const canvas = await html2canvas(input, { 
+        scale: scale,
+        useCORS: true,
+        logging: false,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        width: 794, // Largura A4 em pixels (210mm)
+        height: 1123 // Altura A4 em pixels (297mm)
+      });
+      
+      const imgData = canvas.toDataURL('image/png', 0.95);
+      
+      // Calcular dimensões da imagem para caber no A4
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      
+      // Proporção do canvas
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      
+      // Calcular dimensões finais mantendo proporção
+      const finalWidth = imgWidth * ratio;
+      const finalHeight = imgHeight * ratio;
+      
+      // Centralizar na página
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+      
+      // Adicionar imagem ao PDF
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+      
+      // Gerar nome único com timestamp para evitar conflitos
+      const timestamp = new Date().getTime();
+      const fileName = `${selectedDocument.document_type}_${timestamp}.pdf`;
+      
+      // No mobile, usar uma abordagem diferente para garantir que o download funcione
+      if (isMobile) {
+        // Criar um blob e usar download via link para melhor compatibilidade com mobile
+        const pdfBlob = pdf.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Liberar o URL após um delay
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 1000);
+      } else {
+        // No desktop, usar o método padrão
+        pdf.save(fileName);
+      }
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar PDF: ' + error.message + '\n\nTente fechar e abrir o preview novamente.');
     }
   };
 
