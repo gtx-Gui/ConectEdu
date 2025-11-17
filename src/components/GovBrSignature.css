@@ -1,25 +1,38 @@
-/* Modal de Assinatura Digital gov.br - Versão Simplificada */
+/* Modal de Assinatura Digital gov.br - Versão Detalhada */
 .govbr-signature-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   z-index: 10000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .govbr-signature-modal {
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  overflow: visible;
   max-width: 400px;
   width: 90%;
   animation: slideIn 0.3s ease-out;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.govbr-signature-modal.detailed {
+  max-width: 700px;
+  max-height: 95vh;
 }
 
 .govbr-signature-modal.simple {
@@ -69,14 +82,325 @@
 
 .modal-body {
   padding: 30px 20px;
-  text-align: center;
+  padding-top: 20vh;
+  text-align: left;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-top: 20vh;
 }
 
 .modal-body p {
   color: #666;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Seção de Introdução */
+.govbr-intro {
+  text-align: center;
+}
+
+.govbr-intro-text {
+  color: #333;
+  font-size: 1.05rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.govbr-intro-text strong {
+  color: #0066cc;
+}
+
+/* Requisitos */
+.govbr-reqs {
+  background: #f8f9fa;
+  border-left: 4px solid #0066cc;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.govbr-reqs h4 {
+  color: #0066cc;
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.govbr-reqs ul {
+  margin: 10px 0 0 0;
+  padding-left: 20px;
+  color: #555;
+}
+
+.govbr-reqs ul li {
+  margin-bottom: 8px;
   line-height: 1.5;
+}
+
+/* Botões */
+.govbr-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-govbr.btn-primary {
+  background: linear-gradient(135deg, #0066cc, #004499);
+  color: white;
+}
+
+.btn-govbr.btn-secondary {
+  background: #f8f9fa;
+  color: #0066cc;
+  border: 2px solid #0066cc;
+}
+
+.btn-govbr.btn-secondary:hover {
+  background: #e9ecef;
+}
+
+/* Instruções */
+.govbr-instructions {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.btn-back-instructions {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  padding: 10px 0;
+  margin-bottom: 30px;
+  margin-top: 0;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.btn-back-instructions:hover {
+  color: #004499;
+}
+
+.govbr-signature-modal .instructions-title {
+  color: #333;
+  margin: 0 0 35px 0;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+/* Container de Vídeo */
+.govbr-signature-modal .video-container {
+  margin-top: 20vh;
+  margin-bottom: 25px;
+  width: 100%;
+  overflow: visible;
+  scroll-margin-top: 20vh;
+}
+
+.govbr-signature-modal .video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: visible;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: #000;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.govbr-signature-modal .youtube-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  border: none;
+}
+
+.govbr-signature-modal .video-description {
+  margin-top: 15px;
+  color: #666;
+  font-size: 0.95rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.govbr-signature-modal .quick-steps {
+  background: #f8f9fa;
+  border-left: 4px solid #0066cc;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.govbr-signature-modal .quick-steps-title {
+  color: #0066cc;
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.govbr-signature-modal .quick-steps ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #555;
+  line-height: 1.8;
+}
+
+.govbr-signature-modal .quick-steps ul li {
+  margin-bottom: 8px;
+}
+
+.govbr-signature-modal .quick-steps a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.govbr-signature-modal .quick-steps a:hover {
+  text-decoration: underline;
+}
+
+.govbr-signature-modal .instructions-steps {
+  margin-bottom: 25px;
+}
+
+.govbr-signature-modal .instruction-step {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.govbr-signature-modal .instruction-step:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.govbr-signature-modal .step-number {
+  background: linear-gradient(135deg, #0066cc, #004499);
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.govbr-signature-modal .step-content h5 {
+  color: #333;
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+}
+
+.govbr-signature-modal .step-content p {
+  color: #666;
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.govbr-signature-modal .step-content ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+  color: #555;
+}
+
+.govbr-signature-modal .step-content ul li {
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.govbr-signature-modal .step-content a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.govbr-signature-modal .step-content a:hover {
+  text-decoration: underline;
+}
+
+/* Seção de Ajuda */
+.govbr-signature-modal .govbr-help {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.govbr-signature-modal .govbr-help p {
+  margin: 0 0 10px 0;
+  color: #856404;
+}
+
+.govbr-signature-modal .govbr-help p strong {
+  color: #856404;
+}
+
+.govbr-signature-modal .govbr-help ul {
+  margin: 10px 0;
+  padding-left: 20px;
+  color: #856404;
+}
+
+.govbr-signature-modal .govbr-help ul li {
+  margin-bottom: 5px;
+}
+
+.govbr-signature-modal .govbr-help a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.govbr-signature-modal .govbr-help a:hover {
+  text-decoration: underline;
+}
+
+.govbr-signature-modal .govbr-alternative {
+  background: #d1ecf1;
+  border-left: 4px solid #17a2b8;
+  padding: 12px;
+  margin: 15px 0 0 0 !important;
+  border-radius: 4px;
+  color: #0c5460 !important;
+}
+
+.govbr-signature-modal .govbr-alternative strong {
+  color: #0c5460;
 }
 
 .btn-govbr {
@@ -112,27 +436,126 @@
 }
 
 /* Responsividade */
+@media (max-width: 768px) {
+  .govbr-signature-modal.detailed {
+    max-width: 95%;
+    max-height: 95vh;
+  }
+  
+  .govbr-signature-modal .instruction-step {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .govbr-signature-modal .step-number {
+    align-self: flex-start;
+  }
+
+  .govbr-signature-modal .video-wrapper {
+    border-radius: 6px;
+    padding-bottom: 56.25%;
+    overflow: visible;
+    margin-top: 10px;
+  }
+
+  .govbr-signature-modal .video-container {
+    margin-top: 10vh;
+    scroll-margin-top: 10vh;
+  }
+
+  .govbr-signature-modal .instructions-title {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    padding-top: 10vh;
+  }
+
+  .modal-body {
+    padding-top: 10vh;
+    scroll-padding-top: 10vh;
+  }
+
+  .btn-back-instructions {
+    margin-bottom: 30px;
+  }
+
+  .govbr-signature-modal-overlay {
+    align-items: flex-start;
+    padding: 10px;
+  }
+}
+
 @media (max-width: 480px) {
   .govbr-signature-modal {
     width: 95%;
-    margin: 20px;
+    margin: 10px auto;
+    max-height: 95vh;
+  }
+  
+  .govbr-signature-modal.detailed {
+    max-width: 100%;
+    max-height: 95vh;
   }
   
   .modal-header {
     padding: 15px 20px;
+    flex-shrink: 0;
   }
   
   .modal-header h3 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .modal-body {
-    padding: 25px 15px;
+    padding: 20px 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
   .btn-govbr {
     padding: 12px 25px;
     font-size: 0.95rem;
     min-width: 180px;
+  }
+  
+  .govbr-buttons {
+    gap: 10px;
+  }
+  
+  .govbr-signature-modal .instruction-step {
+    gap: 10px;
+  }
+  
+  .govbr-signature-modal .instructions-title {
+    font-size: 1.1rem;
+  }
+
+  .govbr-signature-modal .video-wrapper {
+    padding-bottom: 56.25%;
+    overflow: visible;
+    margin-top: 10px;
+  }
+
+  .govbr-signature-modal .video-container {
+    margin-top: 10vh;
+    scroll-margin-top: 10vh;
+  }
+
+  .govbr-signature-modal .instructions-title {
+    margin-bottom: 30px;
+    padding-top: 10vh;
+  }
+
+  .modal-body {
+    padding-top: 10vh;
+    scroll-padding-top: 10vh;
+  }
+
+  .btn-back-instructions {
+    margin-bottom: 30px;
+  }
+
+  .govbr-signature-modal-overlay {
+    padding: 10px;
+    align-items: flex-start;
   }
 }

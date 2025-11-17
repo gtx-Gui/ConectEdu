@@ -73,6 +73,12 @@ const Support = () => {
                         Processo de Doação
                     </button>
                     <button 
+                        className={`suporte-tab-button ${activeTab === 'assinatura' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('assinatura')}
+                    >
+                        Assinatura Digital
+                    </button>
+                    <button 
                         className={`suporte-tab-button ${activeTab === 'faq' ? 'active' : ''}`}
                         onClick={() => setActiveTab('faq')}
                     >
@@ -116,6 +122,156 @@ const Support = () => {
                                 <p className="processo-descricao">
                                     Caso necessário, solicite o recibo de doação diretamente na escola. O recibo também pode ser gerado no site da ConectEdu pelo painel de usuário das instituições públicas.
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                ) : activeTab === 'assinatura' ? (
+                    <div className="suporte-assinatura">
+                        <div className="assinatura-guia">
+                            <h2 className="assinatura-titulo">
+                                <i className="fas fa-signature me-2"></i>
+                                Guia Completo: Como Assinar Digitalmente pelo Gov.br
+                            </h2>
+
+                            <div className="assinatura-intro">
+                                <p>
+                                    A assinatura digital pelo <strong>Gov.br</strong> é uma forma segura e legal de assinar seus documentos de doação sem precisar sair de casa. Este guia passo a passo vai te ajudar em cada etapa do processo.
+                                </p>
+                            </div>
+
+                            <div className="assinatura-section">
+                                <h3 className="assinatura-section-titulo">
+                                    <i className="fas fa-info-circle me-2"></i>
+                                    O que você precisa saber
+                                </h3>
+                                <div className="assinatura-box info">
+                                    <ul>
+                                        <li><strong>Requisito:</strong> Conta no Gov.br com nível <strong>Prata ou Ouro</strong></li>
+                                        <li><strong>Documentos necessários:</strong> RG (ou CNH) e CPF</li>
+                                        <li><strong>Celular:</strong> Número cadastrado para receber códigos de verificação</li>
+                                        <li><strong>Tempo:</strong> Todo o processo pode ser feito em alguns minutos</li>
+                                        <li><strong>Validade legal:</strong> A assinatura digital tem a mesma validade da assinatura presencial</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="assinatura-section">
+                                <h3 className="assinatura-section-titulo">
+                                    <i className="fas fa-video me-2"></i>
+                                    Vídeo Tutorial Oficial
+                                </h3>
+
+                                <div className="video-section">
+                                    <div className="video-wrapper-suporte">
+                                        <iframe
+                                            src="https://www.youtube.com/embed/dE_hy6sbe9Q"
+                                            title="Como assinar digitalmente pelo Gov.br - Vídeo Tutorial Oficial"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                            className="youtube-video-suporte"
+                                        ></iframe>
+                                    </div>
+                                    <p className="video-description-suporte">
+                                        Assista ao vídeo oficial do Gov.br para aprender passo a passo como criar sua conta, elevar o nível e assinar documentos digitalmente.
+                                    </p>
+                                </div>
+
+                                <div className="assinatura-resumo">
+                                    <h4 className="resumo-titulo">
+                                        <i className="fas fa-check-circle me-2"></i>
+                                        Resumo Rápido do Processo
+                                    </h4>
+                                    <div className="resumo-steps">
+                                        <div className="resumo-step">
+                                            <span className="resumo-number">1</span>
+                                            <div className="resumo-content">
+                                                <h5>Criar conta no Gov.br</h5>
+                                                <p>Acesse <a href="https://www.gov.br/acesso/" target="_blank" rel="noopener noreferrer">www.gov.br/acesso</a> e crie sua conta gratuitamente</p>
+                                            </div>
+                                        </div>
+                                        <div className="resumo-step">
+                                            <span className="resumo-number">2</span>
+                                            <div className="resumo-content">
+                                                <h5>Elevar nível para Prata ou Ouro</h5>
+                                                <p>Verificação via aplicativo do banco (Prata) ou presencial nos Correios (Ouro)</p>
+                                            </div>
+                                        </div>
+                                        <div className="resumo-step">
+                                            <span className="resumo-number">3</span>
+                                            <div className="resumo-content">
+                                                <h5>Assinar na plataforma ConectEdu</h5>
+                                                <p>Clique no botão "Assinatura Digital gov.br" após gerar seus documentos</p>
+                                            </div>
+                                        </div>
+                                        <div className="resumo-step">
+                                            <span className="resumo-number">4</span>
+                                            <div className="resumo-content">
+                                                <h5>Confirmar assinatura</h5>
+                                                <p>Documento será marcado como assinado digitalmente na plataforma</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="assinatura-section">
+                                <h3 className="assinatura-section-titulo">
+                                    <i className="fas fa-question-circle me-2"></i>
+                                    Dúvidas Comuns
+                                </h3>
+                                <div className="assinatura-faq">
+                                    <div className="faq-item">
+                                        <h5>Quanto tempo leva para elevar o nível da conta?</h5>
+                                        <p><strong>Nível Prata:</strong> Pode ser feito em alguns minutos, se você tiver conta no Banco do Brasil ou Caixa. <strong>Nível Ouro:</strong> Requer agendamento e comparecimento presencial.</p>
+                                    </div>
+                                    <div className="faq-item">
+                                        <h5>Posso assinar mesmo sem conta no Gov.br?</h5>
+                                        <p>Não. Você precisa ter uma conta no Gov.br com nível Prata ou Ouro. Mas não se preocupe: você também pode <strong>imprimir os documentos e assinar presencialmente na escola</strong> - ambas as opções têm validade legal.</p>
+                                    </div>
+                                    <div className="faq-item">
+                                        <h5>A assinatura digital é segura?</h5>
+                                        <p>Sim! A assinatura digital pelo Gov.br é extremamente segura e tem a mesma validade legal de uma assinatura presencial. Os documentos são criptografados e protegidos.</p>
+                                    </div>
+                                    <div className="faq-item">
+                                        <h5>Preciso pagar algo?</h5>
+                                        <p>Não! Tanto a criação da conta no Gov.br quanto a assinatura digital são <strong>totalmente gratuitas</strong>.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="assinatura-section">
+                                <div className="assinatura-box alternative">
+                                    <h4>
+                                        <i className="fas fa-info-circle me-2"></i>
+                                        Lembre-se
+                                    </h4>
+                                    <p>
+                                        <strong>A assinatura digital é opcional!</strong> Se você preferir ou tiver dificuldades, você pode:
+                                    </p>
+                                    <ul>
+                                        <li>Imprimir os documentos gerados na plataforma</li>
+                                        <li>Levar até a escola selecionada</li>
+                                        <li>Assinar presencialmente na presença de um representante da escola</li>
+                                    </ul>
+                                    <p>Ambas as formas (digital e presencial) têm a mesma validade legal.</p>
+                                </div>
+                            </div>
+
+                            <div className="assinatura-section">
+                                <div className="assinatura-help">
+                                    <h4>
+                                        <i className="fas fa-headset me-2"></i>
+                                        Precisa de ajuda?
+                                    </h4>
+                                    <p>Se você ainda tem dúvidas ou encontrou algum problema:</p>
+                                    <ul>
+                                        <li><strong>E-mail:</strong> conectedu.org@gmail.com</li>
+                                        <li><strong>Telefone:</strong> (19) 99611-7872</li>
+                                        <li><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</li>
+                                    </ul>
+                                    <p>Também podemos te ajudar pelo <a href="https://whatsa.me/5519996117872/?t=Olá,%20preciso%20de%20ajuda%20com%20assinatura%20digital" target="_blank" rel="noopener noreferrer">WhatsApp</a>.</p>
+                                </div>
                             </div>
                         </div>
                     </div>

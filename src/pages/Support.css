@@ -102,7 +102,7 @@
 }
 
 .processo-titulo {
-    color: var(--primary-color, #4CAF50);
+    color: #4CAF50 !important;
     font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 1rem;
@@ -297,5 +297,469 @@
 
     .processo-descricao {
         font-size: 0.9rem;
+    }
+}
+
+/* Seção de Assinatura Digital */
+.suporte-assinatura {
+    color: var(--white, #fff);
+}
+
+.assinatura-guia {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.assinatura-titulo {
+    color: var(--primary-color, #4CAF50);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.assinatura-intro {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--primary-color, #4CAF50);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+}
+
+.assinatura-intro p {
+    color: var(--white, #fff);
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.assinatura-section {
+    margin-bottom: 2.5rem;
+}
+
+.assinatura-section-titulo {
+    color: var(--primary-color, #4CAF50);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.assinatura-box {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.assinatura-box.info {
+    background: rgba(33, 150, 243, 0.1);
+    border-left: 4px solid #2196F3;
+}
+
+.assinatura-box.info ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: var(--white, #fff);
+}
+
+.assinatura-box.info li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.assinatura-box.alternative {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--primary-color, #4CAF50);
+}
+
+.assinatura-box.alternative h4 {
+    color: var(--primary-color, #4CAF50);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.assinatura-box.alternative p,
+.assinatura-box.alternative ul {
+    color: var(--white, #fff);
+    margin-bottom: 0.75rem;
+}
+
+.assinatura-box.alternative ul {
+    padding-left: 1.5rem;
+}
+
+.assinatura-step {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary-color, #4CAF50);
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.step-header .step-number {
+    background: linear-gradient(135deg, var(--primary-color, #4CAF50), #388E3C);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.step-header h4 {
+    color: var(--primary-color, #4CAF50);
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.step-content {
+    color: var(--white, #fff);
+    padding-left: 0;
+}
+
+.step-content ol,
+.step-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+}
+
+.step-content ol li,
+.step-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+.step-content a {
+    color: var(--primary-color, #4CAF50);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.step-content a:hover {
+    text-decoration: underline;
+}
+
+.step-note {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #FFC107;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.step-note i {
+    color: #FFC107;
+    margin-top: 0.2rem;
+}
+
+.step-note p {
+    margin: 0;
+    color: var(--white, #fff);
+}
+
+.nivel-opcoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.nivel-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.nivel-card h5 {
+    color: var(--primary-color, #4CAF50);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nivel-card > p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.nivel-card ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    color: var(--white, #fff);
+    line-height: 1.6;
+}
+
+.nivel-card ul li {
+    margin-bottom: 0.5rem;
+}
+
+.como-fazer {
+    background: rgba(33, 150, 243, 0.1);
+    border-left: 3px solid #2196F3;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--white, #fff);
+}
+
+.assinatura-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.assinatura-faq .faq-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border-left: 4px solid #2196F3;
+}
+
+.assinatura-faq .faq-item h5 {
+    color: var(--primary-color, #4CAF50);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.assinatura-faq .faq-item p {
+    color: var(--white, #fff);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.assinatura-help {
+    background: rgba(255, 152, 0, 0.1);
+    border-left: 4px solid #FF9800;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.assinatura-help h4 {
+    color: #FF9800;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.assinatura-help p {
+    color: var(--white, #fff);
+    margin-bottom: 0.75rem;
+}
+
+.assinatura-help ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    color: var(--white, #fff);
+}
+
+.assinatura-help ul li {
+    margin-bottom: 0.5rem;
+}
+
+.assinatura-help a {
+    color: #FF9800;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.assinatura-help a:hover {
+    text-decoration: underline;
+}
+
+/* Seção de Vídeo */
+.video-section {
+    margin-bottom: 2rem;
+}
+
+.video-wrapper-suporte {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    background: #000;
+    margin-bottom: 1.5rem;
+}
+
+.youtube-video-suporte {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+}
+
+.video-description-suporte {
+    color: var(--white, #fff);
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Resumo Rápido */
+.assinatura-resumo {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.resumo-titulo {
+    color: var(--primary-color, #4CAF50);
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.resumo-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.resumo-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.resumo-number {
+    background: linear-gradient(135deg, var(--primary-color, #4CAF50), #388E3C);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.resumo-content h5 {
+    color: var(--primary-color, #4CAF50);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.05rem;
+}
+
+.resumo-content p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.resumo-content a {
+    color: var(--primary-color, #4CAF50);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.resumo-content a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade para Assinatura Digital */
+@media (max-width: 768px) {
+    .assinatura-titulo {
+        font-size: 1.5rem;
+    }
+
+    .assinatura-section-titulo {
+        font-size: 1.25rem;
+    }
+
+    .nivel-opcoes {
+        grid-template-columns: 1fr;
+    }
+
+    .assinatura-step,
+    .assinatura-box,
+    .nivel-card {
+        padding: 1rem;
+    }
+
+    .video-wrapper-suporte {
+        border-radius: 8px;
+    }
+
+    .resumo-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .assinatura-resumo {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .assinatura-titulo {
+        font-size: 1.3rem;
+        flex-direction: column;
+    }
+
+    .step-header .step-number {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .step-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .video-wrapper-suporte {
+        border-radius: 6px;
+    }
+
+    .resumo-titulo {
+        font-size: 1.1rem;
+    }
+
+    .resumo-step {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .resumo-number {
+        align-self: flex-start;
     }
 }

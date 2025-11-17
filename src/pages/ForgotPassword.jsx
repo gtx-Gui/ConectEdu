@@ -11,8 +11,29 @@ function ForgotPassword() {
     setMessage('');
     setError('');
 
+    // Determinar a URL de redirecionamento baseada no ambiente
+    const getRedirectUrl = () => {
+      // Se houver variável de ambiente, usar ela
+      if (process.env.REACT_APP_SITE_URL) {
+        return process.env.REACT_APP_SITE_URL + '/reset-password';
+      }
+      
+      // Se estiver em produção (não é localhost), usar a URL atual
+      const origin = window.location.origin;
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        // Em desenvolvimento, usar localhost
+        return origin + '/reset-password';
+      }
+      
+      // Em produção, usar a URL atual detectada
+      return origin + '/reset-password';
+    };
+
+    const redirectUrl = getRedirectUrl();
+    console.log('🔗 URL de redirecionamento:', redirectUrl);
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset-password'
+      redirectTo: redirectUrl
     });
 
     if (error) {

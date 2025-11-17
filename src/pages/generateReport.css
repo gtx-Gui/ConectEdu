@@ -227,9 +227,11 @@
 
 .preview-paper {
   width: 794px;
+  height: 1123px;
   min-height: 1123px;
+  max-height: 1123px;
   background: #fff;
-  padding: 40px;
+  padding: 0;
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
   position: relative;
@@ -237,6 +239,10 @@
   font-size: 1rem;
   line-height: 1.6;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 1024px) {
@@ -245,26 +251,41 @@
   }
   
   .preview-paper {
-    padding: 32px;
+    width: 794px !important;
+    height: 1123px !important;
+    min-height: 1123px !important;
+    max-height: 1123px !important;
+    padding: 0 !important;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    overflow: hidden !important;
   }
 }
 
 @media (max-width: 768px) {
   .preview-paper {
+    width: 794px !important;
+    height: 1123px !important;
+    min-height: 1123px !important;
+    max-height: 1123px !important;
     border-radius: 8px;
-    padding: clamp(20px, 5vw, 28px);
-    font-size: 0.9rem;
+    padding: 0 !important;
+    font-size: 1rem;
+    overflow: hidden !important;
   }
 }
 
 @media (max-width: 480px) {
   .preview-paper {
+    width: 794px !important;
+    height: 1123px !important;
+    min-height: 1123px !important;
+    max-height: 1123px !important;
     border-radius: 4px;
-    padding: clamp(18px, 6vw, 24px);
-    font-size: 0.85rem;
+    padding: 0 !important;
+    font-size: 1rem;
+    overflow: hidden !important;
   }
 
 .preview-structure {
@@ -1002,6 +1023,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+}
+
+.preview-scale-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 /* Mobile - garantir que report-preview ocupe toda largura */

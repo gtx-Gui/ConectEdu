@@ -367,6 +367,14 @@
   line-height: 1.6;
 }
 
+/* Centralizar conteúdo do modal */
+.modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 /* Responsividade para o modal */
 @media (max-width: 768px) {
   .modal-content {
@@ -378,6 +386,10 @@
   .modal-body {
     padding: 0;
     overflow-x: visible !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
   
   .modal-header {
