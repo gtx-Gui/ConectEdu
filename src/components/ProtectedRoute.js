@@ -295,6 +295,22 @@ function ProtectedRoute({ children }) {
             if (userError.code === 'PGRST116') {
               console.warn('⚠️ Usuário autenticado mas não encontrado na tabela users. Verifique se o registro existe com auth_id:', currentSession.user.id);
             }
+            
+            // Tentar usar cache como fallback quando há erro
+            const fallbackCache = localStorage.getItem('user');
+            if (fallbackCache) {
+              try {
+                const fallbackData = JSON.parse(fallbackCache);
+                if (fallbackData && fallbackData.auth_id === currentSession.user.id) {
+                  console.warn('⚠️ Usando cache antigo como fallback após erro na busca');
+                  if (isMounted) {
+                    setUserData(fallbackData);
+                  }
+                }
+              } catch (e) {
+                console.error('❌ Erro ao usar cache de fallback:', e);
+              }
+            }
           } else if (!userDataFromDB) {
             console.warn('⚠️ Query retornou sem erro mas sem dados após', maxRetries, 'tentativas. auth_id:', currentSession.user.id);
             // Tentar usar cache antigo se existir (mesmo que inválido)
@@ -435,13 +451,38 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  // Se há sessão mas não há dados do usuário, ainda permite acesso
+  // Se há sessão mas não há dados do usuário, tentar usar cache como último recurso
   // (pode ser um problema temporário de conexão com o Supabase)
   if (!userData) {
-    console.log('Usuário autenticado mas dados não encontrados no Supabase');
+    console.warn('⚠️ Usuário autenticado mas dados não encontrados no Supabase');
+    
+    // Tentar usar cache como último recurso
+    try {
+      const fallbackCache = localStorage.getItem('user');
+      if (fallbackCache) {
+        try {
+          const fallbackData = JSON.parse(fallbackCache);
+          if (fallbackData && fallbackData.auth_id === session.user.id) {
+            console.log('✅ Usando cache como fallback para dados do usuário');
+            setUserData(fallbackData);
+          } else {
+            console.warn('⚠️ Cache encontrado mas auth_id não corresponde');
+          }
+        } catch (cacheError) {
+          console.error('❌ Erro ao ler cache de fallback:', cacheError);
+        }
+      } else {
+        console.warn('⚠️ Nenhum cache disponível para fallback');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao tentar usar cache de fallback:', error);
+    }
+    
+    // Mesmo sem dados, permite acesso (componentes filhos buscarão diretamente)
+    // Isso evita bloqueio em caso de problemas temporários com o Supabase
   }
 
-  console.log('Usuário autenticado:', session.user.email);
+  console.log('✅ Usuário autenticado:', session.user.email);
   return children;
 }
 
