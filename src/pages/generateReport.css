@@ -135,10 +135,20 @@
         width: 100%;
         max-width: 300px;
         margin: 0 auto;
+        position: relative; /* Garantir que botões fiquem abaixo do preview */
+        z-index: 10; /* Garantir que botões fiquem acima do conteúdo se necessário */
     }
     
     .digital-signature-button {
         margin-top: 8px;
+    }
+    
+    /* Container dos botões - garantir espaçamento adequado */
+    .report-preview > div:last-child {
+        margin-top: 40px !important; /* Espaço extra antes dos botões */
+        padding-top: 20px !important; /* Padding adicional para evitar sobreposição */
+        position: relative;
+        z-index: 10;
     }
 }
 
@@ -913,10 +923,10 @@
         position: relative;
     }
 
-    /* 3. Container do preview - sem padding/margin */
+    /* 3. Container do preview - sem padding/margin lateral, mas com margin-bottom para espaçar dos botões */
     .report-preview {
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 0 60px 0 !important; /* Margin-bottom para espaçar dos botões */
         width: 100vw !important;
         max-width: 100vw !important;
         position: relative;
@@ -928,7 +938,7 @@
         max-width: 100vw !important;
         min-width: 100vw !important;
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 0 40px 0 !important; /* Margin-bottom adicional para garantir espaço */
         margin-left: 0 !important;
         margin-right: 0 !important;
         position: relative !important;
@@ -944,12 +954,12 @@
         max-width: 100% !important;
         padding: 20px 26px 20px 44px !important; /* Padding direito aumentado (26px) para evitar corte de letras */
         font-size: 10pt;
-        margin: 0 !important;
+        margin: 0 0 20px 0 !important; /* Margin-bottom para espaçar dos botões */
         margin-left: 0 !important;
         margin-right: 0 !important;
         box-sizing: border-box !important;
         transform: none !important;
-        overflow: visible !important; /* Garantir que decores não sejam cortados */
+        overflow: hidden !important; /* Hidden para evitar que caracteres ultrapassem */
         position: relative !important;
     }
     
