@@ -1,5 +1,6 @@
 import React from 'react';
 import './footer.css';
+import packageJson from '../../package.json';
 
 function footer() {
     return (
@@ -23,7 +24,7 @@ function footer() {
                 <a href="https://youtube.com/@conectedu-q6f?si=-ry3RsRVXmXcdWVu" className="btn-footer youtube" target="_blank" rel="noopener noreferrer"><i className="fab fa-youtube"></i></a>
             </div>
 
-            <p>&copy; Todos os direitos reservados | Versão 1.0.2</p>
+            <p>&copy; Todos os direitos reservados | Versão {packageJson.version}</p>
         </footer>
     );
 }
