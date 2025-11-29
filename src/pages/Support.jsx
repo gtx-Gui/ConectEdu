@@ -268,7 +268,6 @@ const Support = () => {
                                     <ul>
                                         <li><strong>E-mail:</strong> conectedu.org@gmail.com</li>
                                         <li><strong>Telefone:</strong> (19) 99611-7872</li>
-                                        <li><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</li>
                                     </ul>
                                     <p>Também podemos te ajudar pelo <a href="https://whatsa.me/5519996117872/?t=Olá,%20preciso%20de%20ajuda%20com%20assinatura%20digital" target="_blank" rel="noopener noreferrer">WhatsApp</a>.</p>
                                 </div>

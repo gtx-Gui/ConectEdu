@@ -14,8 +14,81 @@ function UserDashboard() {
     const navigate = useNavigate();
 
     const logout = async () => {
-        await supabase.auth.signOut();
-        navigate('/login', { replace: true });
+        console.log('🚪 Iniciando logout...');
+        
+        try {
+            // 1. Fazer signOut PRIMEIRO (mais importante - remove sessão do Supabase)
+            console.log('🔄 Removendo sessão do Supabase...');
+            try {
+                // Aguardar signOut com timeout maior (3 segundos) para garantir que complete
+                const signOutPromise = supabase.auth.signOut();
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout')), 3000);
+                });
+                
+                try {
+                    await Promise.race([signOutPromise, timeoutPromise]);
+                    console.log('✅ Sessão removida do Supabase');
+                } catch (err) {
+                    console.warn('⚠️ Timeout ou erro no signOut:', err.message);
+                    // Mesmo com timeout, continuar para limpar localStorage
+                }
+            } catch (err) {
+                console.warn('⚠️ Erro no signOut:', err.message);
+            }
+            
+            // 2. Limpar TODAS as chaves relacionadas ao Supabase no localStorage
+            // O Supabase pode usar diferentes chaves para armazenar sessão
+            const storageKeysToRemove = [
+                'user',
+                'session',
+                'document_history',
+                'document_history_user_id',
+                'document_history_timestamp',
+                'conectedu.supabase.auth.token',
+                'sb-zosupqbyanlliswinicv-auth-token',
+                'supabase.auth.token',
+                'conectedu.supabase.auth',
+            ];
+            
+            storageKeysToRemove.forEach(key => {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.warn(`⚠️ Erro ao remover ${key}:`, e);
+                }
+            });
+            
+            // 3. Remover também do sessionStorage (caso tenha sido usado como fallback)
+            storageKeysToRemove.forEach(key => {
+                try {
+                    sessionStorage.removeItem(key);
+                } catch (e) {
+                    // Ignorar erros
+                }
+            });
+            
+            console.log('✅ localStorage e sessionStorage limpos');
+            
+            // 4. Aguardar um pouco para garantir que tudo foi processado
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            console.log('✅ Logout concluído completamente');
+            
+        } catch (error) {
+            console.error('❌ Erro no logout:', error);
+            // Mesmo com erro, limpar localStorage e redirecionar
+            try {
+                localStorage.clear(); // Limpar tudo como último recurso
+                sessionStorage.clear();
+            } catch (e) {
+                console.warn('⚠️ Erro ao limpar storage:', e);
+            }
+        }
+        
+        // 5. SEMPRE redirecionar para login (mesmo se algo falhou)
+        // Usar window.location para forçar reload completo e limpar estado do React
+        window.location.href = '/login';
     };
 
     const newDonation = () => {
@@ -41,13 +114,110 @@ function UserDashboard() {
     // Buscar escolas (usuários do tipo 'instituicao') ao carregar o componente
     useEffect(() => {
         async function fetchSchools() {
-            // Query otimizada: buscar apenas campos necessários para a pesquisa
-            const { data, error } = await supabase
-                .from('users')
-                .select('id, nome, cidade, estado')
-                .eq('tipo', 'instituicao')
-                .order('nome');
-            if (!error) setSchools(data || []);
+            try {
+                // PRIMEIRO: Tentar usar cache de escolas (se existir)
+                try {
+                    const cachedSchools = localStorage.getItem('schools_list');
+                    const cacheTimestamp = localStorage.getItem('schools_list_timestamp');
+                    if (cachedSchools && cacheTimestamp) {
+                        const now = Date.now();
+                        const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
+                        
+                        if (now - parseInt(cacheTimestamp, 10) < CACHE_DURATION) {
+                            const parsed = JSON.parse(cachedSchools);
+                            if (parsed && Array.isArray(parsed)) {
+                                // Filtrar apenas campos necessários para o dashboard
+                                const dashboardSchools = parsed.map(s => ({
+                                    id: s.id,
+                                    nome: s.nome,
+                                    cidade: s.cidade,
+                                    estado: s.estado
+                                }));
+                                setSchools(dashboardSchools);
+                                console.log('✅ Escolas carregadas do cache no dashboard');
+                                
+                                // Atualizar em background
+                                setTimeout(async () => {
+                                    try {
+                                        const { data, error } = await supabase
+                                            .from('users')
+                                            .select('id, nome, cidade, estado')
+                                            .eq('tipo', 'instituicao')
+                                            .order('nome');
+                                        
+                                        if (!error && data) {
+                                            setSchools(data || []);
+                                            localStorage.setItem('schools_list', JSON.stringify(data || []));
+                                            localStorage.setItem('schools_list_timestamp', Date.now().toString());
+                                        }
+                                    } catch (err) {
+                                        console.warn('⚠️ Erro ao atualizar escolas em background:', err);
+                                    }
+                                }, 100);
+                                
+                                return; // SAIR - já tem cache
+                            }
+                        }
+                    }
+                } catch (cacheError) {
+                    console.warn('⚠️ Erro ao ler cache de escolas:', cacheError);
+                }
+                
+                // SEGUNDO: Se não há cache válido, buscar do Supabase
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('id, nome, cidade, estado')
+                    .eq('tipo', 'instituicao')
+                    .order('nome');
+                
+                if (!error && data) {
+                    setSchools(data || []);
+                    // Salvar no cache
+                    localStorage.setItem('schools_list', JSON.stringify(data || []));
+                    localStorage.setItem('schools_list_timestamp', Date.now().toString());
+                    console.log('✅ Escolas carregadas do Supabase no dashboard:', data.length);
+                } else if (error) {
+                    console.warn('⚠️ Erro ao buscar escolas:', error);
+                    // Tentar usar cache mesmo que expirado
+                    try {
+                        const cachedSchools = localStorage.getItem('schools_list');
+                        if (cachedSchools) {
+                            const parsed = JSON.parse(cachedSchools);
+                            if (parsed && Array.isArray(parsed)) {
+                                const dashboardSchools = parsed.map(s => ({
+                                    id: s.id,
+                                    nome: s.nome,
+                                    cidade: s.cidade,
+                                    estado: s.estado
+                                }));
+                                setSchools(dashboardSchools);
+                            }
+                        }
+                    } catch (e) {
+                        // Ignorar erro
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Erro ao buscar escolas:', error);
+                // Tentar usar cache como fallback
+                try {
+                    const cachedSchools = localStorage.getItem('schools_list');
+                    if (cachedSchools) {
+                        const parsed = JSON.parse(cachedSchools);
+                        if (parsed && Array.isArray(parsed)) {
+                            const dashboardSchools = parsed.map(s => ({
+                                id: s.id,
+                                nome: s.nome,
+                                cidade: s.cidade,
+                                estado: s.estado
+                            }));
+                            setSchools(dashboardSchools);
+                        }
+                    }
+                } catch (e) {
+                    // Ignorar erro
+                }
+            }
         }
         fetchSchools();
     }, []);

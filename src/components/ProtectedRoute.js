@@ -14,384 +14,284 @@ function ProtectedRoute({ children }) {
 
     const checkAuth = async () => {
       try {
-        // Verificar se já temos uma sessão válida em cache primeiro (mais rápido)
+        if (!isMounted) return;
+
+        // 1. PRIMEIRO: Tentar usar cache IMEDIATAMENTE (sem delay) para acesso rápido
+        let cachedUserData = null;
         try {
           const cachedUser = localStorage.getItem('user');
           if (cachedUser) {
-            const userDataFromCache = JSON.parse(cachedUser);
-            // Pequeno delay apenas se não há cache (para sincronização após login)
-            await new Promise(resolve => setTimeout(resolve, 50));
-            
-            if (!isMounted) return;
-            
-            // Tentar verificar sessão rapidamente
-            const { data: { session: quickSession } } = await supabase.auth.getSession();
-            if (quickSession && quickSession.user && quickSession.user.id === userDataFromCache.auth_id) {
-              // Sessão válida encontrada rapidamente - permitir acesso imediato
-              if (isMounted) {
-                setSession(quickSession);
-                setUserData(userDataFromCache);
-                setLoading(false);
-                
-                // Atualizar em background sem bloquear (com retry)
-                setTimeout(async () => {
-                  let userDataFromDB = null;
-                  try {
-                    const result = await supabase
-                      .from('users')
-                      .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
-                      .eq('auth_id', quickSession.user.id)
-                      .single();
-                    userDataFromDB = result.data;
-                  } catch (error) {
-                    // Tentar novamente após 1 segundo
-                    setTimeout(async () => {
-                      try {
-                        const retryResult = await supabase
-                          .from('users')
-                          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
-                          .eq('auth_id', quickSession.user.id)
-                          .single();
-                        if (retryResult.data && isMounted) {
-                          localStorage.setItem('user', JSON.stringify(retryResult.data));
-                          setUserData(retryResult.data);
-                        }
-                      } catch (retryError) {
-                        console.error('❌ Erro ao atualizar dados em background:', retryError);
-                      }
-                    }, 1000);
-                  }
-                  
-                  if (userDataFromDB && isMounted) {
-                    localStorage.setItem('user', JSON.stringify(userDataFromDB));
-                    setUserData(userDataFromDB);
-                  }
-                }, 0);
-                return;
-              }
-            }
+            cachedUserData = JSON.parse(cachedUser);
           }
         } catch (cacheError) {
-          // Continuar com verificação normal se cache falhar
+          console.warn('⚠️ Erro ao ler cache:', cacheError);
         }
-        
-        // Delay menor para verificação normal
-        await new Promise(resolve => setTimeout(resolve, 50));
-        
-        if (!isMounted) return;
 
-        // 1. Buscar sessão atual do Supabase (tenta renovar automaticamente se expirada)
-        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+        // 2. Verificar se localStorage foi limpo (logout) - se sim, bloquear acesso
+        // Verificar se há alguma das chaves de sessão do Supabase ainda presente
+        const supabaseSessionKeys = [
+          'conectedu.supabase.auth.token',
+          'sb-zosupqbyanlliswinicv-auth-token',
+          'supabase.auth.token',
+          'conectedu.supabase.auth'
+        ];
         
-        if (sessionError) {
-          console.error('❌ Erro ao buscar sessão:', sessionError);
-          
-          // Tentar recuperar sessão do storage diretamente como fallback
+        const hasSupabaseSession = supabaseSessionKeys.some(key => {
           try {
-            const possibleKeys = [
-              'conectedu.supabase.auth.token',
-              'sb-zosupqbyanlliswinicv-auth-token',
-              'supabase.auth.token'
-            ];
-            
-            let savedSession = null;
-            for (const key of possibleKeys) {
-              const session = localStorage.getItem(key);
-              if (session) {
-                savedSession = session;
-                console.log(`⚠️ Tentando recuperar sessão da chave: ${key}`);
-                break;
-              }
-            }
-            
-            if (savedSession) {
-              const parsed = JSON.parse(savedSession);
-              console.log('⚠️ Tentando renovar sessão do storage...');
-              // Forçar refresh do token
-              const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
-              
-              if (!refreshError && refreshedSession) {
-                console.log('✅ Sessão renovada com sucesso após erro');
-                if (isMounted) {
-                  setSession(refreshedSession);
-                }
-              } else {
-                // Tentar buscar novamente
-                const { data: { session: retrySession } } = await supabase.auth.getSession();
-                if (retrySession) {
-                  console.log('✅ Sessão recuperada após retry');
-                  if (isMounted) {
-                    setSession(retrySession);
-                  }
-                }
-              }
-              
-              if (isMounted) {
-                setLoading(false);
-                return;
-              }
-            }
-          } catch (fallbackError) {
-            console.error('❌ Erro no fallback de sessão:', fallbackError);
+            return localStorage.getItem(key) || sessionStorage.getItem(key);
+          } catch {
+            return false;
           }
-          
-          if (isMounted) {
-            setLoading(false);
-          }
-          return;
-        }
-        
-        console.log('✅ Sessão atual:', {
-          user: currentSession?.user?.email,
-          expiresAt: currentSession?.expires_at ? new Date(currentSession.expires_at * 1000).toLocaleString('pt-BR') : 'N/A'
         });
         
-        if (!currentSession || !currentSession.user) {
-          console.log('ℹ️ Usuário não autenticado');
+        // Se não há cache E não há chave de sessão do Supabase, provavelmente foi logout
+        // Neste caso, bloquear acesso mesmo antes de verificar getSession()
+        if (!cachedUserData && !hasSupabaseSession) {
+          console.log('ℹ️ Sem cache e sem sessão no storage - logout detectado');
+          if (isMounted) {
+            setLoading(false);
+          }
+          return;
+        }
+        
+        // 3. Se há cache válido, LIBERAR IMEDIATAMENTE sem esperar getSession()
+        // Isso evita timeout e acelera o carregamento
+        if (cachedUserData && cachedUserData.auth_id) {
+          console.log('✅ Cache encontrado, liberando UI imediatamente:', cachedUserData.nome);
+          if (isMounted) {
+            setUserData(cachedUserData);
+            setLoading(false); // LIBERAR UI IMEDIATAMENTE - sem esperar getSession()
+            
+            // Tentar buscar sessão e dados atualizados em BACKGROUND (sem bloquear)
+            setTimeout(async () => {
+              if (!isMounted) return;
+              
+              try {
+                // Buscar sessão em background (sem timeout curto, deixar tentar)
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session && session.user && isMounted) {
+                  setSession(session);
+                  
+                  // Se session.user.id corresponde ao cache, tentar atualizar dados
+                  if (session.user.id === cachedUserData.auth_id) {
+                    try {
+                      const { data: userDataFromDB, error: userError } = await supabase
+                        .from('users')
+                        .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+                        .eq('auth_id', session.user.id)
+                        .single();
+
+                      if (!userError && userDataFromDB && isMounted) {
+                        console.log('✅ Dados atualizados em background');
+                        localStorage.setItem('user', JSON.stringify(userDataFromDB));
+                        setUserData(userDataFromDB);
+                      }
+                    } catch (error) {
+                      console.warn('⚠️ Erro ao atualizar dados em background:', error);
+                    }
+                  }
+                } else {
+                  // Se getSession() não retorna sessão mas há cache
+                  // Não limpar cache imediatamente - pode ser apenas timeout temporário
+                  // O cache ainda é válido para permitir acesso
+                  console.log('ℹ️ Cache presente mas sessão não encontrada (pode ser timeout) - mantendo cache');
+                }
+              } catch (err) {
+                // Ignorar erros em background, cache já está sendo usado
+                console.warn('⚠️ Erro ao buscar sessão em background (ignorando):', err.message);
+              }
+            }, 50); // Delay mínimo para não bloquear UI
+            
+            return; // SAIR AQUI - não precisa fazer getSession() agora
+          }
+        }
+
+        // 4. Se não há cache, tentar buscar sessão (com timeout curto)
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout ao verificar sessão')), 2000); // Reduzido para 2s
+        });
+
+        let currentSession = null;
+        try {
+          const result = await Promise.race([sessionPromise, timeoutPromise]);
+          currentSession = result?.data?.session || null;
+        } catch (error) {
+          console.warn('⚠️ Timeout ao verificar sessão (sem cache):', error.message);
+          // Sem cache e sem sessão, redirecionar
           if (isMounted) {
             setLoading(false);
           }
           return;
         }
 
-        // Verificar se a sessão está próxima de expirar e tentar renovar
-        if (currentSession.expires_at) {
-          const expiresAt = currentSession.expires_at * 1000;
-          const now = Date.now();
-          const timeUntilExpiry = expiresAt - now;
-          const fiveMinutes = 5 * 60 * 1000; // 5 minutos em ms
-          
-          if (timeUntilExpiry < fiveMinutes && timeUntilExpiry > 0) {
-            console.log('🔄 Sessão próxima de expirar, renovando automaticamente...');
-            try {
-              const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
-              if (!refreshError && refreshedSession) {
-                console.log('✅ Sessão renovada com sucesso');
-                if (isMounted) {
-                  setSession(refreshedSession);
-                }
-              }
-            } catch (refreshErr) {
-              console.warn('⚠️ Erro ao renovar sessão:', refreshErr);
-            }
-          }
-        }
-
         if (!isMounted) return;
 
+        // 5. Se não há sessão válida OU se localStorage foi limpo (logout), redirecionar
+        // Verificar novamente se localStorage foi limpo (caso logout tenha acontecido durante verificação)
+        const stillHasUserCache = localStorage.getItem('user');
+        if (!currentSession || !currentSession.user || !stillHasUserCache) {
+          console.log('ℹ️ Usuário não autenticado ou logout detectado');
+          if (isMounted) {
+            setLoading(false);
+            // Limpar qualquer sessão residual
+            setSession(null);
+            setUserData(null);
+          }
+          return;
+        }
+
+        // 6. Sessão válida encontrada - usar cache IMEDIATAMENTE se válido
         if (isMounted) {
           setSession(currentSession);
         }
 
-        // 2. Buscar dados do usuário - PRIMEIRO do cache, depois do Supabase se necessário
-        try {
-          // Tentar carregar do cache primeiro
-          const cachedUser = localStorage.getItem('user');
-          if (cachedUser) {
-            try {
-              const userDataFromCache = JSON.parse(cachedUser);
-              if (userDataFromCache && userDataFromCache.auth_id === currentSession.user.id) {
-                console.log('✅ Dados carregados do cache:', userDataFromCache.nome);
-                if (isMounted) {
-                  setUserData(userDataFromCache);
-                }
-                // Verificar sessão em background para atualizar se necessário (com retry)
-                let userDataFromDB = null;
-                try {
-                  const result = await supabase
-                    .from('users')
-                    .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
-                    .eq('auth_id', currentSession.user.id)
-                    .single();
-                  userDataFromDB = result.data;
-                } catch (error) {
-                  console.warn('⚠️ Erro ao atualizar dados em background:', error);
-                  // Tentar novamente após 1 segundo
-                  setTimeout(async () => {
-                    try {
-                      const retryResult = await supabase
-                        .from('users')
-                        .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
-                        .eq('auth_id', currentSession.user.id)
-                        .single();
-                      if (retryResult.data && isMounted) {
-                        localStorage.setItem('user', JSON.stringify(retryResult.data));
-                        setUserData(retryResult.data);
-                      }
-                    } catch (retryError) {
-                      console.error('❌ Erro ao tentar novamente em background:', retryError);
-                    }
-                  }, 1000);
-                }
-                
-                if (userDataFromDB && isMounted) {
-                  // Atualizar cache se houver mudanças
-                  localStorage.setItem('user', JSON.stringify(userDataFromDB));
-                  setUserData(userDataFromDB);
-                }
-                return;
-              }
-            } catch (cacheError) {
-              console.warn('⚠️ Erro ao ler cache, buscando do Supabase:', cacheError);
-            }
+        // Verificar se cache é válido para este usuário
+        if (cachedUserData && cachedUserData.auth_id === currentSession.user.id) {
+          console.log('✅ Usando dados do cache:', cachedUserData.nome);
+          if (isMounted) {
+            setUserData(cachedUserData);
+            setLoading(false); // LIBERAR UI IMEDIATAMENTE
           }
-          
-          // Se não há cache válido, buscar do Supabase com retry
-          console.log('🔍 Buscando dados do usuário com auth_id:', currentSession.user.id);
-          
-          let userDataFromDB = null;
-          let userError = null;
-          const maxRetries = 3;
-          let retryCount = 0;
-          
-          // Tentar buscar até 3 vezes em caso de falha
-          while (retryCount < maxRetries && !userDataFromDB) {
+
+          // Buscar dados atualizados em BACKGROUND (sem bloquear UI)
+          setTimeout(async () => {
+            if (!isMounted) return;
+            
             try {
-              const result = await supabase
+              const { data: userDataFromDB, error: userError } = await supabase
                 .from('users')
                 .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
                 .eq('auth_id', currentSession.user.id)
                 .single();
-              
-              userDataFromDB = result.data;
-              userError = result.error;
-              
-              if (userDataFromDB) {
-                break; // Sucesso, sair do loop
-              }
-              
-              if (userError && userError.code !== 'PGRST116') {
-                // Se não for "não encontrado", pode ser um erro temporário, tentar novamente
-                retryCount++;
-                if (retryCount < maxRetries) {
-                  console.warn(`⚠️ Tentativa ${retryCount} falhou, tentando novamente em 500ms...`);
-                  await new Promise(resolve => setTimeout(resolve, 500 * retryCount)); // Backoff exponencial
-                }
-              } else {
-                break; // Erro definitivo ou não encontrado, sair do loop
+
+              if (!userError && userDataFromDB && isMounted) {
+                console.log('✅ Dados atualizados em background');
+                localStorage.setItem('user', JSON.stringify(userDataFromDB));
+                setUserData(userDataFromDB);
               }
             } catch (error) {
-              console.error('❌ Exceção ao buscar dados:', error);
-              retryCount++;
-              if (retryCount < maxRetries) {
-                await new Promise(resolve => setTimeout(resolve, 500 * retryCount));
-              }
+              console.warn('⚠️ Erro ao atualizar dados em background:', error);
             }
-          }
-          
-          if (!isMounted) return;
+          }, 100);
+          return;
+        }
 
-          if (userError) {
-            console.error('❌ Erro ao buscar dados do usuário:', {
-              code: userError.code,
-              message: userError.message,
-              details: userError.details,
-              hint: userError.hint,
-              auth_id: currentSession.user.id,
-              tentativas: retryCount
-            });
-            
-            // Se o erro for PGRST116 (nenhum resultado), o usuário não existe na tabela
-            if (userError.code === 'PGRST116') {
-              console.warn('⚠️ Usuário autenticado mas não encontrado na tabela users. Verifique se o registro existe com auth_id:', currentSession.user.id);
-            }
-            
-            // Tentar usar cache como fallback quando há erro
-            const fallbackCache = localStorage.getItem('user');
-            if (fallbackCache) {
-              try {
-                const fallbackData = JSON.parse(fallbackCache);
-                if (fallbackData && fallbackData.auth_id === currentSession.user.id) {
-                  console.warn('⚠️ Usando cache antigo como fallback após erro na busca');
-                  if (isMounted) {
-                    setUserData(fallbackData);
-                  }
-                }
-              } catch (e) {
-                console.error('❌ Erro ao usar cache de fallback:', e);
-              }
-            }
-          } else if (!userDataFromDB) {
-            console.warn('⚠️ Query retornou sem erro mas sem dados após', maxRetries, 'tentativas. auth_id:', currentSession.user.id);
-            // Tentar usar cache antigo se existir (mesmo que inválido)
-            const fallbackCache = localStorage.getItem('user');
-            if (fallbackCache) {
-              try {
-                const fallbackData = JSON.parse(fallbackCache);
-                if (fallbackData && fallbackData.auth_id === currentSession.user.id) {
-                  console.warn('⚠️ Usando cache antigo como fallback');
-                  if (isMounted) {
-                    setUserData(fallbackData);
-                  }
-                }
-              } catch (e) {
-                console.error('❌ Erro ao usar cache de fallback:', e);
-              }
-            }
-          } else {
-            console.log('✅ Dados do usuário encontrados:', {
-              id: userDataFromDB.id,
-              nome: userDataFromDB.nome,
-              email: userDataFromDB.email,
-              tipo: userDataFromDB.tipo,
-              tentativas: retryCount + 1
-            });
-            if (isMounted) {
-              setUserData(userDataFromDB);
-              // Atualizar cache
-              localStorage.setItem('user', JSON.stringify(userDataFromDB));
+        // 7. Se não há cache válido, buscar dados (com timeout curto)
+        if (isMounted) {
+          setLoading(false); // Permitir acesso mesmo sem dados do usuário
+        }
+
+        const userDataPromise = supabase
+          .from('users')
+          .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
+          .eq('auth_id', currentSession.user.id)
+          .single();
+
+        const userTimeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout ao buscar dados do usuário')), 3000);
+        });
+
+        try {
+          const { data: userDataFromDB, error: userError } = await Promise.race([
+            userDataPromise,
+            userTimeoutPromise
+          ]);
+
+          if (!userError && userDataFromDB && isMounted) {
+            console.log('✅ Dados do usuário encontrados:', userDataFromDB.nome);
+            setUserData(userDataFromDB);
+            localStorage.setItem('user', JSON.stringify(userDataFromDB));
+          } else if (userError) {
+            console.warn('⚠️ Erro ao buscar dados:', userError.message);
+            // Se houver cache antigo, usar mesmo que não corresponda
+            if (cachedUserData && isMounted) {
+              console.warn('⚠️ Usando cache antigo como fallback');
+              setUserData(cachedUserData);
             }
           }
         } catch (error) {
-          console.error('❌ Exceção ao buscar dados do usuário:', error);
+          console.warn('⚠️ Timeout ou erro ao buscar dados do usuário:', error.message);
+          // Usar cache se disponível
+          if (cachedUserData && isMounted) {
+            console.warn('⚠️ Usando cache devido a timeout');
+            setUserData(cachedUserData);
+          }
         }
+
       } catch (error) {
-        console.error('Erro na verificação de autenticação:', error);
+        console.error('❌ Erro na verificação de autenticação:', error);
       } finally {
-        // Garantir que sempre sai do loading, mesmo com erro
+        // SEMPRE limpar loading
         if (isMounted) {
           setLoading(false);
         }
       }
     };
 
-    checkAuth();
-
-    // Timeout de segurança - máximo 10 segundos
-    timeoutId = setTimeout(() => {
-      if (isMounted) {
-        console.warn('Timeout na verificação de autenticação - forçando saída do loading');
-        setLoading(false);
-      }
-    }, 10000);
-
-    // Escuta mudanças de autenticação
+    // Escuta mudanças de autenticação PRIMEIRO (para capturar eventos rapidamente)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Mudança de autenticação:', event, session);
+      console.log('🔄 Mudança de autenticação:', event, session);
       
       if (event === 'SIGNED_OUT') {
-        setSession(null);
-        setUserData(null);
-      } else if (session) {
-        setSession(session);
-        // Buscar dados do usuário novamente diretamente no Supabase
+        if (isMounted) {
+          setSession(null);
+          setUserData(null);
+          setLoading(false);
+        }
+      } else if (session && session.user) {
+        console.log('✅ Sessão detectada pelo onAuthStateChange:', session.user.email);
+        
+        if (isMounted) {
+          setSession(session);
+          setLoading(false); // Liberar loading quando sessão é detectada
+        }
+
+        // Buscar dados do usuário em background
         try {
+          // Tentar cache primeiro
+          const cachedUser = localStorage.getItem('user');
+          if (cachedUser) {
+            try {
+              const cachedData = JSON.parse(cachedUser);
+              if (cachedData && cachedData.auth_id === session.user.id && isMounted) {
+                console.log('✅ Usando cache do usuário:', cachedData.nome);
+                setUserData(cachedData);
+              }
+            } catch (e) {
+              console.warn('⚠️ Erro ao ler cache:', e);
+            }
+          }
+
+          // Buscar dados atualizados em background
           const { data: userDataFromDB, error: userError } = await supabase
             .from('users')
             .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo')
             .eq('auth_id', session.user.id)
             .single();
           
-          if (!userError && userDataFromDB) {
+          if (!userError && userDataFromDB && isMounted) {
+            console.log('✅ Dados do usuário atualizados:', userDataFromDB.nome);
             setUserData(userDataFromDB);
+            localStorage.setItem('user', JSON.stringify(userDataFromDB));
           }
         } catch (error) {
-          console.error('Erro ao buscar dados do usuário:', error);
+          console.warn('⚠️ Erro ao buscar dados do usuário:', error);
         }
       }
-      
-      setLoading(false);
     });
+
+    // Depois executa verificação manual (fallback caso onAuthStateChange não dispare rapidamente)
+    checkAuth();
+
+    // Timeout de segurança - máximo 2 segundos (reduzido ainda mais)
+    // Se há cache, loading já foi liberado, então este timeout só pega casos sem cache
+    timeoutId = setTimeout(() => {
+      if (isMounted) {
+        console.warn('⏱️ Timeout na verificação de autenticação - forçando saída do loading');
+        setLoading(false);
+      }
+    }, 2000);
 
     return () => {
       isMounted = false;
@@ -456,27 +356,31 @@ function ProtectedRoute({ children }) {
   if (!userData) {
     console.warn('⚠️ Usuário autenticado mas dados não encontrados no Supabase');
     
-    // Tentar usar cache como último recurso
-    try {
-      const fallbackCache = localStorage.getItem('user');
-      if (fallbackCache) {
-        try {
-          const fallbackData = JSON.parse(fallbackCache);
-          if (fallbackData && fallbackData.auth_id === session.user.id) {
-            console.log('✅ Usando cache como fallback para dados do usuário');
-            setUserData(fallbackData);
-          } else {
-            console.warn('⚠️ Cache encontrado mas auth_id não corresponde');
+      // Tentar usar cache como último recurso
+      try {
+        const fallbackCache = localStorage.getItem('user');
+        if (fallbackCache) {
+          try {
+            const fallbackData = JSON.parse(fallbackCache);
+            if (fallbackData && session.user && fallbackData.auth_id === session.user.id) {
+              console.log('✅ Usando cache como fallback para dados do usuário');
+              setUserData(fallbackData);
+            } else if (fallbackData && fallbackData.auth_id) {
+              // Se auth_id não corresponde, pode ser que a sessão mudou
+              // Mas ainda pode ser válido - só não usar para este caso
+              console.log('ℹ️ Cache encontrado mas auth_id diferente - pode ser sessão diferente');
+            } else {
+              console.warn('⚠️ Cache encontrado mas sem auth_id válido');
+            }
+          } catch (cacheError) {
+            console.error('❌ Erro ao ler cache de fallback:', cacheError);
           }
-        } catch (cacheError) {
-          console.error('❌ Erro ao ler cache de fallback:', cacheError);
+        } else {
+          console.warn('⚠️ Nenhum cache disponível para fallback');
         }
-      } else {
-        console.warn('⚠️ Nenhum cache disponível para fallback');
+      } catch (error) {
+        console.error('❌ Erro ao tentar usar cache de fallback:', error);
       }
-    } catch (error) {
-      console.error('❌ Erro ao tentar usar cache de fallback:', error);
-    }
     
     // Mesmo sem dados, permite acesso (componentes filhos buscarão diretamente)
     // Isso evita bloqueio em caso de problemas temporários com o Supabase

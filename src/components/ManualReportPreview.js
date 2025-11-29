@@ -403,14 +403,14 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
               </thead>
               <tbody>
                 {(formData.equipamentos || []).map((equipamento, index) => (
-                  <tr key={equipamento.id || index}>
+                    <tr key={equipamento.id || index}>
                     <td style={{ border: '1px solid #000', padding: `${8 * sizeFactor}px`, textAlign: 'center' }}>{index + 1}</td>
                     <td style={{ border: '1px solid #000', padding: `${8 * sizeFactor}px` }}>{equipamento.descricao || ''}</td>
                     <td style={{ border: '1px solid #000', padding: `${8 * sizeFactor}px` }}>{equipamento.marca || ''}</td>
                     <td style={{ border: '1px solid #000', padding: `${8 * sizeFactor}px` }}>{equipamento.serie || ''}</td>
                     <td style={{ border: '1px solid #000', padding: `${8 * sizeFactor}px`, textAlign: 'center' }}>{equipamento.quantidade || ''}</td>
                     <td style={{ border: '1px solid #000', padding: `${8 * sizeFactor}px` }}>{equipamento.estado || ''}</td>
-                  </tr>
+                    </tr>
                 ))}
               </tbody>
             </table>
@@ -542,7 +542,7 @@ const ManualReportPreview = forwardRef(({ reportType, formData, onBack }, ref) =
             <div style={{ marginBottom: `${16 * sizeFactor}px` }}>
               <p style={{ marginBottom: `${8 * sizeFactor}px` }}>
                 <b>{formData.local || '[LOCAL]'}</b>, <b>{formData.dia || '[DIA]'}</b> DE <b>{formData.mes || '[MÊS POR EXTENSO]'}</b> DE <b>{formData.ano || '[ANO]'}</b>.
-              </p>
+            </p>
               
               <div style={{ marginBottom: `${16 * sizeFactor}px` }}>
                 <div style={{ marginBottom: `${8 * sizeFactor}px`, fontSize: `${1.05 * sizeFactor}rem` }}>__________________________________</div>

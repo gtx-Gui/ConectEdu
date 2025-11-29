@@ -72,7 +72,67 @@ function GenerateReport() {
 
     async function fetchUser() {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // Tenta buscar do localStorage PRIMEIRO (mais rápido e não depende de sessão)
+        try {
+          const cachedUser = localStorage.getItem('user');
+          if (cachedUser) {
+            const userData = JSON.parse(cachedUser);
+            if (userData && userData.tipo) {
+              console.log('✅ Usando dados do cache (antes de verificar sessão):', userData.tipo);
+              // Tentar buscar sessão em background, mas não bloquear
+              supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session && session.user && isMounted) {
+                  setUser(session.user);
+                }
+              }).catch(() => {});
+              
+              if (isMounted) {
+                // Criar objeto user básico do cache
+                setUser({ id: userData.auth_id, email: userData.email });
+                setUserType(userData.tipo);
+                setShowLoading(false);
+                return;
+              }
+            }
+          }
+        } catch (cacheError) {
+          console.warn('⚠️ Erro ao ler cache:', cacheError);
+        }
+        
+        // Se não há cache, buscar sessão com timeout
+        let session = null;
+        let sessionError = null;
+        try {
+          const sessionPromise = supabase.auth.getSession();
+          const sessionTimeout = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout')), 5000);
+          });
+          const result = await Promise.race([sessionPromise, sessionTimeout]);
+          session = result?.data?.session || null;
+          sessionError = result?.error || null;
+        } catch (err) {
+          console.error('❌ Timeout ao buscar sessão:', err.message);
+          // Se deu timeout, tentar usar cache como último recurso
+          const cachedUser = localStorage.getItem('user');
+          if (cachedUser) {
+            try {
+              const userData = JSON.parse(cachedUser);
+              if (userData && userData.tipo && isMounted) {
+                console.log('⚠️ Usando cache devido a timeout na sessão');
+                setUser({ id: userData.auth_id, email: userData.email });
+                setUserType(userData.tipo);
+                setShowLoading(false);
+                return;
+              }
+            } catch (e) {
+              console.warn('⚠️ Erro ao usar cache de fallback:', e);
+            }
+          }
+          if (isMounted) {
+            setShowLoading(false);
+          }
+          return;
+        }
         
         if (sessionError) {
           console.error('Erro ao buscar sessão:', sessionError);
@@ -83,24 +143,6 @@ function GenerateReport() {
         }
         
         if (session && session.user) {
-          // Tenta buscar do localStorage primeiro como fallback
-          try {
-            const cachedUser = localStorage.getItem('user');
-            if (cachedUser) {
-              const userData = JSON.parse(cachedUser);
-              if (userData && userData.tipo) {
-                console.log('Usando dados do cache:', userData.tipo);
-                if (isMounted) {
-                  setUser(session.user);
-                  setUserType(userData.tipo);
-                  setShowLoading(false);
-                  return;
-                }
-              }
-            }
-          } catch (cacheError) {
-            console.warn('Erro ao ler cache:', cacheError);
-          }
 
           // Busca o tipo do usuário na tabela 'users' usando o campo 'auth_id'
           console.log('🔍 Buscando tipo do usuário com auth_id:', session.user.id);

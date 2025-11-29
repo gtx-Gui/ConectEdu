@@ -479,89 +479,286 @@ const DocumentHistory = () => {
         setLoading(true);
         setError(null);
         
-        // PRIMEIRO: Tentar carregar do cache (mais rápido)
+        console.log('🔄 Iniciando busca de histórico...');
+        
+        // PRIMEIRO: Tentar usar cache do usuário IMEDIATAMENTE (sem esperar getSession)
+        let userId = null;
+        let cachedUserData = null;
+        try {
+          const cachedUser = localStorage.getItem('user');
+          console.log('🔍 Verificando cache de usuário:', cachedUser ? 'Encontrado' : 'Não encontrado');
+          
+          if (cachedUser) {
+            cachedUserData = JSON.parse(cachedUser);
+            console.log('📦 Cache de usuário parseado:', {
+              hasAuthId: !!(cachedUserData && cachedUserData.auth_id),
+              authId: cachedUserData?.auth_id,
+              nome: cachedUserData?.nome,
+              todasChaves: Object.keys(cachedUserData || {})
+            });
+            
+            if (cachedUserData && cachedUserData.auth_id) {
+              userId = cachedUserData.auth_id;
+              console.log('✅ Cache de usuário encontrado, usando auth_id:', userId);
+            } else {
+              console.warn('⚠️ Cache de usuário encontrado mas sem auth_id válido:', cachedUserData);
+              
+              // FALLBACK: Tentar usar document_history_user_id se cache do usuário não tem auth_id
+              const cachedHistoryUserId = localStorage.getItem('document_history_user_id');
+              if (cachedHistoryUserId) {
+                userId = cachedHistoryUserId;
+                console.log('✅ Usando document_history_user_id como fallback:', userId);
+              }
+            }
+          } else {
+            console.warn('⚠️ Nenhum cache de usuário encontrado no localStorage');
+            
+            // FALLBACK: Tentar usar document_history_user_id mesmo sem cache do usuário
+            const cachedHistoryUserId = localStorage.getItem('document_history_user_id');
+            if (cachedHistoryUserId) {
+              userId = cachedHistoryUserId;
+              console.log('✅ Usando document_history_user_id (sem cache de usuário):', userId);
+            }
+          }
+        } catch (e) {
+          console.error('❌ Erro ao ler cache de usuário:', e);
+          
+          // FALLBACK: Tentar usar document_history_user_id mesmo com erro
+          try {
+            const cachedHistoryUserId = localStorage.getItem('document_history_user_id');
+            if (cachedHistoryUserId) {
+              userId = cachedHistoryUserId;
+              console.log('✅ Usando document_history_user_id após erro:', userId);
+            }
+          } catch (e2) {
+            console.warn('⚠️ Erro ao buscar document_history_user_id:', e2);
+          }
+        }
+        
+        // SEGUNDO: Tentar carregar do cache do histórico (se válido)
         try {
           const cachedHistory = localStorage.getItem('document_history');
           const cachedUserId = localStorage.getItem('document_history_user_id');
           
-          if (cachedHistory && cachedUserId) {
-            // Buscar sessão para verificar se ainda é o mesmo usuário
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session && session.user && String(session.user.id) === cachedUserId) {
-              try {
-                const historyData = JSON.parse(cachedHistory);
-                const cacheTimestamp = parseInt(localStorage.getItem('document_history_timestamp') || '0', 10);
-                const now = Date.now();
-                const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+          if (cachedHistory && cachedUserId && userId && cachedUserId === String(userId)) {
+            try {
+              const historyData = JSON.parse(cachedHistory);
+              const cacheTimestamp = parseInt(localStorage.getItem('document_history_timestamp') || '0', 10);
+              const now = Date.now();
+              const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+              
+              // Se o cache é recente (menos de 5 minutos), usar ele IMEDIATAMENTE
+              if (now - cacheTimestamp < CACHE_DURATION) {
+                console.log('✅ Histórico carregado do cache');
+                setHistory(historyData);
+                setLoading(false);
                 
-                // Se o cache é recente (menos de 5 minutos), usar ele
-                if (now - cacheTimestamp < CACHE_DURATION) {
-                  console.log('✅ Histórico carregado do cache');
-                  setUser(session.user);
-                  setHistory(historyData);
-                  setLoading(false);
-                  
-                  // Atualizar em background sem bloquear
-                  setTimeout(async () => {
+                // Atualizar em background sem bloquear (usando auth_id do cache)
+                setTimeout(async () => {
+                  try {
                     const { data, error } = await supabase
                       .from('document_history')
                       .select('id, document_type, generated_at, form_data')
-                      .eq('user_id', session.user.id)
+                      .eq('user_id', userId)
                       .order('generated_at', { ascending: false })
                       .limit(100);
                     
                     if (!error && data) {
                       localStorage.setItem('document_history', JSON.stringify(data));
-                      localStorage.setItem('document_history_user_id', String(session.user.id));
+                      localStorage.setItem('document_history_user_id', String(userId));
                       localStorage.setItem('document_history_timestamp', Date.now().toString());
                       setHistory(data);
                     }
-                  }, 0);
-                  return;
-                }
-              } catch (parseError) {
-                console.warn('⚠️ Erro ao ler cache do histórico:', parseError);
+                  } catch (err) {
+                    console.warn('⚠️ Erro ao atualizar histórico em background:', err);
+                  }
+                }, 100);
+                return; // SAIR - histórico carregado do cache
               }
+            } catch (parseError) {
+              console.warn('⚠️ Erro ao ler cache do histórico:', parseError);
             }
           }
         } catch (cacheError) {
           console.warn('⚠️ Erro ao verificar cache do histórico:', cacheError);
         }
         
-        // SEGUNDO: Se não há cache válido, buscar do Supabase
-        // Aguardar um pouco para garantir que a sessão está pronta
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Buscar sessão (sem logs desnecessários)
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session && session.user) {
-          setUser(session.user);
+        // TERCEIRO: Se não há cache válido OU cache expirado, buscar do Supabase
+        // Garantir que temos userId (priorizar cache de usuário, depois document_history_user_id)
+        if (!userId) {
+          console.log('⚠️ Sem userId ainda, tentando buscar cache novamente...');
           
-          // Query otimizada: buscar apenas campos necessários e limitar resultados
-          const { data, error } = await supabase
-            .from('document_history')
-            .select('id, document_type, generated_at, form_data')
-            .eq('user_id', session.user.id)
-            .order('generated_at', { ascending: false })
-            .limit(100); // Limitar a 100 documentos mais recentes
+          // FALLBACK 1: Tentar usar document_history_user_id novamente
+          try {
+            const cachedHistoryUserId = localStorage.getItem('document_history_user_id');
+            if (cachedHistoryUserId) {
+              userId = cachedHistoryUserId;
+              console.log('✅ Usando document_history_user_id na segunda tentativa:', userId);
+            }
+          } catch (e) {
+            console.warn('⚠️ Erro ao buscar document_history_user_id:', e);
+          }
+          
+          // FALLBACK 2: Tentar buscar cache de usuário novamente (pode ter sido salvo entre tentativas)
+          if (!userId) {
+            try {
+              const cachedUserRetry = localStorage.getItem('user');
+              if (cachedUserRetry) {
+                const retryData = JSON.parse(cachedUserRetry);
+                if (retryData && retryData.auth_id) {
+                  userId = retryData.auth_id;
+                  cachedUserData = retryData;
+                  console.log('✅ Cache encontrado na segunda tentativa, usando auth_id:', userId);
+                }
+              }
+            } catch (e) {
+              console.warn('⚠️ Erro ao tentar buscar cache novamente:', e);
+            }
+          }
+          
+          // FALLBACK 3: Tentar usar cachedUserData original (se tem auth_id)
+          if (!userId && cachedUserData && cachedUserData.auth_id) {
+            userId = cachedUserData.auth_id;
+            console.log('✅ Usando auth_id do cache de usuário original:', userId);
+          }
+        }
+        
+        // Se AINDA não tem userId após verificar cache, tentar buscar sessão (com timeout)
+        if (!userId) {
+          console.log('⚠️ Sem cache de usuário, tentando buscar sessão...');
+          try {
+            const sessionPromise = supabase.auth.getSession();
+            const sessionTimeout = new Promise((_, reject) => {
+              setTimeout(() => reject(new Error('Timeout')), 3000); // Aumentado para 3s
+            });
+            const result = await Promise.race([sessionPromise, sessionTimeout]);
+            const session = result?.data?.session || null;
+            
+            if (session && session.user) {
+              userId = session.user.id;
+              setUser(session.user);
+              console.log('✅ Sessão encontrada, userId:', userId);
+              
+              // Salvar cache de usuário (atualizar ou criar)
+              try {
+                const { data: userDataFromDB } = await supabase
+                  .from('users')
+                  .select('id, nome, email, telefone, cpf, cnpj, cep, rua, numero, complemento, bairro, cidade, estado, tipo, auth_id')
+                  .eq('auth_id', userId)
+                  .single();
+                
+                if (userDataFromDB) {
+                  localStorage.setItem('user', JSON.stringify(userDataFromDB));
+                  cachedUserData = userDataFromDB;
+                  console.log('✅ Cache de usuário salvo:', userDataFromDB.nome);
+                }
+              } catch (e) {
+                console.warn('⚠️ Erro ao salvar cache de usuário:', e);
+              }
+            } else {
+              console.warn('⚠️ Sessão não encontrada ou inválida');
+            }
+          } catch (err) {
+            console.warn('⚠️ Timeout ao buscar sessão:', err.message);
+            
+            // Última tentativa: buscar document_history_user_id primeiro (mais confiável)
+            try {
+              const lastHistoryUserId = localStorage.getItem('document_history_user_id');
+              if (lastHistoryUserId) {
+                userId = lastHistoryUserId;
+                console.log('✅ Usando document_history_user_id após timeout:', userId);
+              }
+            } catch (e) {
+              console.warn('⚠️ Erro ao buscar document_history_user_id:', e);
+            }
+            
+            // Última tentativa: buscar cache de usuário novamente
+            if (!userId) {
+              try {
+                const lastCacheTry = localStorage.getItem('user');
+                if (lastCacheTry) {
+                  const lastData = JSON.parse(lastCacheTry);
+                  if (lastData && lastData.auth_id) {
+                    userId = lastData.auth_id;
+                    cachedUserData = lastData;
+                    console.log('✅ Cache encontrado após timeout, usando auth_id:', userId);
+                  }
+                }
+              } catch (e) {
+                console.warn('⚠️ Erro na última tentativa de cache:', e);
+              }
+            }
+          }
+        }
+        
+        // Verificar se conseguiu obter userId
+        if (!userId) {
+          console.error('❌ FALHA: Não foi possível obter userId de nenhuma fonte');
+          console.log('🔍 Estado atual:', {
+            cachedUserData: cachedUserData ? 'Existe' : 'null',
+            hasAuthId: !!(cachedUserData && cachedUserData.auth_id),
+            localStorage_user: localStorage.getItem('user') ? 'Existe' : 'null'
+          });
+        }
+        
+        // QUARTO: Buscar histórico do Supabase usando userId (do cache ou sessão)
+        if (userId) {
+          console.log('🔍 Buscando histórico do Supabase com userId:', userId);
+          console.log('📊 Query: SELECT * FROM document_history WHERE user_id =', userId);
+          
+          try {
+            const { data, error } = await supabase
+              .from('document_history')
+              .select('id, document_type, generated_at, form_data')
+              .eq('user_id', userId)
+              .order('generated_at', { ascending: false })
+              .limit(100);
 
-          if (error) {
-            setError(error.message);
-          } else {
-            const historyData = data || [];
-            setHistory(historyData);
-            // Salvar no cache
-            localStorage.setItem('document_history', JSON.stringify(historyData));
-            localStorage.setItem('document_history_user_id', String(session.user.id));
-            localStorage.setItem('document_history_timestamp', Date.now().toString());
+            if (error) {
+              console.error('❌ Erro ao buscar histórico do Supabase:', {
+                message: error.message,
+                code: error.code,
+                details: error.details,
+                hint: error.hint
+              });
+              setError(error.message || 'Erro ao carregar histórico');
+            } else {
+              const historyData = data || [];
+              console.log('✅ Histórico carregado do Supabase:', {
+                quantidade: historyData.length,
+                documentos: historyData.length > 0 ? 'Sim' : 'Não',
+                userIdUsado: userId
+              });
+              
+              setHistory(historyData);
+              
+              // Salvar no cache
+              localStorage.setItem('document_history', JSON.stringify(historyData));
+              localStorage.setItem('document_history_user_id', String(userId));
+              localStorage.setItem('document_history_timestamp', Date.now().toString());
+              console.log('✅ Cache do histórico salvo com sucesso');
+            }
+          } catch (dbError) {
+            console.error('❌ Erro ao buscar histórico do BD:', {
+              error: dbError,
+              message: dbError?.message,
+              stack: dbError?.stack
+            });
+            setError('Erro ao carregar histórico. Tente atualizar a página.');
           }
         } else {
-          setError('Usuário não autenticado');
+          // Sem userId (sem cache e sem sessão)
+          console.error('❌ Sem userId disponível - usuário não autenticado');
+          console.log('🔍 Debug - Verificando localStorage:', {
+            user: localStorage.getItem('user') ? 'Existe' : 'Não existe',
+            document_history_user_id: localStorage.getItem('document_history_user_id') || 'Não existe',
+            todasAsChaves: Object.keys(localStorage).filter(k => k.includes('user') || k.includes('document'))
+          });
+          setError('Usuário não autenticado. Faça login novamente.');
         }
       } catch (error) {
-        setError(error.message);
+        console.error('❌ Erro geral ao buscar histórico:', error);
+        setError(error.message || 'Erro ao carregar histórico');
       } finally {
         setLoading(false);
       }
