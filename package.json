@@ -1,7 +1,7 @@
 {
   "name": "projeto_conectedu",
   "version": "1.0.3",
-  "description": "",
+  "description": "Plataforma web para conectar empresas doadoras a escolas públicas, facilitando doações de equipamentos eletrônicos e geração de documentação oficial",
   "main": "index.js",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
@@ -855,9 +855,21 @@
     "start": "react-scripts start",
     "build": "react-scripts build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "react",
+    "education",
+    "donation",
+    "supabase",
+    "pdf-generation",
+    "brazil",
+    "social-impact"
+  ],
+  "author": "Guilherme Grasso Teixeira Xeres",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gtx-Gui/ConectEdu"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
