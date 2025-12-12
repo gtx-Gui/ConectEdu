@@ -262,7 +262,7 @@ Este projeto está sob a licença ISC. Veja o arquivo `LICENSE` para mais detalh
 ## 👥 Autores
 
 - **Guilherme Grasso Teixeira Xeres** - Desenvolvimento e implementação
-  - GitHub: [@seu-usuario-github](https://github.com/gtx-Gui/ConectEdu) 
+  - GitHub: [@gtx-Gui](https://github.com/gtx-Gui/ConectEdu) 
   - LinkedIn: [Guilherme Grasso](https://www.linkedin.com/in/guilherme-grasso-teixeira-xeres-639380302?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BUAG%2F6RsqSFujAXZHT1%2FG5Q%3D%3D) 
   - Email: conectedu.org@gmail.com
 
